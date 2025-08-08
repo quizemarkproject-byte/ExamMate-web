@@ -1,0 +1,116 @@
+<header class="bg-white border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16 items-center">
+      <!-- Logo -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <img
+          src="/assets/png/logo.png"
+          alt="ExamMate Logo"
+          class="h-8 w-auto"
+        />
+        <a href="/" class="text-xl font-bold text-gray-800">ExamMate</a>
+      </div>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center space-x-6">
+        @for (link of navLinks; track link.url) {
+        <a
+          [routerLink]="link.url"
+          routerLinkActive="text-gray-900 border-b-2 border-gray-900"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="text-gray-700 hover:text-gray-900 font-medium transition-colors duration-200 pb-1"
+        >
+          {{ link.label }}
+        </a>
+        }
+        <a
+          routerLink="/login"
+          class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 active:bg-black transition"
+        >
+          Login
+        </a>
+        <a
+          routerLink="/signup"
+          routerLinkActive="bg-gray-200 text-gray-900"
+          class="px-4 py-2 text-sm font-medium text-gray-800 border border-gray-800 rounded-md hover:bg-gray-100 active:bg-gray-200 transition"
+        >
+          Sign Up
+        </a>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button
+          type="button"
+          (click)="toggleMenu()"
+          [attr.aria-expanded]="menuOpen"
+          aria-label="Toggle menu"
+          class="p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-800 transition-transform duration-200"
+          [class.rotate-90]="menuOpen"
+        >
+          @if (!menuOpen) {
+          <!-- Hamburger icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+          } @else {
+          <!-- Close icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Nav -->
+  @if (menuOpen) {
+  <div class="md:hidden border-t border-gray-200">
+    <nav class="px-4 pt-4 pb-6 space-y-2">
+      @for (link of navLinks; track link.url) {
+      <a
+        [routerLink]="link.url"
+        class="block text-gray-700 hover:text-gray-800 font-medium transition-colors duration-200"
+      >
+        {{ link.label }}
+      </a>
+      }
+      <a
+        routerLink="/login"
+        class="block px-4 py-2 mt-4 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 active:bg-black transition"
+      >
+        Login
+      </a>
+      <a
+        routerLink="/signup"
+        class="block px-4 py-2 text-sm font-medium text-gray-800 border border-gray-800 rounded-md hover:bg-gray-100 active:bg-gray-200 transition"
+      >
+        Sign Up
+      </a>
+    </nav>
+  </div>
+  }
+</header>
