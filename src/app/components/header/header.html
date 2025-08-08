@@ -1,7 +1,6 @@
 <header class="bg-white border-b border-gray-200">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16 items-center">
-      <!-- Logo -->
       <div class="flex items-center gap-2 flex-shrink-0">
         <img
           src="/assets/png/logo.png"
@@ -11,7 +10,6 @@
         <a href="/" class="text-xl font-bold text-gray-800">ExamMate</a>
       </div>
 
-      <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center space-x-6">
         @for (link of navLinks; track link.url) {
         <a
@@ -38,7 +36,6 @@
         </a>
       </nav>
 
-      <!-- Mobile menu button -->
       <div class="md:hidden">
         <button
           type="button"
@@ -49,37 +46,9 @@
           [class.rotate-90]="menuOpen"
         >
           @if (!menuOpen) {
-          <!-- Hamburger icon -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
+          <img src="assets/svg/hamburger.svg" alt="Menu" class="h-6 w-6" />
           } @else {
-          <!-- Close icon -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          <img src="assets/svg/close.svg" alt="Close" class="h-6 w-6" />
           }
         </button>
       </div>
