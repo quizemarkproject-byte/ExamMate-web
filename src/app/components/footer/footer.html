@@ -1,0 +1,60 @@
+<footer class="bg-gray-800 text-gray-300 py-16 px-5 lg:px-10">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <div class="space-y-4">
+        <h3 class="text-xl font-bold text-white">Contact</h3>
+        <address class="not-italic">{{ contactInfo.name }}</address>
+        <address class="not-italic">{{ contactInfo.address }}</address>
+        <ul class="space-y-2">
+          @for (phone of contactInfo.phones; track phone.link) {
+            <li>
+              <a [href]="phone.link" class="hover:text-white transition">
+                {{ phone.label }}
+              </a>
+            </li>
+          }
+          @for (email of contactInfo.emails; track email.link) {
+            <li>
+              <a [href]="email.link" class="hover:text-white transition">
+                {{ email.label }}
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="text-xl font-bold text-white">Quick Links</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <ul class="space-y-2">
+            @for (item of menuItems; track item.link) {
+              <li>
+                <a [href]="item.link" class="hover:text-white transition">
+                  {{ item.label }}
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="text-xl font-bold text-white">Socials</h3>
+        <div class="flex space-x-4 pt-4">
+          @for (social of socials; track social.link) {
+            <a [href]="social.link" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition">
+              <img [src]="social.icon" [alt]="social.alt" class="w-6 h-6">
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 text-center">
+      <p class="text-sm">
+        Copyright &copy; {{ currentYear }}. All Rights Reserved. {{ contactInfo.name }}.
+      </p>
+    </div>
+  </div>
+</footer>
