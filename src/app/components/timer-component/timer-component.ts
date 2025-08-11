@@ -9,9 +9,13 @@ import { Component, Input } from '@angular/core';
 })
 export class TimerComponent {
   @Input() remainingSeconds!: number;
-  
+
+  get hours(): number {
+    return Math.floor(this.remainingSeconds / 3600);
+  }
+
   get minutes(): number {
-    return Math.floor(this.remainingSeconds / 60);
+    return Math.floor((this.remainingSeconds % 3600) / 60);
   }
 
   get seconds(): number {
