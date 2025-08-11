@@ -26,7 +26,7 @@ export const routes: Routes = [
     title: 'ExamMate | Take Quiz',
   },
   {
-    path: 'quiz/results/:quizId',
+    path: 'quiz/results/:resultId',
     component: QuizResultPage,
     title: 'ExamMate | Take Quiz',
   },
