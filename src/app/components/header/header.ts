@@ -18,9 +18,7 @@ export class Header {
 
   navLinks: NavLink[] = [
     { label: 'Home', url: '/' },
-    { label: 'About', url: '/about' },
-    { label: 'Services', url: '/services' },
-    { label: 'Contact', url: '/contact' }
+    { label: 'Quiz', url: '/quiz' },
   ];
 
   constructor(private eRef: ElementRef) {}
