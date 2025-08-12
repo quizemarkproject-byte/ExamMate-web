@@ -25,6 +25,7 @@ export interface AnswerSubmission {
 
 export interface QuizResultResponse {
   id: string
+  quizTitle: string
   totalQuestions: number
   correctAnswers: number
   scorePercentage: number
@@ -35,6 +36,7 @@ export interface QuestionResultResponse {
   text: string
   options: string[]
   correctAnswer: string
+  chosenAnswer: string
   correct: boolean
 }
 

@@ -10,6 +10,7 @@ module.exports = {
           snow: "#f9fafb",
           mist: "#f0f2f5",
           ash: "#555",
+          slate: "#60758a"
         },
         slideDown: {
           "0%": { opacity: 0, transform: "translateY(-10px)" },

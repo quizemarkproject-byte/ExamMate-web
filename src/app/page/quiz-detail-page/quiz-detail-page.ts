@@ -80,7 +80,6 @@ export class QuizDetailPage {
       .startQuiz(this.quizId, this.quizSubmission.userId)
       .subscribe({
         next: (quiz: Quiz) => {
-          console.log('Quiz started:', quiz);
           this.quizData = quiz;
           this.quizSubmission.quizSessionId =
             quiz.timeRemaining?.quizSessionId || '';

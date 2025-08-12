@@ -47,7 +47,6 @@ export class QuizService {
     userId: string,
     quizSessionId: string
   ): Observable<TimeRemainingResponse> {
-    console.log(quizSessionId);
     return this.http.get<TimeRemainingResponse>(
       `${this.baseUrl}/${quizId}/${userId}/${quizSessionId}/time`
     );

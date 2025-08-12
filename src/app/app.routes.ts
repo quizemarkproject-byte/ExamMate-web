@@ -2,7 +2,9 @@ import { Routes } from '@angular/router';
 import { HomePage } from './page/home-page/home-page';
 import { QuizListPage } from './page/quiz-list-page/quiz-list-page';
 import { QuizDetailPage } from './page/quiz-detail-page/quiz-detail-page';
-import { QuizResultPage } from './page/quiz-result-page/quiz-result-page';
+import { QuizResultPage } from './page/result-page/quiz-result-page/quiz-result-page';
+import { QuizResultList } from './page/result-page/quiz-result-list/quiz-result-list';
+import { QuizResultDetail } from './page/result-page/quiz-result-detail/quiz-result-detail';
 
 export const routes: Routes = [
   {
@@ -21,13 +23,22 @@ export const routes: Routes = [
     title: 'ExamMate | Quiz',
   },
   {
+  path: 'quiz/results',
+  component: QuizResultPage,
+  children: [
+    {
+      path: '',
+      component: QuizResultList
+    },
+    {
+      path: ':resultId',
+      component: QuizResultDetail
+    }
+  ]
+},
+  {
     path: 'quiz/:quizId',
     component: QuizDetailPage,
-    title: 'ExamMate | Take Quiz',
-  },
-  {
-    path: 'quiz/results/:resultId',
-    component: QuizResultPage,
     title: 'ExamMate | Take Quiz',
   },
 ];
