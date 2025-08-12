@@ -24,16 +24,19 @@ export interface AnswerSubmission {
 }
 
 export interface QuizResultResponse {
-  questionResultResponse: QuestionResultResponse[]
+  id: string
+  quizTitle: string
   totalQuestions: number
   correctAnswers: number
   scorePercentage: number
+  questionResultResponse?: QuestionResultResponse[]
 }
 
 export interface QuestionResultResponse {
   text: string
   options: string[]
   correctAnswer: string
+  chosenAnswer: string
   correct: boolean
 }
 

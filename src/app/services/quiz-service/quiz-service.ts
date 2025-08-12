@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Quiz, QuizResultResponse, QuizSubmission, TimeRemainingResponse } from '../../models/quiz';
+import {
+  Quiz,
+  QuizResultResponse,
+  QuizSubmission,
+  TimeRemainingResponse,
+} from '../../models/quiz';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -20,6 +25,13 @@ export class QuizService {
     return this.http.get<Quiz>(`${this.baseUrl}/${quizId}`);
   }
 
+  startQuiz(quizId: string, userId: string): Observable<Quiz> {
+    return this.http.post<Quiz>(
+      `${this.baseUrl}/${quizId}/${userId}/start`,
+      {}
+    );
+  }
+
   submitQuiz(
     quizId: string,
     answers: QuizSubmission
@@ -30,14 +42,28 @@ export class QuizService {
     );
   }
 
-  startQuiz(quizId: string, userId: string): Observable<Quiz> {
-    return this.http.post<Quiz>(`${this.baseUrl}/${quizId}/${userId}/start`, {});
-  }
-
-  getRemainingTime(quizId: string, userId: string, quizSessionId: string): Observable<TimeRemainingResponse> {
-    console.log(quizSessionId)
+  getRemainingTime(
+    quizId: string,
+    userId: string,
+    quizSessionId: string
+  ): Observable<TimeRemainingResponse> {
     return this.http.get<TimeRemainingResponse>(
       `${this.baseUrl}/${quizId}/${userId}/${quizSessionId}/time`
+    );
+  }
+
+  getAllUserQuizResults(userId: string): Observable<QuizResultResponse[]> {
+    return this.http.get<QuizResultResponse[]>(
+      `${this.baseUrl}/result/user/${userId}`
+    );
+  }
+
+  getUserQuizResult(
+    resultId: string,
+    userId: string
+  ): Observable<QuizResultResponse> {
+    return this.http.get<QuizResultResponse>(
+      `${this.baseUrl}/result/${resultId}/user/${userId}`
     );
   }
 }

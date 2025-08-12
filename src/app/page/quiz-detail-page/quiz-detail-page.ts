@@ -4,9 +4,8 @@ import { QuizService } from '../../services/quiz-service/quiz-service';
 import { Quiz, QuizResultResponse, QuizSubmission } from '../../models/quiz';
 import { FormsModule } from '@angular/forms';
 import { QuestionComponent } from '../../components/question-component/question-component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TimerComponent } from '../../components/timer-component/timer-component';
-import { parseDurationToSeconds } from '../../utils/duration-utils';
 
 @Component({
   selector: 'app-quiz-detail-page',
@@ -26,17 +25,17 @@ export class QuizDetailPage {
   termsAccepted = false;
   loading = false;
   currentQuestionIndex = 0;
-  totalTimeLimitSeconds = 0;
   remainingSeconds = 0;
   private countdownInterval: any;
 
   constructor(
     private quizService: QuizService,
-    private route: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.quizId = this.route.snapshot.paramMap.get('quizId')!;
+    this.quizId = this.activatedRoute.snapshot.paramMap.get('quizId')!;
 
     const savedState = localStorage.getItem(`quiz-${this.quizId}`);
     if (savedState) {
@@ -45,12 +44,6 @@ export class QuizDetailPage {
       this.quizSubmission = parsed.quizSubmission;
       this.currentQuestionIndex = parsed.currentQuestionIndex;
       this.termsAccepted = parsed.termsAccepted;
-
-      if (this.quizData?.timeLimit) {
-        this.totalTimeLimitSeconds = parseDurationToSeconds(
-          this.quizData.timeLimit
-        );
-      }
     }
 
     if (this.termsAccepted) {
@@ -69,7 +62,6 @@ export class QuizDetailPage {
       .subscribe({
         next: (time) => {
           this.remainingSeconds = time.remainingSeconds;
-          this.totalTimeLimitSeconds = time.totalTimeLimitSeconds;
           this.loading = false;
           this.startCountdown();
         },
@@ -88,18 +80,12 @@ export class QuizDetailPage {
       .startQuiz(this.quizId, this.quizSubmission.userId)
       .subscribe({
         next: (quiz: Quiz) => {
-          console.log('Quiz started:', quiz);
           this.quizData = quiz;
-          this.quizSubmission.quizSessionId = quiz.timeRemaining?.quizSessionId || '';
-
-          if (quiz.timeLimit) {
-            this.totalTimeLimitSeconds = parseDurationToSeconds(quiz.timeLimit);
-          }
+          this.quizSubmission.quizSessionId =
+            quiz.timeRemaining?.quizSessionId || '';
 
           if (quiz.timeRemaining) {
             this.remainingSeconds = quiz.timeRemaining.remainingSeconds;
-            this.totalTimeLimitSeconds =
-              quiz.timeRemaining.totalTimeLimitSeconds;
             this.loading = false;
             this.startCountdown();
           }
@@ -203,6 +189,12 @@ export class QuizDetailPage {
         },
       });
     }
+  }
+
+  viewResults() {
+    if (this.quizSubmissionResult?.id) {
+    this.router.navigate(['/quiz/results', this.quizSubmissionResult.id]);
+  }
   }
 
   ngOnDestroy() {
