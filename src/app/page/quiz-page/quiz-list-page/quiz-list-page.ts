@@ -26,9 +26,6 @@ export class QuizListPage {
         console.log(err);
       },
     });
-
-    console.log('Quiz data:', this.quizData);
-    console.log(this.quizData.length)
   }
 
 }
