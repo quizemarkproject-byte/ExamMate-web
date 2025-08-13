@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { QuizResultResponse } from '../../../models/quiz';
 import { RouterModule } from '@angular/router';
+import { Footer } from '../../../components/footer/footer';
 
 @Component({
   selector: 'app-quiz-result-list',
   imports: [RouterModule],
-  templateUrl: './quiz-result-list.html',
-  styleUrl: './quiz-result-list.css'
+  templateUrl: './result-list.html'
 })
 export class QuizResultList {
   quizResults: QuizResultResponse[] = [];

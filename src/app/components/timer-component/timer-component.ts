@@ -4,8 +4,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-timer-component',
   imports: [CommonModule],
-  templateUrl: './timer-component.html',
-  styleUrl: './timer-component.css',
+  templateUrl: './timer-component.html'
 })
 export class TimerComponent {
   @Input() remainingSeconds!: number;

@@ -36,26 +36,29 @@
       (answerSelected)="onAnswerSelected($event)"
     ></app-question-component>
 
-    <div class="flex justify-stretch">
-      <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-between">
-        @if (currentQuestionIndex > 0) {
+    <div class="flex justify-between px-4 py-3">
+      @if (currentQuestionIndex > 0) {
+      <button
+        class="flex min-w-[6.5rem] max-w-[30rem] items-center justify-center rounded-lg h-10 px-4 text-black bg-white hover:bg-gray-100 border border-gray-900 text-sm font-bold"
+        (click)="prevQuestion()"
+      >
+        Previous
+      </button>
+      } @else {
+      <div class="min-w-[6rem] h-10"></div>
+      }
+      <div class="relative min-w-[6.5rem] max-w-[30rem] h-10">
+        @if (quizData.questions.length > currentQuestionIndex + 1) {
         <button
-          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 text-black bg-white hover:bg-gray-100 border border-gray-900 text-sm font-bold"
-          (click)="prevQuestion()"
-        >
-          Previous
-        </button>
-        } @if (quizData.questions.length > currentQuestionIndex + 1) {
-        <button
-          class="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 text-white bg-gray-800 hover:bg-gray-900 active:bg-black text-sm font-bold disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+          class="absolute inset-0 flex items-center justify-center rounded-lg px-4 text-white bg-gray-800 hover:bg-gray-900 active:bg-black text-sm font-bold disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
           [disabled]="!hasAnswerForCurrentQuestion()"
           (click)="nextQuestion()"
         >
           Next
         </button>
-        } @if (quizData.questions.length === currentQuestionIndex + 1) {
+        } @else {
         <button
-          class="flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 text-white bg-gray-800 hover:bg-gray-900 active:bg-black text-sm font-bold disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+          class="absolute inset-0 flex items-center justify-center rounded-lg px-4 text-white bg-gray-800 hover:bg-gray-900 active:bg-black text-sm font-bold disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 whitespace-nowrap"
           [disabled]="!hasAnswerForCurrentQuestion()"
           (click)="submitQuiz()"
         >
