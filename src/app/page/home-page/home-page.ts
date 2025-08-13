@@ -4,8 +4,7 @@ import { Footer } from '../../components/footer/footer';
 @Component({
   selector: 'app-home-page',
   imports: [Footer],
-  templateUrl: './home-page.html',
-  styleUrl: './home-page.css'
+  templateUrl: './home-page.html'
 })
 export class HomePage {
 

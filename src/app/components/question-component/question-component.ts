@@ -4,8 +4,7 @@ import { Question } from '../../models/quiz';
 @Component({
   selector: 'app-question-component',
   imports: [],
-  templateUrl: './question-component.html',
-  styleUrl: './question-component.css'
+  templateUrl: './question-component.html'
 })
 export class QuestionComponent {
   @Input() questionNumber!: number;

@@ -6,8 +6,7 @@ import { QuizResultResponse } from '../../../models/quiz';
 @Component({
   selector: 'app-quiz-result-detail',
   imports: [],
-  templateUrl: './quiz-result-detail.html',
-  styleUrl: './quiz-result-detail.css',
+  templateUrl: './result-detail.html'
 })
 export class QuizResultDetail {
   resultId: string = '';

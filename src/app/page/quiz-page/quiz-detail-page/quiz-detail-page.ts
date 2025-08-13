@@ -1,17 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { QuizService } from '../../services/quiz-service/quiz-service';
-import { Quiz, QuizResultResponse, QuizSubmission } from '../../models/quiz';
+import { Quiz, QuizResultResponse, QuizSubmission } from '../../../models/quiz';
 import { FormsModule } from '@angular/forms';
-import { QuestionComponent } from '../../components/question-component/question-component';
+import { QuestionComponent } from '../../../components/question-component/question-component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TimerComponent } from '../../components/timer-component/timer-component';
+import { TimerComponent } from '../../../components/timer-component/timer-component';
+import { QuizService } from '../../../services/quiz-service/quiz-service';
 
 @Component({
   selector: 'app-quiz-detail-page',
   imports: [CommonModule, FormsModule, QuestionComponent, TimerComponent],
-  templateUrl: './quiz-detail-page.html',
-  styleUrl: './quiz-detail-page.css',
+  templateUrl: './quiz-detail-page.html'
 })
 export class QuizDetailPage {
   quizId: string = '';
