@@ -12,7 +12,7 @@ import { Footer } from '../../../components/footer/footer';
   templateUrl: './quiz-list-page.html'
 })
 export class QuizListPage {
-  quizData: Quiz[] | null = null;
+  quizData: Quiz[] = [];
   loading = false;
 
   constructor(private quizService: QuizService) {}
@@ -26,6 +26,9 @@ export class QuizListPage {
         console.log(err);
       },
     });
+
+    console.log('Quiz data:', this.quizData);
+    console.log(this.quizData.length)
   }
 
 }
