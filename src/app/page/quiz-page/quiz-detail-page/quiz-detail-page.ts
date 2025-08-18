@@ -6,17 +6,18 @@ import { QuestionComponent } from '../../../components/question-component/questi
 import { ActivatedRoute, Router } from '@angular/router';
 import { TimerComponent } from '../../../components/timer-component/timer-component';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
+import { UserService } from '../../../services/user-service/user-service';
 
 @Component({
   selector: 'app-quiz-detail-page',
   imports: [CommonModule, FormsModule, QuestionComponent, TimerComponent],
-  templateUrl: './quiz-detail-page.html'
+  templateUrl: './quiz-detail-page.html',
 })
 export class QuizDetailPage {
   quizId: string = '';
   quizData: Quiz | null = null;
   quizSubmission: QuizSubmission = {
-    userId: 'user1',
+    userId: '',
     quizSessionId: '',
     answerSubmissions: [],
   };
@@ -30,10 +31,12 @@ export class QuizDetailPage {
   constructor(
     private quizService: QuizService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
+    this.quizSubmission.userId = this.userService.getUserId();
     this.quizId = this.activatedRoute.snapshot.paramMap.get('quizId')!;
 
     const savedState = localStorage.getItem(`quiz-${this.quizId}`);
@@ -192,8 +195,8 @@ export class QuizDetailPage {
 
   viewResults() {
     if (this.quizSubmissionResult?.id) {
-    this.router.navigate(['/quiz/results', this.quizSubmissionResult.id]);
-  }
+      this.router.navigate(['/quiz/results', this.quizSubmissionResult.id]);
+    }
   }
 
   ngOnDestroy() {
