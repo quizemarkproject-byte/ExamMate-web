@@ -3,22 +3,26 @@ import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { QuizResultResponse } from '../../../models/quiz';
 import { RouterModule } from '@angular/router';
 import { Footer } from '../../../components/footer/footer';
+import { UserService } from '../../../services/user-service/user-service';
 
 @Component({
   selector: 'app-quiz-result-list',
   imports: [RouterModule],
-  templateUrl: './result-list.html'
+  templateUrl: './result-list.html',
 })
 export class QuizResultList {
   quizResults: QuizResultResponse[] = [];
-  userId: string = 'user1';
+  userId: string = '';
 
   constructor(
-    private quizService: QuizService) {}
+    private quizService: QuizService,
+    private userService: UserService
+  ) {}
 
-    ngOnInit() {
-      this.getAllUserQuizResults();
-    }
+  ngOnInit() {
+    this.userId = this.userService.getUserId();
+    this.getAllUserQuizResults();
+  }
 
   getAllUserQuizResults() {
     this.quizService.getAllUserQuizResults(this.userId).subscribe({
@@ -27,8 +31,7 @@ export class QuizResultList {
       },
       error: (err) => {
         console.error('Error fetching all quiz results:', err);
-      }
+      },
     });
   }
-
 }
