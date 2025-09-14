@@ -15,7 +15,8 @@ export const routes: Routes = [
   },
   {
     path: 'home',
-    component: HomePage,
+    // component: HomePage,
+    component: QuizListPage,
     title: 'ExamMate | Home',
   },
   {
