@@ -194,7 +194,6 @@ export class QuizDetailPage {
   }
 
   viewResults() {
-    console.log("hello world quiz results")
     if (this.quizSubmissionResult?.id) {
       this.router.navigate(['/quiz/results', this.quizSubmissionResult.id]);
     }
