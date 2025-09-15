@@ -16,7 +16,7 @@ export class Header {
   menuOpen = false;
 
   navLinks: NavLink[] = [
-    { label: 'Home', url: '/home' },
+    // { label: 'Home', url: '/home' },
     { label: 'Quiz', url: '/quiz' },
     { label: 'Result', url: '/quiz/results' },
   ];
