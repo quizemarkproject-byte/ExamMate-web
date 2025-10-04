@@ -4,8 +4,9 @@ import { Observable } from 'rxjs';
 import {
   Quiz,
   QuizResultResponse,
+  QuizSessionStartRequest,
+  QuizSessionStartResponse,
   QuizSubmission,
-  TimeRemainingResponse,
 } from '../../models/quiz';
 import { environment } from '../../../environments/environment';
 
@@ -13,48 +14,36 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class QuizService {
-  private baseUrl = environment.backend_url + '/api/v1/quiz';
+  private quizUrl = environment.backend_url + '/api/v1/quizzes';
+  private quizSessionUrl = environment.backend_url + '/api/v1/quiz-sessions';
 
   constructor(private http: HttpClient) {}
 
   getQuizzes(): Observable<Quiz[]> {
-    return this.http.get<Quiz[]>(this.baseUrl);
+    return this.http.get<Quiz[]>(this.quizUrl);
   }
 
   getQuizById(quizId: string): Observable<Quiz> {
-    return this.http.get<Quiz>(`${this.baseUrl}/${quizId}`);
+    return this.http.get<Quiz>(`${this.quizUrl}/${quizId}`);
   }
 
-  startQuiz(quizId: string, userId: string): Observable<Quiz> {
-    return this.http.post<Quiz>(
-      `${this.baseUrl}/${quizId}/${userId}/start`,
-      {}
+  startQuiz(startRequest: QuizSessionStartRequest): Observable<QuizSessionStartResponse> {
+    return this.http.post<QuizSessionStartResponse>(
+      `${this.quizSessionUrl}/start`, startRequest
     );
   }
 
   submitQuiz(
-    quizId: string,
-    answers: QuizSubmission
+    quizSubmission: QuizSubmission
   ): Observable<QuizResultResponse> {
     return this.http.post<QuizResultResponse>(
-      `${this.baseUrl}/submit/${quizId}`,
-      answers
-    );
-  }
-
-  getRemainingTime(
-    quizId: string,
-    userId: string,
-    quizSessionId: string
-  ): Observable<TimeRemainingResponse> {
-    return this.http.get<TimeRemainingResponse>(
-      `${this.baseUrl}/${quizId}/${userId}/${quizSessionId}/time`
+      `${this.quizSessionUrl}/submit`, quizSubmission
     );
   }
 
   getAllUserQuizResults(userId: string): Observable<QuizResultResponse[]> {
     return this.http.get<QuizResultResponse[]>(
-      `${this.baseUrl}/result/user/${userId}`
+      `${this.quizSessionUrl}/results/${userId}`
     );
   }
 
@@ -63,7 +52,7 @@ export class QuizService {
     userId: string
   ): Observable<QuizResultResponse> {
     return this.http.get<QuizResultResponse>(
-      `${this.baseUrl}/result/${resultId}/user/${userId}`
+      `${this.quizSessionUrl}/result/${resultId}/user/${userId}`
     );
   }
 }

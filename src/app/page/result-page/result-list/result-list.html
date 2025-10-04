@@ -16,12 +16,12 @@
               Total Questions: <span>{{ result.totalQuestions }}</span>
             </p>
             <p class="text-charcoal text-sm font-normal leading-normal">
-              Correct Answers: {{ result.correctAnswers }}
+              Correct Answers: {{ result.score }}
             </p>
           </div>
           <div>
             <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold">
-              {{ result.scorePercentage }}%
+              {{ (result.score / result.totalQuestions) * 100 | number:'1.0-2' }}%
             </h1>
           </div>
         </div>

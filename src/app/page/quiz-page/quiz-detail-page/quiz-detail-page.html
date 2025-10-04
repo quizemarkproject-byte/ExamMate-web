@@ -79,7 +79,7 @@
       <p class="text-gray-700">
         Correct Answers:
         <span class="font-semibold">{{
-          quizSubmissionResult.correctAnswers
+          quizSubmissionResult.score
         }}</span>
       </p>
       <p class="text-gray-700">
@@ -91,7 +91,7 @@
       <p class="text-gray-700">
         Score:
         <span class="font-semibold"
-          >{{ quizSubmissionResult.scorePercentage }}%</span
+          >{{ (quizSubmissionResult.score / quizSubmissionResult.totalQuestions) * 100 | number:'1.0-2' }}%</span
         >
       </p>
 

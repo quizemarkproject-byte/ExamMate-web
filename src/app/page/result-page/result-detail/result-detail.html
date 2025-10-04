@@ -14,12 +14,12 @@
           Total Questoins: <span> {{ quizResult.totalQuestions }} </span>
         </p>
         <p class="text-charcoal text-sm font-normal leading-normal">
-          Correct Answers: {{ quizResult.correctAnswers }}
+          Correct Answers: {{ quizResult.score }}
         </p>
       </div>
       <div>
         <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold">
-          {{ quizResult.scorePercentage }}%
+          {{ (quizResult.score / quizResult.totalQuestions) * 100 | number:'1.0-2' }}%
         </h1>
       </div>
     </div>
@@ -31,8 +31,8 @@
   Review Questions
 </h2>
 
-@if ((quizResult.questionResultResponse?.length ?? 0) > 0) { @for (question of
-quizResult.questionResultResponse; track $index; let questionIndex = $index) {
+@if ((quizResult.questions?.length ?? 0) > 0) { @for (question of
+quizResult.questions; track $index; let questionIndex = $index) {
 <div class="flex gap-4 bg-white px-4 py-3 justify-between border-b">
   <div class="flex items-center gap-4">
     <div
