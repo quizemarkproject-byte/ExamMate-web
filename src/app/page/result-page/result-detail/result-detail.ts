@@ -3,10 +3,11 @@ import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { ActivatedRoute } from '@angular/router';
 import { QuizResultResponse } from '../../../models/quiz';
 import { UserService } from '../../../services/user-service/user-service';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-quiz-result-detail',
-  imports: [],
+  imports: [DecimalPipe],
   templateUrl: './result-detail.html',
 })
 export class QuizResultDetail {

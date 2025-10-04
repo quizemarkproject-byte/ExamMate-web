@@ -1,9 +1,8 @@
 export interface Quiz {
   id: string
-  title: string
+  name: string
   timeLimit: string
-  questions?: Question[]
-  timeRemaining?: TimeRemainingResponse
+  questionLimit: number
 }
 
 export interface Question {
@@ -12,24 +11,36 @@ export interface Question {
   options: string[]
 }
 
+export interface QuizSessionStartResponse {
+  sessionId: string
+  totalTimeInSeconds: number
+  remainingSeconds: number
+  questions: Question[]
+}
+
+export interface QuizSessionStartRequest {
+  userId: string
+  quizId: string
+}
+
 export interface QuizSubmission {
   userId: string
-  quizSessionId: string
-  answerSubmissions: AnswerSubmission[]
+  sessionId: string
+  answers: AnswerSubmission[]
 }
 
 export interface AnswerSubmission {
   questionId: string
-  selectedAnswer: string
+  answer: string
 }
 
 export interface QuizResultResponse {
   id: string
   quizTitle: string
   totalQuestions: number
-  correctAnswers: number
-  scorePercentage: number
-  questionResultResponse?: QuestionResultResponse[]
+  score: number
+  // scorePercentage: number
+  questions?: QuestionResultResponse[]
 }
 
 export interface QuestionResultResponse {
@@ -38,10 +49,4 @@ export interface QuestionResultResponse {
   correctAnswer: string
   chosenAnswer: string
   correct: boolean
-}
-
-export interface TimeRemainingResponse {
-  quizSessionId: string;
-  remainingSeconds: number
-  totalTimeLimitSeconds: number
 }

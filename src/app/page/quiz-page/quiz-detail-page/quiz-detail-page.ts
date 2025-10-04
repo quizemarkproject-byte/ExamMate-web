@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { Quiz, QuizResultResponse, QuizSubmission } from '../../../models/quiz';
+import { Quiz, QuizResultResponse, QuizSessionStartRequest, QuizSessionStartResponse, QuizSubmission } from '../../../models/quiz';
 import { FormsModule } from '@angular/forms';
 import { QuestionComponent } from '../../../components/question-component/question-component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,16 +10,16 @@ import { UserService } from '../../../services/user-service/user-service';
 
 @Component({
   selector: 'app-quiz-detail-page',
-  imports: [CommonModule, FormsModule, QuestionComponent, TimerComponent],
+  imports: [CommonModule, FormsModule, QuestionComponent, TimerComponent, DecimalPipe],
   templateUrl: './quiz-detail-page.html',
 })
 export class QuizDetailPage {
   quizId: string = '';
-  quizData: Quiz | null = null;
+  quizData: QuizSessionStartResponse | null = null;
   quizSubmission: QuizSubmission = {
     userId: '',
-    quizSessionId: '',
-    answerSubmissions: [],
+    sessionId: '',
+    answers: [],
   };
   quizSubmissionResult: QuizResultResponse | null = null;
   termsAccepted = false;
@@ -49,45 +49,27 @@ export class QuizDetailPage {
     }
 
     if (this.termsAccepted) {
-      this.loadRemainingTimeFromServer();
+      this.loadQuiz();
     }
-  }
-
-  loadRemainingTimeFromServer() {
-    this.loading = true;
-    this.quizService
-      .getRemainingTime(
-        this.quizId,
-        this.quizSubmission.userId,
-        this.quizSubmission.quizSessionId
-      )
-      .subscribe({
-        next: (time) => {
-          this.remainingSeconds = time.remainingSeconds;
-          this.loading = false;
-          this.startCountdown();
-        },
-        error: (err) => {
-          console.error('Failed to load remaining time:', err);
-          this.loading = false;
-        },
-      });
   }
 
   loadQuiz() {
     this.termsAccepted = true;
     this.loading = true;
-
+    const startRequest: QuizSessionStartRequest = {
+      userId: this.userService.getUserId(),
+      quizId: this.quizId
+    };
     this.quizService
-      .startQuiz(this.quizId, this.quizSubmission.userId)
+      .startQuiz(startRequest)
       .subscribe({
-        next: (quiz: Quiz) => {
+        next: (quiz: QuizSessionStartResponse) => {
           this.quizData = quiz;
-          this.quizSubmission.quizSessionId =
-            quiz.timeRemaining?.quizSessionId || '';
+          this.quizSubmission.sessionId =
+            quiz.sessionId;
 
-          if (quiz.timeRemaining) {
-            this.remainingSeconds = quiz.timeRemaining.remainingSeconds;
+          if (quiz.remainingSeconds) {
+            this.remainingSeconds = quiz.remainingSeconds;
             this.loading = false;
             this.startCountdown();
           }
@@ -104,16 +86,16 @@ export class QuizDetailPage {
   onAnswerSelected(answer: string) {
     const questionId = this.quizData!.questions![this.currentQuestionIndex].id;
 
-    let answerEntry = this.quizSubmission.answerSubmissions.find(
+    let answerEntry = this.quizSubmission.answers.find(
       (a) => a.questionId === questionId
     );
 
     if (answerEntry) {
-      answerEntry.selectedAnswer = answer;
+      answerEntry.answer = answer;
     } else {
-      this.quizSubmission.answerSubmissions.push({
+      this.quizSubmission.answers.push({
         questionId,
-        selectedAnswer: answer,
+        answer: answer,
       });
     }
     this.saveState();
@@ -121,16 +103,16 @@ export class QuizDetailPage {
 
   getSelectedAnswer(questionId: string): string | null {
     return (
-      this.quizSubmission.answerSubmissions.find(
+      this.quizSubmission.answers.find(
         (a) => a.questionId === questionId
-      )?.selectedAnswer || null
+      )?.answer || null
     );
   }
 
   hasAnswerForCurrentQuestion(): boolean {
     const questionId =
       this.quizData?.questions?.[this.currentQuestionIndex]?.id;
-    return !!this.quizSubmission.answerSubmissions.find(
+    return !!this.quizSubmission.answers.find(
       (a) => a.questionId === questionId
     );
   }
@@ -181,7 +163,7 @@ export class QuizDetailPage {
 
   submitQuiz() {
     if (this.quizSubmission != null) {
-      this.quizService.submitQuiz(this.quizId, this.quizSubmission).subscribe({
+      this.quizService.submitQuiz(this.quizSubmission).subscribe({
         next: (data: QuizResultResponse) => {
           this.quizSubmissionResult = data;
           localStorage.removeItem(`quiz-${this.quizId}`);

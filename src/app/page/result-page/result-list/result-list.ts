@@ -4,10 +4,11 @@ import { QuizResultResponse } from '../../../models/quiz';
 import { RouterModule } from '@angular/router';
 import { Footer } from '../../../components/footer/footer';
 import { UserService } from '../../../services/user-service/user-service';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-quiz-result-list',
-  imports: [RouterModule],
+  imports: [RouterModule, DecimalPipe],
   templateUrl: './result-list.html',
 })
 export class QuizResultList {
