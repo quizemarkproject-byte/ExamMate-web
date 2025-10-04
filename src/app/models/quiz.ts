@@ -39,7 +39,6 @@ export interface QuizResultResponse {
   quizTitle: string
   totalQuestions: number
   score: number
-  // scorePercentage: number
   questions?: QuestionResultResponse[]
 }
 
