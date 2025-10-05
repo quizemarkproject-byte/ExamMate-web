@@ -1,0 +1,24 @@
+<div class="layout-content-container flex flex-col w-80">
+  <div
+    class="flex h-full min-h-[700px] flex-col justify-between bg-dark_gray_blue p-4"
+  >
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        @for (link of navLinks; track link.url) {
+        <div
+          class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue_black hover:bg-blue_black_hover cursor-pointer"
+          [routerLink]="link.url"
+          routerLinkActive="bg-blue_black"
+        >
+          <img
+            [src]="link.icon"
+            alt="ExamMate Logo"
+            class="filter invert"
+          />
+          <p class="text-white text-sm font-medium leading-normal">{{link.label}}</p>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

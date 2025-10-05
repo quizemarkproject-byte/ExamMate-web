@@ -15,12 +15,11 @@ export const routes: Routes = [
   },
   {
     path: 'home',
-    // component: HomePage,
-    component: QuizListPage,
+    component: HomePage,
     title: 'ExamMate | Home',
   },
   {
-    path: 'quiz/results',
+    path: 'result',
     component: QuizResultPage,
     children: [
       {

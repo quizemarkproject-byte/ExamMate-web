@@ -2,13 +2,12 @@ import { Component } from '@angular/core';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { QuizResultResponse } from '../../../models/quiz';
 import { RouterModule } from '@angular/router';
-import { Footer } from '../../../components/footer/footer';
 import { UserService } from '../../../services/user-service/user-service';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-quiz-result-list',
-  imports: [RouterModule, DecimalPipe],
+  imports: [RouterModule, DecimalPipe, DatePipe],
   templateUrl: './result-list.html',
 })
 export class QuizResultList {

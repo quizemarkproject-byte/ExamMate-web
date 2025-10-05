@@ -13,6 +13,7 @@ export interface Question {
 
 export interface QuizSessionStartResponse {
   sessionId: string
+  quizTitle: string
   totalTimeInSeconds: number
   remainingSeconds: number
   questions: Question[]
@@ -39,13 +40,13 @@ export interface QuizResultResponse {
   quizTitle: string
   totalQuestions: number
   score: number
+  completedAt: string
   questions?: QuestionResultResponse[]
 }
 
 export interface QuestionResultResponse {
   text: string
   options: string[]
-  correctAnswer: string
   chosenAnswer: string
   correct: boolean
 }

@@ -1,109 +1,131 @@
-<div
-  class="quiz-container flex flex-col items-center justify-center min-h-[60vh] p-6"
->
-  @if (!termsAccepted) {
-  <div class="max-w-lg w-full bg-white shadow rounded p-6 text-center">
-    <h2 class="font-bold text-xl mb-4">Quiz Terms & Conditions</h2>
-    <ul class="list-disc list-inside text-gray-700 text-left space-y-1 mb-6">
-      <li>You must complete the quiz within the given time limit.</li>
-      <li>Answers cannot be changed once submitted.</li>
-      <li>Cheating or using external help is not allowed.</li>
-      <li>Your score will be final once the quiz is submitted.</li>
-    </ul>
+@if (!termsAccepted) {
+<div class="flex flex-wrap justify-between gap-3 p-4">
+  <p
+    class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72"
+  >
+    Quiz Terms & Conditions
+  </p>
+</div>
+<ul class="space-y-3 text-white p-4">
+  <li class="flex items-start gap-3">
+    <span class="text-blue-600 mt-1">✔️</span>
+    <span>You must complete the quiz within the given time limit.</span>
+  </li>
+  <li class="flex items-start gap-3">
+    <span class="text-blue-600 mt-1">✔️</span>
+    <span>Answers cannot be changed once submitted.</span>
+  </li>
+  <li class="flex items-start gap-3">
+    <span class="text-blue-600 mt-1">✔️</span>
+    <span>Cheating or using external help is not allowed.</span>
+  </li>
+  <li class="flex items-start gap-3">
+    <span class="text-blue-600 mt-1">✔️</span>
+    <span>Your score will be final once the quiz is submitted.</span>
+  </li>
+</ul>
 
-    <button
-      class="text-white bg-gray-800 hover:bg-gray-900 active:bg-black px-6 py-2 rounded-lg transition"
-      (click)="loadQuiz()"
-    >
-      Agree & Continue
-    </button>
-  </div>
-  } @if (termsAccepted) {
-  <section class="w-full max-w-3xl">
-    @if (quizData && quizData.questions && quizData.questions.length) {
+<button
+  class="text-white bg-royal_blue hover:bg-royal_blue_hover active:bg-black m-4 p-4 rounded-lg transition"
+  (click)="loadQuiz()"
+>
+  Agree & Continue
+</button>
+
+} @if (termsAccepted) {
+<section class="w-full">
+  @if (quizData && quizData.questions && quizData.questions.length) {
+  <div class="flex justify-between">
+    <div class="flex flex-wrap justify-between gap-3 p-4">
+      <p
+        class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72"
+      >
+        Quiz: {{ quizData.quizTitle }}
+      </p>
+    </div>
     <app-timer-component
       [remainingSeconds]="remainingSeconds"
       (timeUp)="submitQuiz()"
     ></app-timer-component>
+  </div>
+  <app-question-component
+    [question]="quizData.questions[currentQuestionIndex]"
+    [questionNumber]="currentQuestionIndex + 1"
+    [totalQuestions]="quizData.questions.length"
+    [selectedAnswer]="
+      getSelectedAnswer(quizData.questions[currentQuestionIndex].id)
+    "
+    (answerSelected)="onAnswerSelected($event)"
+  ></app-question-component>
 
-    <app-question-component
-      [question]="quizData.questions[currentQuestionIndex]"
-      [questionNumber]="currentQuestionIndex + 1"
-      [totalQuestions]="quizData.questions.length"
-      [selectedAnswer]="
-        getSelectedAnswer(quizData.questions[currentQuestionIndex].id)
-      "
-      (answerSelected)="onAnswerSelected($event)"
-    ></app-question-component>
-
-    <div class="flex justify-between px-4 py-3">
-      @if (currentQuestionIndex > 0) {
+  <div class="flex justify-between px-4 py-3">
+    @if (currentQuestionIndex > 0) {
+    <button
+      class="flex min-w-[6.5rem] max-w-[30rem] items-center justify-center rounded-lg h-10 px-4 text-black bg-gray-100 hover:bg-gray-200 border border-gray-900 text-sm font-bold"
+      (click)="prevQuestion()"
+    >
+      Previous
+    </button>
+    } @else {
+    <div class="min-w-[6rem] h-10"></div>
+    }
+    <div class="relative min-w-[6.5rem] max-w-[30rem] h-10">
+      @if (quizData.questions.length > currentQuestionIndex + 1) {
       <button
-        class="flex min-w-[6.5rem] max-w-[30rem] items-center justify-center rounded-lg h-10 px-4 text-black bg-white hover:bg-gray-100 border border-gray-900 text-sm font-bold"
-        (click)="prevQuestion()"
+        class="absolute inset-0 flex items-center justify-center rounded-lg px-4 text-white bg-royal_blue hover:bg-royal_blue_hover active:bg-black text-sm font-bold disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+        [disabled]="!hasAnswerForCurrentQuestion()"
+        (click)="nextQuestion()"
       >
-        Previous
+        Next
       </button>
       } @else {
-      <div class="min-w-[6rem] h-10"></div>
+      <button
+        class="absolute inset-0 flex items-center justify-center rounded-lg px-4 text-white bg-royal_blue hover:bg-royal_blue_hover active:bg-black text-sm font-bold disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 whitespace-nowrap"
+        [disabled]="!hasAnswerForCurrentQuestion()"
+        (click)="submitQuiz()"
+      >
+        Submit Quiz
+      </button>
       }
-      <div class="relative min-w-[6.5rem] max-w-[30rem] h-10">
-        @if (quizData.questions.length > currentQuestionIndex + 1) {
-        <button
-          class="absolute inset-0 flex items-center justify-center rounded-lg px-4 text-white bg-gray-800 hover:bg-gray-900 active:bg-black text-sm font-bold disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
-          [disabled]="!hasAnswerForCurrentQuestion()"
-          (click)="nextQuestion()"
-        >
-          Next
-        </button>
-        } @else {
-        <button
-          class="absolute inset-0 flex items-center justify-center rounded-lg px-4 text-white bg-gray-800 hover:bg-gray-900 active:bg-black text-sm font-bold disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 whitespace-nowrap"
-          [disabled]="!hasAnswerForCurrentQuestion()"
-          (click)="submitQuiz()"
-        >
-          Submit Quiz
-        </button>
-        }
-      </div>
-    </div>
-    }
-  </section>
-  } @if (quizSubmissionResult) {
-  <div
-    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-  >
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
-      <h2 class="text-xl font-bold mb-4">Quiz Result</h2>
-
-      <p class="text-gray-700">
-        Correct Answers:
-        <span class="font-semibold">{{
-          quizSubmissionResult.score
-        }}</span>
-      </p>
-      <p class="text-gray-700">
-        Total Questions:
-        <span class="font-semibold">{{
-          quizSubmissionResult.totalQuestions
-        }}</span>
-      </p>
-      <p class="text-gray-700">
-        Score:
-        <span class="font-semibold"
-          >{{ (quizSubmissionResult.score / quizSubmissionResult.totalQuestions) * 100 | number:'1.0-2' }}%</span
-        >
-      </p>
-
-      <div class="mt-6">
-        <button
-          class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
-          (click)="viewResults()"
-        >
-          View Results
-        </button>
-      </div>
     </div>
   </div>
   }
+</section>
+} @if (quizSubmissionResult) {
+<div
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+>
+  <div class="bg-dark_gray_blue text-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
+    <h2 class="text-xl font-bold mb-4">Quiz Result</h2>
+
+    <p>
+      Correct Answers:
+      <span class="font-semibold">{{ quizSubmissionResult.score }}</span>
+    </p>
+    <p>
+      Total Questions:
+      <span class="font-semibold">{{
+        quizSubmissionResult.totalQuestions
+      }}</span>
+    </p>
+    <p>
+      Score:
+      <span class="font-semibold"
+        >{{
+          (quizSubmissionResult.score / quizSubmissionResult.totalQuestions) *
+            100 | number : "1.0-2"
+        }}%</span
+      >
+    </p>
+
+    <div class="mt-6">
+      <button
+        class="px-4 py-2 bg-royal_blue text-white rounded hover:bg-royal_blue_hover"
+        (click)="viewResults()"
+      >
+        View Results
+      </button>
+    </div>
+  </div>
 </div>
+}
