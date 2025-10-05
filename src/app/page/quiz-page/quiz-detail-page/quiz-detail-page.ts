@@ -1,6 +1,12 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { Quiz, QuizResultResponse, QuizSessionStartRequest, QuizSessionStartResponse, QuizSubmission } from '../../../models/quiz';
+import {
+  Quiz,
+  QuizResultResponse,
+  QuizSessionStartRequest,
+  QuizSessionStartResponse,
+  QuizSubmission,
+} from '../../../models/quiz';
 import { FormsModule } from '@angular/forms';
 import { QuestionComponent } from '../../../components/question-component/question-component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,7 +16,13 @@ import { UserService } from '../../../services/user-service/user-service';
 
 @Component({
   selector: 'app-quiz-detail-page',
-  imports: [CommonModule, FormsModule, QuestionComponent, TimerComponent, DecimalPipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    QuestionComponent,
+    TimerComponent,
+    DecimalPipe,
+  ],
   templateUrl: './quiz-detail-page.html',
 })
 export class QuizDetailPage {
@@ -58,29 +70,26 @@ export class QuizDetailPage {
     this.loading = true;
     const startRequest: QuizSessionStartRequest = {
       userId: this.userService.getUserId(),
-      quizId: this.quizId
+      quizId: this.quizId,
     };
-    this.quizService
-      .startQuiz(startRequest)
-      .subscribe({
-        next: (quiz: QuizSessionStartResponse) => {
-          this.quizData = quiz;
-          this.quizSubmission.sessionId =
-            quiz.sessionId;
+    this.quizService.startQuiz(startRequest).subscribe({
+      next: (quiz: QuizSessionStartResponse) => {
+        this.quizData = quiz;
+        this.quizSubmission.sessionId = quiz.sessionId;
 
-          if (quiz.remainingSeconds) {
-            this.remainingSeconds = quiz.remainingSeconds;
-            this.loading = false;
-            this.startCountdown();
-          }
-
-          this.saveState();
-        },
-        error: (err) => {
-          console.error(err);
+        if (quiz.remainingSeconds) {
+          this.remainingSeconds = quiz.remainingSeconds;
           this.loading = false;
-        },
-      });
+          this.startCountdown();
+        }
+
+        this.saveState();
+      },
+      error: (err) => {
+        console.error(err);
+        this.loading = false;
+      },
+    });
   }
 
   onAnswerSelected(answer: string) {
@@ -103,9 +112,8 @@ export class QuizDetailPage {
 
   getSelectedAnswer(questionId: string): string | null {
     return (
-      this.quizSubmission.answers.find(
-        (a) => a.questionId === questionId
-      )?.answer || null
+      this.quizSubmission.answers.find((a) => a.questionId === questionId)
+        ?.answer || null
     );
   }
 
@@ -162,6 +170,9 @@ export class QuizDetailPage {
   }
 
   submitQuiz() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
     if (this.quizSubmission != null) {
       this.quizService.submitQuiz(this.quizSubmission).subscribe({
         next: (data: QuizResultResponse) => {
@@ -177,7 +188,7 @@ export class QuizDetailPage {
 
   viewResults() {
     if (this.quizSubmissionResult?.id) {
-      this.router.navigate(['/quiz/results', this.quizSubmissionResult.id]);
+      this.router.navigate(['/result', this.quizSubmissionResult.id]);
     }
   }
 

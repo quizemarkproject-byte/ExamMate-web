@@ -10,6 +10,15 @@ module.exports = {
         mist: "#f0f2f5",
         ash: "#555",
         slate: "#60758a",
+
+        // new 
+        dark_gray_blue: "#111122",
+        blue_black: "#242447",
+        blue_black_hover: "#3a3a6e",
+        blue_purple: "#343465",
+        royal_blue: "#1919e6",
+        royal_blue_hover: "#3232ff",
+        lavender_blue: "#9393c8",
       },
       keyframes: {
         slideDown: {

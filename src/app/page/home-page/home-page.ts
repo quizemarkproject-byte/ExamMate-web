@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { Footer } from '../../components/footer/footer';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
-  imports: [Footer],
+  imports: [RouterModule],
   templateUrl: './home-page.html'
 })
 export class HomePage {
