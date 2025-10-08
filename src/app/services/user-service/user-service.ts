@@ -9,14 +9,14 @@ export class UserService {
 
   constructor() {}
 
-  getUserId(): string {
-    let userId = localStorage.getItem(this.USER_ID_KEY);
+  // getUserId(): string {
+  //   let userId = localStorage.getItem(this.USER_ID_KEY);
 
-    if (!userId) {
-      userId = uuidv4();
-      localStorage.setItem(this.USER_ID_KEY, userId);
-    }
+  //   if (!userId) {
+  //     userId = uuidv4();
+  //     localStorage.setItem(this.USER_ID_KEY, userId);
+  //   }
 
-    return userId;
-  }
+  //   return userId;
+  // }
 }

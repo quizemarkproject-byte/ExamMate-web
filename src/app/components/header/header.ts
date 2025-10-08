@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TokenService } from '../../services/token-service/token-service';
 
 interface NavLink {
   label: string;
@@ -12,6 +13,15 @@ interface NavLink {
   templateUrl: './header.html'
 })
 export class Header {
+  isLoggedIn:boolean = false;
+  username: string = ''
+
+  constructor(private tokenService: TokenService){}
+
+  ngOnInit() {
+    this.isLoggedIn = this.tokenService.isLoggedIn();
+    this.username = this.tokenService.getSub();
+  }
 
   navLinks: NavLink[] = [
     { label: 'Login', url: '/login'},

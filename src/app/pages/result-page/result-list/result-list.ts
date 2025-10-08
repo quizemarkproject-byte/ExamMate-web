@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { QuizService } from '../../../services/quiz-service/quiz-service';
-import { QuizResultResponse } from '../../../models/quiz';
-import { RouterModule } from '@angular/router';
-import { UserService } from '../../../services/user-service/user-service';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { QuizResultResponse } from '../../../models/quiz';
+import { QuizService } from '../../../services/quiz-service/quiz-service';
+import { TokenService } from '../../../services/token-service/token-service';
 
 @Component({
   selector: 'app-quiz-result-list',
@@ -16,11 +16,11 @@ export class QuizResultList {
 
   constructor(
     private quizService: QuizService,
-    private userService: UserService
+    private tokenService: TokenService
   ) {}
 
   ngOnInit() {
-    this.userId = this.userService.getUserId();
+    this.userId = this.tokenService.getId();
     this.getAllUserQuizResults();
   }
 

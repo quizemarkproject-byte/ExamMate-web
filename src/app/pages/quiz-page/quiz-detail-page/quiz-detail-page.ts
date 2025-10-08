@@ -1,18 +1,17 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { QuestionComponent } from '../../../components/question-component/question-component';
+import { TimerComponent } from '../../../components/timer-component/timer-component';
 import {
-  Quiz,
   QuizResultResponse,
   QuizSessionStartRequest,
   QuizSessionStartResponse,
-  QuizSubmission,
+  QuizSubmission
 } from '../../../models/quiz';
-import { FormsModule } from '@angular/forms';
-import { QuestionComponent } from '../../../components/question-component/question-component';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TimerComponent } from '../../../components/timer-component/timer-component';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
-import { UserService } from '../../../services/user-service/user-service';
+import { TokenService } from '../../../services/token-service/token-service';
 
 @Component({
   selector: 'app-quiz-detail-page',
@@ -44,11 +43,11 @@ export class QuizDetailPage {
     private quizService: QuizService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private userService: UserService
+    private tokenService: TokenService
   ) {}
 
   ngOnInit() {
-    this.quizSubmission.userId = this.userService.getUserId();
+    this.quizSubmission.userId = this.tokenService.getId();
     this.quizId = this.activatedRoute.snapshot.paramMap.get('quizId')!;
 
     const savedState = localStorage.getItem(`quiz-${this.quizId}`);
@@ -69,7 +68,7 @@ export class QuizDetailPage {
     this.termsAccepted = true;
     this.loading = true;
     const startRequest: QuizSessionStartRequest = {
-      userId: this.userService.getUserId(),
+      userId: this.tokenService.getId(),
       quizId: this.quizId,
     };
     this.quizService.startQuiz(startRequest).subscribe({

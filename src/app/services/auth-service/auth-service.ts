@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { EmailRequest, LoginRequest, LoginResponse, ResetPasswordRequest, SignupRequest, TokenRequest } from '../../models/auth';
+import { environment } from '../../../environments/environment';
+import { EmailRequest, LoginRequest, LoginResponse, ResetPasswordRequest, SignupRequest } from '../../models/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,10 @@ export class AuthService {
     return this.http.post<void>(`${this.authUrl}/reset-password`, ResetPasswordRequest);
   }
 
-  verifyEmail(tokenRequest: TokenRequest): Observable<void> {
-    return this.http.post<void>(`${this.authUrl}/verify-email`, tokenRequest);
+  verifyEmail(token: string): Observable<void> {
+    console.log('Verifying email with token:', token); 
+    console.log('Verification URL:', `${this.authUrl}/verify-email?token=${token}`);
+    return this.http.get<void>(`${this.authUrl}/verify-email?token=${token}`);
   }
+
 }
