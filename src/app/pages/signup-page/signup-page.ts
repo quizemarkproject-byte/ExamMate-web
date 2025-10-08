@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { SignupRequest } from '../../models/auth';
 import { AuthService } from '../../services/auth-service/auth-service';
+import { ToastrService } from '../../services/toastr-service/toastr-service';
 
 @Component({
   selector: 'app-signup-page',
@@ -19,7 +20,8 @@ export class SignupPage {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
     this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -43,6 +45,7 @@ export class SignupPage {
     const signupRequest: SignupRequest = this.signupForm.value;
     this.authService.signup(signupRequest).subscribe({
       next: () => {
+        this.toastr.success('Signup successful! Verification email sent.');
         this.router.navigate(['/login']);
       },
       error: (err: HttpErrorResponse) => {

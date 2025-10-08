@@ -14,20 +14,17 @@
     </div>
   </a>
   <div class="flex flex-1 items-center justify-end gap-8">
-    @for (link of navLinks; track link.url) {
-      <a
-          [routerLink]="link.url"
-          routerLinkActive="text-gray-300 border-b-2 border-blue_black"
-          [routerLinkActiveOptions]="{ exact: true }"
-          class="text-white hover:text-gray-300 font-medium transition-colors duration-200 pb-1"
-        >
-          {{ link.label }}
-        </a>
-    }
-    <!-- <img
-      class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-      src="/assets/png/user.png"
-      alt="user Logo"
-    /> -->
+    @if(!isLoggedIn) { @for (link of navLinks; track link.url) {
+    <a
+      [routerLink]="link.url"
+      routerLinkActive="text-gray-300 border-b-2 border-blue_black"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="text-white hover:text-gray-300 font-medium transition-colors duration-200 pb-1"
+    >
+      {{ link.label }}
+    </a>
+    } } 
+    <p class="text-white font-medium">
+      Welcome, {{ username }}!
   </div>
 </header>

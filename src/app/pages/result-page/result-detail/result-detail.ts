@@ -1,9 +1,9 @@
+import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { ActivatedRoute } from '@angular/router';
 import { QuizResultResponse } from '../../../models/quiz';
-import { UserService } from '../../../services/user-service/user-service';
-import { DecimalPipe } from '@angular/common';
+import { QuizService } from '../../../services/quiz-service/quiz-service';
+import { TokenService } from '../../../services/token-service/token-service';
 
 @Component({
   selector: 'app-quiz-result-detail',
@@ -18,11 +18,11 @@ export class QuizResultDetail {
   constructor(
     private quizService: QuizService,
     private activatedRoute: ActivatedRoute,
-    private userService: UserService
+    private tokenService: TokenService
   ) {}
 
   ngOnInit() {
-    this.userId = this.userService.getUserId();
+    this.userId = this.tokenService.getId();
     this.resultId = this.activatedRoute.snapshot.paramMap.get('resultId')!;
     if (this.resultId) {
       this.getUserQuizResult();

@@ -11,7 +11,7 @@ module.exports = {
         ash: "#555",
         slate: "#60758a",
 
-        // new 
+        // new
         dark_gray_blue: "#111122",
         blue_black: "#242447",
         blue_black_hover: "#3a3a6e",
@@ -25,9 +25,19 @@ module.exports = {
           "0%": { opacity: 0, transform: "translateY(-10px)" },
           "100%": { opacity: 1, transform: "translateY(0)" },
         },
+        fadeIn: {
+          "0%": { opacity: "0", transform: "translateY(-10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        fadeOut: {
+          "0%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "0", transform: "translateY(-10px)" },
+        },
       },
       animation: {
         slideDown: "slideDown 0.3s ease-out",
+        fadeIn: "fadeIn 0.3s ease-in-out",
+        fadeOut: "fadeOut 0.3s ease-in-out",
       },
     },
   },
