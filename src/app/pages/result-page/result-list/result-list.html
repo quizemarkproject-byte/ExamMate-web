@@ -5,10 +5,12 @@
     Quiz Results
   </p>
 </div>
+
+@if (quizResults.length === 0) {
+<p class="text-white p-4">No quizzes taken.</p>
+} @else {
 <div class="grid grid-cols-3 gap-3 p-4">
-  @if (quizResults.length === 0) {
-  <p class="text-white">No quizzes available at the moment.</p>
-  } @else { @for (result of quizResults; track result.id ) {
+  @for (result of quizResults; track result.id) {
   <div
     [routerLink]="['/result', result.id]"
     class="flex justify-between rounded-lg border border-[#343465] bg-[#1a1a32] hover:bg-blue_black_hover p-4 items-center cursor-pointer"
@@ -23,5 +25,6 @@
       {{ (result.score / result.totalQuestions) * 100 | number : "1.0-2" }}%
     </h2>
   </div>
-  } }
+  }
 </div>
+}

@@ -5,10 +5,12 @@
     Categories
   </p>
 </div>
+
+@if (quizData.length === 0) {
+<p class="text-white p-4">No quizzes available at the moment.</p>
+} @else {
 <div class="grid grid-cols-3 gap-3 p-4">
-  @if (quizData.length === 0) {
-  <p class="text-white">No quizzes available at the moment.</p>
-  } @else { @for (quiz of quizData; track quiz.id ) {
+  @for (quiz of quizData; track quiz.id) {
   <div
     [routerLink]="['/quiz', quiz.id]"
     class="flex flex-1 gap-3 rounded-lg border border-[#343465] bg-[#1a1a32] hover:bg-blue_black_hover p-4 items-center cursor-pointer"
@@ -17,5 +19,6 @@
       {{ quiz.name }}
     </h2>
   </div>
-  } }
+  }
 </div>
+}
