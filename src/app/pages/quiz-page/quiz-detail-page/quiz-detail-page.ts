@@ -1,17 +1,18 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { QuestionComponent } from '../../../components/question-component/question-component';
 import { TimerComponent } from '../../../components/timer-component/timer-component';
 import {
   QuizResultResponse,
   QuizSessionStartRequest,
   QuizSessionStartResponse,
-  QuizSubmission
+  QuizSubmission,
 } from '../../../models/quiz';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { TokenService } from '../../../services/token-service/token-service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-quiz-detail-page',
@@ -37,7 +38,8 @@ export class QuizDetailPage {
   loading = false;
   currentQuestionIndex = 0;
   remainingSeconds = 0;
-  private countdownInterval: any;
+  private countdownInterval: number | null = null;
+  private routerSubscription: Subscription | null = null;
 
   constructor(
     private quizService: QuizService,
@@ -61,6 +63,30 @@ export class QuizDetailPage {
 
     if (this.termsAccepted) {
       this.loadQuiz();
+    }
+
+    this.routerSubscription = this.router.events.subscribe((event) => {
+      if (
+        event instanceof NavigationStart &&
+        this.quizData &&
+        !this.quizSubmissionResult
+      ) {
+        this.submitQuiz();
+      }
+    });
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBeforeUnload(event: BeforeUnloadEvent) {
+    if (this.quizData && !this.quizSubmissionResult) {
+      event.preventDefault();
+    }
+  }
+
+  @HostListener('window:unload')
+  handleUnload() {
+    if (this.quizData && !this.quizSubmissionResult) {
+      this.submitQuiz();
     }
   }
 
@@ -154,15 +180,16 @@ export class QuizDetailPage {
   }
 
   private startCountdown() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
+    if (this.countdownInterval !== null) {
+      window.clearInterval(this.countdownInterval as number);
     }
 
-    this.countdownInterval = setInterval(() => {
+    this.countdownInterval = window.setInterval(() => {
       if (this.remainingSeconds > 0) {
         this.remainingSeconds--;
       } else {
-        clearInterval(this.countdownInterval);
+        window.clearInterval(this.countdownInterval as number);
+        this.countdownInterval = null;
         this.submitQuiz();
       }
     }, 1000);
@@ -192,8 +219,12 @@ export class QuizDetailPage {
   }
 
   ngOnDestroy() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
+    if (this.countdownInterval !== null) {
+      window.clearInterval(this.countdownInterval as number);
+      this.countdownInterval = null;
+    }
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
     }
   }
 }
