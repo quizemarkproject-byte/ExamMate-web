@@ -32,7 +32,7 @@ export class VerificationPage {
   verifyToken(token: string) {
     this.authService.verifyEmail(token).subscribe({
       next: () => {
-        this.message = 'Email verified successfully! You can now log in.';
+        this.message = 'Email verification successfull! You can now log in.';
         this.loading = false;
       },
       error: (err: HttpErrorResponse) => {
