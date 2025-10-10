@@ -32,7 +32,7 @@
   Agree & Continue
 </button>
 
-} @if (termsAccepted) {
+} @if (termsAccepted && !loadingQuiz) {
 <section class="w-full">
   @if (quizData && quizData.questions && quizData.questions.length) {
   <div class="flex justify-between">
@@ -84,18 +84,38 @@
         [disabled]="!hasAnswerForCurrentQuestion()"
         (click)="submitQuiz()"
       >
-        Submit Quiz
+        @if (!submittingQuiz) { Submit } @if (submittingQuiz) {
+        <img
+          src="assets/svg/button-loading.svg"
+          alt="Loading"
+          class="h-5 w-5 mr-2 animate-spin filter invert"
+        />
+        Loading... }
       </button>
       }
     </div>
   </div>
   }
 </section>
-} @if (quizSubmissionResult) {
+ }
+ @if(termsAccepted && loadingQuiz){
+  <div class="flex justify-center items-center">
+  <img
+          src="assets/svg/button-loading.svg"
+          alt="Loading"
+          class="h-20 w-20 animate-spin filter invert"
+        />
+    
+  </div>
+ } 
+
+@if (quizSubmissionResult) {
 <div
   class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
 >
-  <div class="bg-dark_gray_blue text-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
+  <div
+    class="bg-dark_gray_blue text-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center"
+  >
     <h2 class="text-xl font-bold mb-4">Quiz Result</h2>
 
     <p>

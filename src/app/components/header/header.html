@@ -1,30 +1,59 @@
-<header
-  class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-blue_black px-10 py-3"
->
-  <a routerLink="/" class="no-underline">
-    <div class="flex items-center gap-4 text-white">
-      <div class="size-6">
-        <img src="/assets/png/logo-1.png" alt="ExamMate Logo" />
-      </div>
-      <h2
-        class="text-white text-lg font-bold leading-tight tracking-[-0.015em]"
-      >
-        ExamMate
-      </h2>
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-blue_black px-4 sm:px-10 py-3 relative z-20 bg-dark_gray_blue">
+  <!-- Logo -->
+  <a routerLink="/" class="no-underline flex items-center gap-4 text-white">
+    <div class="w-6 h-6">
+      <img src="/assets/png/logo-1.png" alt="ExamMate Logo" class="w-full h-full" />
     </div>
+    <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+      ExamMate
+    </h2>
   </a>
-  <div class="flex flex-1 items-center justify-end gap-8">
-    @if(!isLoggedIn) { @for (link of navLinks; track link.url) {
-    <a
-      [routerLink]="link.url"
-      routerLinkActive="text-gray-300 border-b-2 border-blue_black"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="text-white hover:text-gray-300 font-medium transition-colors duration-200 pb-1"
-    >
-      {{ link.label }}
-    </a>
-    } } 
-    <p class="text-white font-medium">
-      Welcome, {{ username }}!
+
+  <!-- Navigation & User Info -->
+  <div class="flex items-center gap-4">
+    <!-- Hamburger menu on small screens -->
+    <button class="sm:hidden text-white p-2 text-3xl" (click)="toggleMobileMenu()">
+      ☰
+    </button>
+
+    <!-- Links: hidden on small screens -->
+    <div class="hidden sm:flex items-center gap-8">
+      @if(!isLoggedIn) { 
+        @for (link of navLinks; track link.url) {
+          <a
+            [routerLink]="link.url"
+            routerLinkActive="text-gray-300 border-b-2 border-blue_black"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="text-white hover:text-gray-300 font-medium transition-colors duration-200 pb-1"
+          >
+            {{ link.label }}
+          </a>
+        }
+      }
+      <p class="text-white font-medium">
+        Welcome, {{ username }}!
+      </p>
+    </div>
   </div>
 </header>
+
+<!-- Mobile Menu Overlay -->
+@if(mobileMenuOpen) {
+<div class="sm:hidden fixed top-0 left-0 w-full h-full bg-dark_gray_blue bg-opacity-95 z-30 flex flex-col p-4">
+  <button class="self-end text-white mb-4 text-2xl" (click)="toggleMobileMenu()">✕</button>
+  @if(!isLoggedIn) { 
+    @for (link of navLinks; track link.url) {
+      <a
+        [routerLink]="link.url"
+        routerLinkActive="text-gray-300"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="block text-white py-2 text-lg hover:text-gray-300"
+        (click)="toggleMobileMenu()"
+      >
+        {{ link.label }}
+      </a>
+    }
+  }
+  <p class="text-white font-medium mt-4">Welcome, {{ username }}!</p>
+</div>
+}
