@@ -48,5 +48,6 @@ export interface QuestionResultResponse {
   text: string
   options: string[]
   chosenAnswer: string
+  correctAnswer: string
   correct: boolean
 }
