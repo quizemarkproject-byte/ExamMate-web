@@ -15,6 +15,13 @@ interface NavLink {
 export class Header {
   isLoggedIn:boolean = false;
   username: string = ''
+  mobileMenuOpen = false;
+
+  
+  navLinks: NavLink[] = [
+    { label: 'Login', url: '/login'},
+    { label: 'Signup', url: '/signup'},
+  ];
 
   constructor(private tokenService: TokenService){}
 
@@ -23,8 +30,7 @@ export class Header {
     this.username = this.tokenService.getSub();
   }
 
-  navLinks: NavLink[] = [
-    { label: 'Login', url: '/login'},
-    { label: 'Signup', url: '/signup'},
-  ];
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
 }
