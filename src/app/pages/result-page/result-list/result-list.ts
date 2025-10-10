@@ -13,6 +13,7 @@ import { TokenService } from '../../../services/token-service/token-service';
 export class QuizResultList {
   quizResults: QuizResultResponse[] = [];
   userId: string = '';
+  loading: boolean = false;
 
   constructor(
     private quizService: QuizService,
@@ -25,12 +26,15 @@ export class QuizResultList {
   }
 
   getAllUserQuizResults() {
+    this.loading = true;
     this.quizService.getAllUserQuizResults(this.userId).subscribe({
       next: (data) => {
         this.quizResults = data;
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error fetching all quiz results:', err);
+        this.loading = false;
       },
     });
   }
