@@ -1,21 +1,25 @@
-<div class="flex flex-wrap justify-between gap-3 p-4">
+<div class="flex flex-wrap justify-center md:justify-between gap-3 p-4">
   <p
-    class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72"
+    class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72 text-center md:text-left"
   >
     Categories
   </p>
 </div>
 
 @if (quizData.length === 0) {
-<p class="text-white p-4">No quizzes available at the moment.</p>
+<p class="text-white p-4 text-center md:text-left">
+  No quizzes available at the moment.
+</p>
 } @else {
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4">
   @for (quiz of quizData; track quiz.id) {
   <div
     [routerLink]="['/quiz', quiz.id]"
-    class="flex flex-1 gap-3 rounded-lg border border-[#343465] bg-[#1a1a32] hover:bg-blue_black_hover p-4 items-center cursor-pointer"
+    class="flex flex-1 gap-3 rounded-lg border border-[#343465] bg-[#1a1a32] hover:bg-blue_black_hover p-4 items-center justify-center md:justify-start cursor-pointer"
   >
-    <h2 class="text-white text-base font-bold leading-tight">
+    <h2
+      class="text-white text-base font-bold leading-tight text-center md:text-left"
+    >
       {{ quiz.name }}
     </h2>
   </div>

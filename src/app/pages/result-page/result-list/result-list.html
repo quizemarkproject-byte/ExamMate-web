@@ -1,13 +1,13 @@
-<div class="flex flex-wrap justify-between gap-3 p-4">
+<div class="flex flex-wrap justify-center md:justify-between gap-3 p-4">
   <p
-    class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72"
+    class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72 text-center md:text-left"
   >
     Quiz Results
   </p>
 </div>
 
 @if (quizResults.length === 0) {
-<p class="text-white p-4">No quizzes taken.</p>
+<p class="text-white p-4 text-center md:text-left">No quizzes taken.</p>
 } @else {
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4">
   @for (result of quizResults; track result.id) {
