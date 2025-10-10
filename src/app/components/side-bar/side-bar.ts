@@ -14,6 +14,7 @@ interface NavLink {
   templateUrl: './side-bar.html',
 })
 export class SideBar {
+  isLoggedIn:boolean = false;
   constructor(private tokenService: TokenService, private router: Router) {}
 
   navLinks: NavLink[] = [
@@ -21,6 +22,10 @@ export class SideBar {
     { label: 'Quizzes', url: '/quiz', icon: '/assets/svg/quiz.svg' },
     { label: 'Results', url: '/result', icon: '/assets/svg/result.svg' },
   ];
+
+  ngOnInit() {
+    this.isLoggedIn = this.tokenService.isLoggedIn();
+  }
 
   logout() {
     this.tokenService.logout();

@@ -11,18 +11,17 @@
           [routerLink]="link.url"
           routerLinkActive="bg-blue_black"
         >
-          <img
-            [src]="link.icon"
-            alt="ExamMate Logo"
-            class="filter invert"
-          />
-          <p class="text-white text-sm font-medium leading-normal">{{link.label}}</p>
+          <img [src]="link.icon" alt="ExamMate Logo" class="filter invert" />
+          <p class="text-white text-sm font-medium leading-normal">
+            {{ link.label }}
+          </p>
         </div>
         }
       </div>
     </div>
 
     <!-- Logout Button at Bottom -->
+    @if (isLoggedIn){
     <div class="mt-auto">
       <button
         class="flex items-center gap-3 px-3 py-2 rounded-lg"
@@ -32,5 +31,6 @@
         <span class="text-white text-sm font-medium">Logout</span>
       </button>
     </div>
+    }
   </div>
 </div>
