@@ -35,7 +35,8 @@ export class QuizDetailPage {
   };
   quizSubmissionResult: QuizResultResponse | null = null;
   termsAccepted = false;
-  loading = false;
+  loadingQuiz: boolean = false;
+  submittingQuiz: boolean = false;
   currentQuestionIndex = 0;
   remainingSeconds = 0;
   private countdownInterval: number | null = null;
@@ -92,11 +93,11 @@ export class QuizDetailPage {
 
   loadQuiz() {
     this.termsAccepted = true;
-    this.loading = true;
     const startRequest: QuizSessionStartRequest = {
       userId: this.tokenService.getId(),
       quizId: this.quizId,
     };
+    this.loadingQuiz = true;
     this.quizService.startQuiz(startRequest).subscribe({
       next: (quiz: QuizSessionStartResponse) => {
         this.quizData = quiz;
@@ -104,7 +105,7 @@ export class QuizDetailPage {
 
         if (quiz.remainingSeconds) {
           this.remainingSeconds = quiz.remainingSeconds;
-          this.loading = false;
+          this.loadingQuiz = false;
           this.startCountdown();
         }
 
@@ -112,7 +113,7 @@ export class QuizDetailPage {
       },
       error: (err) => {
         console.error(err);
-        this.loading = false;
+        this.loadingQuiz = false;
       },
     });
   }
@@ -200,13 +201,16 @@ export class QuizDetailPage {
       clearInterval(this.countdownInterval);
     }
     if (this.quizSubmission != null) {
+      this.submittingQuiz = true;
       this.quizService.submitQuiz(this.quizSubmission).subscribe({
         next: (data: QuizResultResponse) => {
           this.quizSubmissionResult = data;
           localStorage.removeItem(`quiz-${this.quizId}`);
+          this.submittingQuiz = false;
         },
         error: (err) => {
           console.log(err);
+          this.submittingQuiz = false;
         },
       });
     }
