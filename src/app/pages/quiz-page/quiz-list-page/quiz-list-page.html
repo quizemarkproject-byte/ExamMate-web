@@ -9,7 +9,7 @@
 @if (quizData.length === 0) {
 <p class="text-white p-4">No quizzes available at the moment.</p>
 } @else {
-<div class="grid grid-cols-3 gap-3 p-4">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4">
   @for (quiz of quizData; track quiz.id) {
   <div
     [routerLink]="['/quiz', quiz.id]"
