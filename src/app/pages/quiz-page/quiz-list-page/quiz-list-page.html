@@ -1,4 +1,4 @@
-<div class="w-full p-5">
+<div class="w-full mx-auto px-4 p-5">
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-2xl font-semibold text-gray-800">Available Quizzes</h2>
     <span class="text-sm text-gray-500"
@@ -8,19 +8,20 @@
 
   @if(loading) {
   <div class="flex justify-center items-center min-h-[60vh]">
-  <img
-    src="assets/svg/loading.svg"
-    alt="Loading"
-    class="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 xl:h-36 xl:w-36"
-    style="filter: invert(36%) sepia(88%) saturate(2065%) hue-rotate(206deg) brightness(98%) contrast(101%);"
-  />
-</div>
+    <img
+      src="assets/svg/loading.svg"
+      alt="Loading"
+      class="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 xl:h-36 xl:w-36"
+      style="
+        filter: invert(36%) sepia(88%) saturate(2065%) hue-rotate(206deg)
+          brightness(98%) contrast(101%);
+      "
+    />
+  </div>
   } @if (!loading) {
-  <div
-    class="grid gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-  >
+  <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    @for (q of quizData; track $index) {
     <article
-      *ngFor="let q of quizData"
       class="bg-white rounded-2xl shadow-sm p-6 border border-gray-200 flex flex-col justify-between"
     >
       <div>
@@ -54,6 +55,7 @@
         </a>
       </div>
     </article>
+    }
   </div>
   } @if(!loading && quizData.length === 0){
   <div class="mt-8 text-center text-gray-500">

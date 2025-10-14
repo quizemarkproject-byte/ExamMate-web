@@ -11,13 +11,16 @@
   } @if(quizData && !quizSubmissionResult) {
   <div class="w-full max-w-2xl mx-auto px-2">
     <div class="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-gray-200 w-full">
-      <div class="flex flex-wrap gap-3 justify-between items-center mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <span class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium">
           {{ quizData.quizTitle }}
         </span>
         <span class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
           Question {{ currentQuestionIndex + 1 }} of {{ quizData.questions.length }}
         </span>
+      </div>
+      <div class="mb-8">
+        <app-timer-component [remainingSeconds]="remainingSeconds" [totalSeconds]="totalSeconds"></app-timer-component>
       </div>
 
       @if(quizData.questions && quizData.questions[currentQuestionIndex]) {
@@ -35,11 +38,11 @@
       ></app-question-component>
       }
 
-      <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+      <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4">
         <button
           (click)="prevQuestion()"
           [disabled]="currentQuestionIndex === 0"
-          class="flex items-center justify-center gap-2 bg-white text-gray-700 border-2 border-gray-300 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+          class="flex items-center justify-center gap-2 bg-white text-gray-700 border-2 border-gray-300 px-5 py-3 rounded-lg font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white w-full sm:w-auto"
         >
           <i class="fas fa-arrow-left"></i>
           Previous
@@ -49,7 +52,7 @@
         <button
           (click)="nextQuestion()"
           [disabled]="!hasAnswerForCurrentQuestion()"
-          class="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          class="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-3 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none w-full sm:w-auto"
         >
           Next Question
           <i class="fas fa-arrow-right"></i>
@@ -58,7 +61,7 @@
         <button
           (click)="submitQuiz()"
           [disabled]="submittingQuiz"
-          class="flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-3 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
         >
           @if(submittingQuiz) {
             <i class="fas fa-spinner fa-spin"></i>

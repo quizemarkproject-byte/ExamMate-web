@@ -15,7 +15,7 @@ export class ToastrService {
   toast$ = this.toastSubject.asObservable();
 
   show(message: string, type: ToastData['type'] = 'info', duration = 5000) {
-    this.toastSubject.next({ message, type, visible: true });
+    this.toastSubject.next({ message, type, visible: true, duration });
 
     setTimeout(() => {
       this.toastSubject.next({ ...this.toastSubject.value, visible: false });

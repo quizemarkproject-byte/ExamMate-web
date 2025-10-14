@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LoginPage } from './pages/login-page/login-page';
-import { SignupPage } from './pages/signup-page/signup-page';
 import { HomePage } from './pages/home-page/home-page';
 import { QuizDetailPage } from './pages/quiz-page/quiz-detail-page/quiz-detail-page';
 import { QuizListPage } from './pages/quiz-page/quiz-list-page/quiz-list-page';
@@ -8,7 +7,6 @@ import { QuizPage } from './pages/quiz-page/quiz-page/quiz-page';
 import { QuizResultDetail } from './pages/result-page/result-detail/result-detail';
 import { QuizResultList } from './pages/result-page/result-list/result-list';
 import { QuizResultPage } from './pages/result-page/result-page/result-page';
-import { VerificationPage } from './pages/verification-page/verification-page';
 import { reverseAuthGuard } from './guards/reverse-auth/reverse-auth-guard';
 
 export const routes: Routes = [
@@ -52,22 +50,5 @@ export const routes: Routes = [
         title: 'ExamMate | Take Quiz',
       },
     ],
-  },
-  {
-    path: 'login',
-    component: LoginPage,
-    title: 'ExamMate | Login',
-    canActivate: [reverseAuthGuard],
-  },
-  {
-    path: 'signup',
-    component: SignupPage,
-    title: 'ExamMate | Signup',
-    canActivate: [reverseAuthGuard],
-  },
-  {
-    path: 'verify-email',
-    component: VerificationPage,
-    title: 'ExamMate | Verify Email',
-  },
+  }
 ];

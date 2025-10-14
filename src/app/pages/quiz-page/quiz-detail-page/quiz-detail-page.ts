@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-quiz-detail-page',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -28,6 +29,7 @@ import { Subscription } from 'rxjs';
 export class QuizDetailPage {
   quizId: string = '';
   quizData: QuizSessionStartResponse | null = null;
+  totalSeconds: number = 0; // initial total time for progress bar
   quizSubmission: QuizSubmission = {
     userId: '',
     sessionId: '',
@@ -97,6 +99,7 @@ export class QuizDetailPage {
       next: (quiz: QuizSessionStartResponse) => {
         this.quizData = quiz;
         this.quizSubmission.sessionId = quiz.sessionId;
+        this.totalSeconds = quiz.totalTimeInSeconds || quiz.remainingSeconds || 0;
 
         if (quiz.remainingSeconds) {
           this.remainingSeconds = quiz.remainingSeconds;

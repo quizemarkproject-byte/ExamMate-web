@@ -1,38 +1,18 @@
-<!-- <div class="flex items-center w-full"> -->
-  <div class="flex gap-6">
-    @if (hours > 0) {
-    <div class="flex flex-col items-center gap-2 w-24">
-      <div
-        class="flex h-16 w-24 items-center justify-center rounded-xl bg-gradient-to-b from-royal_blue to-royal_blue_hover shadow-md"
-      >
-        <p class="text-white text-2xl font-bold tracking-tight">
-          {{ hours | number : '2.0' }}
-        </p>
+<div class="w-full">
+  <div class="relative w-full h-8 rounded-md overflow-hidden bg-blue-500 shadow-inner">
+    <!-- Progress bar (shrinking) -->
+    <div class="absolute top-0 left-0 h-full bg-blue-600 transition-[width] duration-1000 ease-linear"
+         [style.width.%]="progressPercent"></div>
+    <!-- Overlay content -->
+    <div class="relative z-10 flex items-center justify-between h-full px-3 text-white text-xs sm:text-sm font-semibold tracking-wide">
+      <div class="flex items-center gap-1 sm:gap-2">
+        <i class="fas fa-clock"></i>
+        <span *ngIf="hours > 0">{{ hours | number:'2.0' }}:</span>
+        <span>{{ minutes | number:'2.0' }}:{{ seconds | number:'2.0' }}</span>
       </div>
-      <p class="text-white text-sm font-medium">Hours</p>
-    </div>
-    }
-
-    <div class="flex flex-col items-center gap-2 w-24">
-      <div
-        class="flex h-16 w-24 items-center justify-center rounded-xl bg-gradient-to-b from-royal_blue to-royal_blue_hover shadow-md"
-      >
-        <p class="text-white text-2xl font-bold tracking-tight">
-          {{ minutes | number : '2.0' }}
-        </p>
-      </div>
-      <p class="text-white text-sm font-medium">Minutes</p>
-    </div>
-
-    <div class="flex flex-col items-center gap-2 w-24">
-      <div
-        class="flex h-16 w-24 items-center justify-center rounded-xl bg-gradient-to-b from-royal_blue to-royal_blue_hover shadow-md"
-      >
-        <p class="text-white text-2xl font-bold tracking-tight">
-          {{ seconds | number : '2.0' }}
-        </p>
-      </div>
-      <p class="text-white text-sm font-medium">Seconds</p>
+      <span *ngIf="totalSeconds" class="hidden sm:inline">{{ progressPercent | number:'1.0-0' }}%</span>
     </div>
   </div>
-<!-- </div> -->
+  <span class="sr-only" aria-live="polite">Time remaining {{ hours }} hours {{ minutes }} minutes {{ seconds }} seconds</span>
+</div>
+

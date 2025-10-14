@@ -3,9 +3,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoginRequest } from '../../models/auth';
 import { AuthService } from '../../services/auth-service/auth-service';
 import { TokenService } from '../../services/token-service/token-service';
+import { EmailRequest } from '../../models/auth';
+import { ToastrService } from '../../services/toastr-service/toastr-service';
 
 @Component({
   selector: 'app-login-page',
@@ -21,11 +22,11 @@ export class LoginPage {
     private fb: FormBuilder,
     private authService: AuthService,
     private tokenService: TokenService,
+    private toastr: ToastrService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]]
+      email: ['', [Validators.required]]
     });
   }
 
@@ -35,11 +36,10 @@ export class LoginPage {
     if (this.loginForm.invalid) return;
     this.loading = true;
     this.error = null;
-    const loginRequest: LoginRequest = this.loginForm.value;
-    this.authService.login(loginRequest).subscribe({
-      next: (res) => {
-        this.tokenService.setAccessToken(res.token);
-        this.router.navigate(['/home']);
+    const emailRequest: EmailRequest = this.loginForm.value;
+    this.authService.login(emailRequest).subscribe({
+      next: () => {
+        // this.router.navigate(['/home']);
       },
       error: (err: HttpErrorResponse) => {
         console.log(err.error.error);
@@ -50,13 +50,5 @@ export class LoginPage {
         this.loading = false;
       }
     });
-  }
-
-  goToSignup() {
-    this.router.navigate(['/signup']);
-  }
-
-  goToForgotPassword() {
-    this.router.navigate(['/forgot-password']);
   }
 }

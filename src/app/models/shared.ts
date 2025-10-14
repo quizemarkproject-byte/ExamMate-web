@@ -8,4 +8,5 @@ export interface ToastData {
   message: string;
   type: 'success' | 'error' | 'info' | 'warning';
   visible: boolean;
+  duration?: number;
 }
