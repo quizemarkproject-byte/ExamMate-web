@@ -15,11 +15,22 @@
       </a>
     </div>
   </div>
-
-  <button
-    class="hidden md:flex items-center gap-2 bg-white/10 text-gray-700 border-2 border-gray-300 px-4 md:px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
-    (click)="login()"
-  >
-    <span class="hidden md:inline">Login/Signup</span>
-  </button>
+  <div class="flex items-center">
+    @if (!isLoggedIn) {
+      <button
+        class="hidden md:flex items-center gap-2 bg-white/10 text-gray-700 border-2 border-gray-300 px-4 md:px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
+        (click)="login()"
+      >
+        <span class="hidden md:inline">Login/Signup</span>
+      </button>
+    } @else {
+      <button
+        class="hidden md:flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 text-white px-4 md:px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+        (click)="logout()"
+      >
+        <span class="hidden md:inline">Logout</span>
+      </button>
+    }
+    <app-auth-modal [open]="showAuth" (closed)="handleAuthClosed()" (authenticated)="handleAuthenticated($event)"></app-auth-modal>
+  </div>
 </header>

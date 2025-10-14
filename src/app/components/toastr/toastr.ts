@@ -45,6 +45,20 @@ export class Toastr {
     }
   }
 
+  // Accent class used for bars/accents in glass UI
+  get accentClass(): string {
+    switch (this.type) {
+      case 'success':
+        return 'bg-emerald-500';
+      case 'error':
+        return 'bg-red-500';
+      case 'warning':
+        return 'bg-amber-400';
+      default:
+        return 'bg-blue-500';
+    }
+  }
+
   closeToast() {
     this.toastrService.hide();
   }

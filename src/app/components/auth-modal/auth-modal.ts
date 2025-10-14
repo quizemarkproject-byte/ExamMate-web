@@ -26,7 +26,7 @@ export class AuthModalComponent {
   otpDigits: string[] = Array(6).fill('');
   @ViewChildren('otpBox') otpBoxes!: QueryList<ElementRef<HTMLInputElement>>;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private toastr: ToastrService, private tokenService: TokenService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private toastr: ToastrService) {
     this.emailForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
@@ -67,7 +67,6 @@ export class AuthModalComponent {
     const req: VerityOtpRequest = { email: this.emailValue, otp: this.otpForm.value.otp };
     this.authService.verifyEmail(req).subscribe({
       next: (resp) => {
-        this.tokenService.setAccessToken(resp.token);
         this.toastr.success('Login successful');
         this.authenticated.emit(resp.token);
         this.close();
