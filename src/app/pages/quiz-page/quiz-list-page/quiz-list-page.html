@@ -1,37 +1,64 @@
-<div class="flex flex-wrap justify-center md:justify-between gap-3 p-4">
-  <p
-    class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72 text-center md:text-left"
-  >
-    Categories
-  </p>
-</div>
+<div class="w-full p-5">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">Available Quizzes</h2>
+    <span class="text-sm text-gray-500"
+      >{{ quizData.length }} quiz{{ quizData.length !== 1 ? "zes" : "" }}</span
+    >
+  </div>
 
-<!-- Loading Spinner -->
-@if (loading) {
-<div class="flex justify-center p-4">
+  @if(loading) {
+  <div class="flex justify-center items-center min-h-[60vh]">
   <img
-    src="assets/svg/button-loading.svg"
+    src="assets/svg/loading.svg"
     alt="Loading"
-    class="h-20 w-20 animate-spin filter invert"
+    class="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 xl:h-36 xl:w-36"
+    style="filter: invert(36%) sepia(88%) saturate(2065%) hue-rotate(206deg) brightness(98%) contrast(101%);"
   />
 </div>
-} @else { @if (quizData.length === 0) {
-<p class="text-white p-4 text-center md:text-left">
-  No quizzes available at the moment.
-</p>
-} @else {
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4">
-  @for (quiz of quizData; track quiz.id) {
+  } @if (!loading) {
   <div
-    [routerLink]="['/quiz', quiz.id]"
-    class="flex flex-1 gap-3 rounded-lg border border-[#343465] bg-[#1a1a32] hover:bg-blue_black_hover p-4 items-center justify-center md:justify-start cursor-pointer"
+    class="grid gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
   >
-    <h2
-      class="text-white text-base font-bold leading-tight text-center md:text-left"
+    <article
+      *ngFor="let q of quizData"
+      class="bg-white rounded-2xl shadow-sm p-6 border border-gray-200 flex flex-col justify-between"
     >
-      {{ quiz.name }}
-    </h2>
+      <div>
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-800">{{ q.name }}</h3>
+          <span class="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600"
+            >Quiz</span
+          >
+        </div>
+
+        <p class="text-sm text-gray-500 mt-3">
+          <strong class="text-gray-700">{{ q.questionLimit }}</strong> questions
+        </p>
+        <p class="text-sm text-gray-500 mt-1">
+          Time limit:
+          <span class="font-medium text-gray-700">{{
+            q.timeLimit | duration
+          }}</span>
+        </p>
+      </div>
+
+      <div class="mt-6 flex items-center justify-between">
+        <div class="text-sm text-gray-500">Ready to test your knowledge?</div>
+        <a
+          [routerLink]="['/quiz', q.id]"
+          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          aria-label="Start quiz {{ q.name }}"
+        >
+          <i class="fas fa-play w-4"></i>
+          Start
+        </a>
+      </div>
+    </article>
+  </div>
+  } @if(!loading && quizData.length === 0){
+  <div class="mt-8 text-center text-gray-500">
+    <p class="text-lg">No quizzes available yet.</p>
+    <p class="mt-2">Check back later.</p>
   </div>
   }
 </div>
-} }

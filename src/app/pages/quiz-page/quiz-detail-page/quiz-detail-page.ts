@@ -34,7 +34,6 @@ export class QuizDetailPage {
     answers: [],
   };
   quizSubmissionResult: QuizResultResponse | null = null;
-  termsAccepted = false;
   loadingQuiz: boolean = false;
   submittingQuiz: boolean = false;
   currentQuestionIndex = 0;
@@ -59,12 +58,9 @@ export class QuizDetailPage {
       this.quizData = parsed.quizData;
       this.quizSubmission = parsed.quizSubmission;
       this.currentQuestionIndex = parsed.currentQuestionIndex;
-      this.termsAccepted = parsed.termsAccepted;
     }
 
-    if (this.termsAccepted) {
       this.loadQuiz();
-    }
 
     this.routerSubscription = this.router.events.subscribe((event) => {
       if (
@@ -92,7 +88,6 @@ export class QuizDetailPage {
   }
 
   loadQuiz() {
-    this.termsAccepted = true;
     const startRequest: QuizSessionStartRequest = {
       userId: this.tokenService.getId(),
       quizId: this.quizId,
@@ -175,7 +170,6 @@ export class QuizDetailPage {
         quizData: this.quizData,
         quizSubmission: this.quizSubmission,
         currentQuestionIndex: this.currentQuestionIndex,
-        termsAccepted: this.termsAccepted,
       })
     );
   }

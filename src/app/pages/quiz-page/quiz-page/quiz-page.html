@@ -1,1 +1,15 @@
-<router-outlet />
+<div id="quiz-app" class="h-screen flex flex-col">
+  <!-- Header -->
+  <app-header (toggleSidebar)="toggleSidebar()" (exitQuiz)="closeSidebar()" />
+
+  <!-- Content area: sidebar + main -->
+  <div class="flex-1 flex flex-col md:flex-row relative min-h-0">
+    <!-- Sidebar -->
+    <app-side-bar [open]="sidebarOpen" (close)="closeSidebar()"></app-side-bar>
+
+    <!-- Main Content -->
+    <main class="flex-1 min-h-0 min-w-0 overflow-y-auto">
+      <router-outlet />
+    </main>
+  </div>
+</div>

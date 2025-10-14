@@ -8,8 +8,6 @@ import { QuizPage } from './pages/quiz-page/quiz-page/quiz-page';
 import { QuizResultDetail } from './pages/result-page/result-detail/result-detail';
 import { QuizResultList } from './pages/result-page/result-list/result-list';
 import { QuizResultPage } from './pages/result-page/result-page/result-page';
-import { MainLayout } from './layouts/main-layout/main-layout';
-import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { VerificationPage } from './pages/verification-page/verification-page';
 import { reverseAuthGuard } from './guards/reverse-auth/reverse-auth-guard';
 

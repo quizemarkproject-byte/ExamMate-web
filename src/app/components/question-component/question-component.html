@@ -1,34 +1,23 @@
-<div class="flex flex-col gap-3 py-4">
-  <div class="flex gap-6 justify-between">
-<h2
-  class="text-white text-base font-medium leading-normal p-4"
->
-  Question {{ questionNumber }} of {{ totalQuestions }}
-</h2>
-</div>
- <div class="rounded bg-[#343465] ml-4"><div class="h-2 rounded bg-royal_blue" [style.width.%]="(questionNumber / totalQuestions) * 100"></div></div>
-</div>
-<p class="text-white text-xl font-bold leading-tight tracking-[-0.015em] text-left p-4">
-  {{ question.text }}
-</p>
-
-<div class="flex flex-col gap-3 ml-4">
+<div class="flex flex-col gap-4">
   @for (option of question.options; track $index) {
   <label
-    class="flex items-center gap-4 rounded-lg border border-solid border-blue_purple p-4"
-    [attr.for]="option"
+    class="flex items-center gap-4 rounded-xl border-2 p-4 cursor-pointer transition-all duration-200"
+    [ngClass]="option === selectedAnswer ? 'border-blue-600 bg-blue-600' : 'border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50'"
+    (click)="selectAnswer(option)"
+    [attr.for]="'option-' + $index"
   >
-    <input
-      type="radio"
-      class="h-5 w-5 border-2 border-blue_purple bg-transparent text-transparent checked:border-royal_blue checked:bg-[image:--radio-dot-svg] focus:outline-none focus:ring-0 focus:ring-offset-0 checked:focus:border-royal_blue"
-      name="answer"
-      [id]="option"
-      [value]="option"
-      [checked]="option === selectedAnswer"
-      (click)="selectAnswer(option)"
-    />
-    <div class="flex grow flex-col">
-      <p class="text-white text-sm font-medium leading-normal cursor-pointer">
+    <!-- Removed radio button -->
+    <div class="flex items-center gap-3 flex-1">
+      <div
+        class="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0"
+        [ngClass]="option === selectedAnswer ? 'bg-white text-blue-600' : 'bg-gray-200 text-gray-800'"
+      >
+        {{ getOptionLetter($index) }}
+      </div>
+      <p
+        class="text-base font-medium leading-relaxed"
+        [ngClass]="option === selectedAnswer ? 'text-white' : 'text-gray-800'"
+      >
         {{ option }}
       </p>
     </div>
