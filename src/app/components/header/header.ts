@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TokenService } from '../../services/token-service/token-service';
 import { AuthModalComponent } from '../auth-modal/auth-modal';
+import { ToastrService } from '../../services/toastr-service/toastr-service';
 
 interface NavLink {
   label: string;
@@ -26,7 +27,7 @@ export class Header {
   //   { label: 'Signup', url: '/signup'},
   // ];
 
-  constructor(private tokenService: TokenService, private router: Router){}
+  constructor(private tokenService: TokenService, private router: Router, private toastr: ToastrService){}
 
   ngOnInit() {
     this.isLoggedIn = this.tokenService.isLoggedIn();
@@ -50,6 +51,7 @@ export class Header {
   }
 
   logout() {
+    this.toastr.success('Logged out successfully');
     this.tokenService.logout();
     this.isLoggedIn = false;
     this.router.navigate(['/quiz']);
