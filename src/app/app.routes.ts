@@ -16,72 +16,60 @@ import { reverseAuthGuard } from './guards/reverse-auth/reverse-auth-guard';
 export const routes: Routes = [
   {
     path: '',
-    component: MainLayout,
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
+  {
+    path: 'home',
+    component: HomePage,
+    title: 'ExamMate | Home',
+  },
+  {
+    path: 'result',
+    component: QuizResultPage,
     children: [
       {
         path: '',
-        redirectTo: 'home',
-        pathMatch: 'full',
+        component: QuizResultList,
       },
       {
-        path: 'home',
-        component: HomePage,
-        title: 'ExamMate | Home',
-      },
-      {
-        path: 'result',
-        component: QuizResultPage,
-        children: [
-          {
-            path: '',
-            component: QuizResultList,
-          },
-          {
-            path: ':resultId',
-            component: QuizResultDetail,
-          },
-        ],
-      },
-      {
-        path: 'quiz',
-        component: QuizPage,
-        title: 'ExamMate | Quiz',
-        children: [
-          {
-            path: '',
-            component: QuizListPage,
-            title: 'ExamMate | Quiz',
-          },
-          {
-            path: ':quizId',
-            component: QuizDetailPage,
-            title: 'ExamMate | Take Quiz',
-          },
-        ],
+        path: ':resultId',
+        component: QuizResultDetail,
       },
     ],
   },
   {
-    path: '',
-    component: AuthLayout,
+    path: 'quiz',
+    component: QuizPage,
+    title: 'ExamMate | Quiz',
     children: [
       {
-        path: 'login',
-        component: LoginPage,
-        title: 'ExamMate | Login',
-        canActivate: [reverseAuthGuard]
+        path: '',
+        component: QuizListPage,
+        title: 'ExamMate | Quiz',
       },
       {
-        path: 'signup',
-        component: SignupPage,
-        title: 'ExamMate | Signup',
-        canActivate: [reverseAuthGuard]
+        path: ':quizId',
+        component: QuizDetailPage,
+        title: 'ExamMate | Take Quiz',
       },
-    {
-      path: 'verify-email',
-      component: VerificationPage,
-      title: 'ExamMate | Verify Email',
-    },
     ],
+  },
+  {
+    path: 'login',
+    component: LoginPage,
+    title: 'ExamMate | Login',
+    canActivate: [reverseAuthGuard],
+  },
+  {
+    path: 'signup',
+    component: SignupPage,
+    title: 'ExamMate | Signup',
+    canActivate: [reverseAuthGuard],
+  },
+  {
+    path: 'verify-email',
+    component: VerificationPage,
+    title: 'ExamMate | Verify Email',
   },
 ];

@@ -4,12 +4,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        charcoal: "#111418",
-        cloud: "#dbe0e6",
-        snow: "#f9fafb",
-        mist: "#f0f2f5",
-        ash: "#555",
-        slate: "#60758a",
 
         // new
         dark_gray_blue: "#111122",
@@ -21,23 +15,15 @@ module.exports = {
         lavender_blue: "#9393c8",
       },
       keyframes: {
-        slideDown: {
-          "0%": { opacity: 0, transform: "translateY(-10px)" },
-          "100%": { opacity: 1, transform: "translateY(0)" },
-        },
-        fadeIn: {
-          "0%": { opacity: "0", transform: "translateY(-10px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        fadeOut: {
-          "0%": { opacity: "1", transform: "translateY(0)" },
-          "100%": { opacity: "0", transform: "translateY(-10px)" },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
         },
       },
       animation: {
-        slideDown: "slideDown 0.3s ease-out",
-        fadeIn: "fadeIn 0.3s ease-in-out",
-        fadeOut: "fadeOut 0.3s ease-in-out",
+        float: "float 3s ease-in-out infinite",
+        "float-delay-1": "float 3s ease-in-out infinite 1s",
+        "float-delay-2": "float 3s ease-in-out infinite 2s",
       },
     },
   },
