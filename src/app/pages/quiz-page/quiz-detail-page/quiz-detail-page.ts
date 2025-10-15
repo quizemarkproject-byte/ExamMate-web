@@ -1,5 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionComponent } from '../../../components/question-component/question-component';
@@ -12,6 +12,7 @@ import {
 } from '../../../models/quiz';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { TokenService } from '../../../services/token-service/token-service';
+import { ToastrService } from '../../../services/toastr-service/toastr-service';
 
 @Component({
   selector: 'app-quiz-detail-page',
@@ -25,7 +26,7 @@ import { TokenService } from '../../../services/token-service/token-service';
   ],
   templateUrl: './quiz-detail-page.html',
 })
-export class QuizDetailPage {
+export class QuizDetailPage implements OnInit, OnDestroy {
   quizId: string = '';
   quizData: QuizSessionStartResponse | null = null;
   totalSeconds: number = 0; // initial total time for progress bar
@@ -40,12 +41,14 @@ export class QuizDetailPage {
   currentQuestionIndex = 0;
   remainingSeconds = 0;
   private countdownInterval: number | null = null;
+  autoNavigateOnSubmit: boolean = false;
 
   constructor(
     private quizService: QuizService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -77,10 +80,10 @@ export class QuizDetailPage {
 
         if (quiz.remainingSeconds) {
           this.remainingSeconds = quiz.remainingSeconds;
-          this.loadingQuiz = false;
           this.startCountdown();
         }
 
+        this.loadingQuiz = false;
         this.saveState();
       },
       error: (err) => {
@@ -162,7 +165,8 @@ export class QuizDetailPage {
       } else {
         window.clearInterval(this.countdownInterval as number);
         this.countdownInterval = null;
-        // Time's up: submit the quiz automatically
+        // Time's up: submit the quiz automatically and auto-navigate to results
+        this.autoNavigateOnSubmit = true;
         this.submitQuiz();
       }
     }, 1000);
@@ -179,6 +183,10 @@ export class QuizDetailPage {
           this.quizSubmissionResult = data;
           localStorage.removeItem(`quiz-${this.quizId}`);
           this.submittingQuiz = false;
+          if (this.autoNavigateOnSubmit && data?.id) {
+            this.toastr.info('Sent you to your latest result');
+            this.router.navigate(['/result', data.id]);
+          }
         },
         error: (err) => {
           console.log(err);

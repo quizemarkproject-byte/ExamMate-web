@@ -1,13 +1,13 @@
 import {CommonModule, DecimalPipe} from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import { QuizResultResponse } from '../../../models/quiz';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { TokenService } from '../../../services/token-service/token-service';
 
 @Component({
   selector: 'app-quiz-result-detail',
-  imports: [DecimalPipe, CommonModule],
+  imports: [DecimalPipe, CommonModule, RouterLink],
   templateUrl: './result-detail.html',
 })
 export class QuizResultDetail implements OnInit {

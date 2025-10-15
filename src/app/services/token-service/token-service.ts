@@ -13,7 +13,16 @@ export class TokenService {
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    const token = localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    if (!token) return null;
+
+    // Remove expired token proactively
+    if (this.isTokenExpired(token)) {
+      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+      return null;
+    }
+
+    return token;
   }
 
   logout(): void {
@@ -31,8 +40,18 @@ export class TokenService {
     }
   }
 
+  // Check token expiration using the standard JWT `exp` claim (seconds since epoch)
+  private isTokenExpired(token: string): boolean {
+    const payload = this.decodeToken(token);
+    if (!payload) return true; // treat invalid tokens as expired
+    const exp: number | undefined = payload.exp;
+    if (!exp) return false; // no exp claim -> consider not expired
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    return exp <= nowInSeconds;
+  }
+
   isLoggedIn(): boolean {
-    return localStorage.getItem(this.ACCESS_TOKEN_KEY) != null;
+    return this.getAccessToken() != null;
   }
 
   getSub(): string {

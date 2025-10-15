@@ -1,4 +1,12 @@
 <div class="p-4 md:p-8 bg-gray-50 h-full">
+  @if(submittingQuiz && autoNavigateOnSubmit) {
+  <div class="w-full max-w-2xl mx-auto px-2 mb-3">
+    <div class="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+      <i class="fas fa-spinner fa-spin"></i>
+      Submitting your quiz… redirecting to results
+    </div>
+  </div>
+  }
   @if(loadingQuiz) {
   <div class="flex justify-center items-center min-h-[60vh]">
     <img
@@ -78,7 +86,7 @@
   }
 
 <!-- Quiz Results Modal -->
-@if(quizSubmissionResult) {
+@if(quizSubmissionResult && !autoNavigateOnSubmit) {
 <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
   <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto transform transition-transform duration-300">
     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
