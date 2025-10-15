@@ -1,7 +1,7 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionComponent } from '../../../components/question-component/question-component';
 import { TimerComponent } from '../../../components/timer-component/timer-component';
 import {
@@ -12,7 +12,6 @@ import {
 } from '../../../models/quiz';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { TokenService } from '../../../services/token-service/token-service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-quiz-detail-page',
@@ -41,7 +40,6 @@ export class QuizDetailPage {
   currentQuestionIndex = 0;
   remainingSeconds = 0;
   private countdownInterval: number | null = null;
-  private routerSubscription: Subscription | null = null;
 
   constructor(
     private quizService: QuizService,
@@ -62,31 +60,7 @@ export class QuizDetailPage {
       this.currentQuestionIndex = parsed.currentQuestionIndex;
     }
 
-      this.loadQuiz();
-
-    this.routerSubscription = this.router.events.subscribe((event) => {
-      if (
-        event instanceof NavigationStart &&
-        this.quizData &&
-        !this.quizSubmissionResult
-      ) {
-        this.submitQuiz();
-      }
-    });
-  }
-
-  @HostListener('window:beforeunload', ['$event'])
-  handleBeforeUnload(event: BeforeUnloadEvent) {
-    if (this.quizData && !this.quizSubmissionResult) {
-      event.preventDefault();
-    }
-  }
-
-  @HostListener('window:unload')
-  handleUnload() {
-    if (this.quizData && !this.quizSubmissionResult) {
-      this.submitQuiz();
-    }
+    this.loadQuiz();
   }
 
   loadQuiz() {
@@ -188,6 +162,7 @@ export class QuizDetailPage {
       } else {
         window.clearInterval(this.countdownInterval as number);
         this.countdownInterval = null;
+        // Time's up: submit the quiz automatically
         this.submitQuiz();
       }
     }, 1000);
@@ -223,9 +198,6 @@ export class QuizDetailPage {
     if (this.countdownInterval !== null) {
       window.clearInterval(this.countdownInterval as number);
       this.countdownInterval = null;
-    }
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
     }
   }
 }

@@ -51,3 +51,7 @@ export interface QuestionResultResponse {
   correctAnswer: string
   correct: boolean
 }
+
+export interface CountResponse {
+  count: number
+}

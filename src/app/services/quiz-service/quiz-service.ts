@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  CountResponse,
   Quiz,
   QuizResultResponse,
   QuizSessionStartRequest,
@@ -53,6 +54,12 @@ export class QuizService {
   ): Observable<QuizResultResponse> {
     return this.http.get<QuizResultResponse>(
       `${this.quizSessionUrl}/result/${resultId}/user/${userId}`
+    );
+  }
+
+  getUserResultsCount(userId: string): Observable<CountResponse> {
+    return this.http.get<CountResponse>(
+      `${this.quizSessionUrl}/results/${userId}/count`
     );
   }
 }

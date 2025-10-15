@@ -5,6 +5,7 @@ import { QuizListPage } from './pages/quiz-page/quiz-list-page/quiz-list-page';
 import { QuizPage } from './pages/quiz-page/quiz-page/quiz-page';
 import { QuizResultDetail } from './pages/quiz-page/result-detail/result-detail';
 import { QuizResultList } from './pages/quiz-page/result-list/result-list';
+import { QuizExitGuard } from './guards/quiz-exit-guard/quiz-exit-guard';
 
 export const routes: Routes = [
   {
@@ -44,6 +45,7 @@ export const routes: Routes = [
       {
         path: ':quizId',
         component: QuizDetailPage,
+        canDeactivate: [QuizExitGuard],
         title: 'ExamMate | Take Quiz',
       },
     ],

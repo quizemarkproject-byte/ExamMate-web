@@ -2,6 +2,8 @@ import { Component, HostListener, Input, Output, EventEmitter } from '@angular/c
 import { Router, RouterModule } from '@angular/router';
 import { TokenService } from '../../services/token-service/token-service';
 import { CommonModule } from '@angular/common';
+import {QuizService} from '../../services/quiz-service/quiz-service';
+import {CountResponse, QuizSessionStartResponse} from '../../models/quiz';
 
 interface NavLink {
   label: string;
@@ -19,8 +21,9 @@ export class SideBar {
   @Input() open: boolean = true;
   @Output() close = new EventEmitter<void>();
   isLoggedIn: boolean = false;
+  count: number = 0;
 
-  constructor(private tokenService: TokenService, private router: Router) {}
+  constructor(private tokenService: TokenService, private router: Router, private quizService: QuizService) {}
 
   navLinks: NavLink[] = [
     { label: 'Quizzes', url: '/quiz', icon: 'fa-solid fa-book' },
@@ -29,28 +32,22 @@ export class SideBar {
 
   ngOnInit() {
     this.isLoggedIn = this.tokenService.isLoggedIn();
+    this.getResultsCount();
   }
 
-  // @HostListener('window:resize')
-  // onResize() {
-  //   this.checkScreenSize();
-  // }
-
-  // private checkScreenSize() {
-  //   const width = window.innerWidth;
-  //   this.isSidebarOpen = width >= this.MOBILE_BREAKPOINT;
-  // }
-
-  // toggleSidebar() {
-  //   this.isSidebarOpen = !this.isSidebarOpen;
-  // }
+ getResultsCount() {
+   this.quizService.getUserResultsCount(this.tokenService.getId()).subscribe({
+     next: (data: CountResponse) => {
+       this.count = data.count
+     },
+     error: (err) => {
+       console.error(err);
+     },
+   });
+ }
 
   onClose() {
     this.close.emit();
   }
 
-  // logout() {
-  //   this.tokenService.logout();
-  //   this.router.navigate(['/login']);
-  // }
 }
