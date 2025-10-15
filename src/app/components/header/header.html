@@ -1,59 +1,36 @@
-<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-blue_black px-4 sm:px-10 py-3 relative z-20 bg-dark_gray_blue">
-  <!-- Logo -->
-  <a routerLink="/" class="no-underline flex items-center gap-4 text-white">
-    <div class="w-6 h-6">
-      <img src="/assets/png/logo-1.png" alt="ExamMate Logo" class="w-full h-full" />
-    </div>
-    <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">
-      ExamMate
-    </h2>
-  </a>
-
-  <!-- Navigation & User Info -->
+<header
+  class="w-full bg-white border-b border-gray-200 px-4 md:px-8 py-4 flex justify-between items-center shadow-sm"
+>
   <div class="flex items-center gap-4">
-    <!-- Hamburger menu on small screens -->
-    <button class="sm:hidden text-white p-2 text-3xl" (click)="toggleMobileMenu()">
-      ☰
+    <button
+      class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-300"
+      (click)="toggleSidebar.emit()"
+    >
+      <i class="fas fa-bars text-xl"></i>
     </button>
-
-    <!-- Links: hidden on small screens -->
-    <div class="hidden sm:flex items-center gap-8">
-      @if(!isLoggedIn) { 
-        @for (link of navLinks; track link.url) {
-          <a
-            [routerLink]="link.url"
-            routerLinkActive="text-gray-300 border-b-2 border-blue_black"
-            [routerLinkActiveOptions]="{ exact: true }"
-            class="text-white hover:text-gray-300 font-medium transition-colors duration-200 pb-1"
-          >
-            {{ link.label }}
-          </a>
-        }
-      }
-      <p class="text-white font-medium">
-        Welcome, {{ username }}!
-      </p>
+    <div>
+      <a href="/home" class="flex items-center gap-2 text-gray-900">
+        <i class="fas fa-brain text-2xl md:text-3xl text-amber-400"></i>
+        <span class="text-xl md:text-2xl font-bold">ExamMate</span>
+      </a>
     </div>
   </div>
-</header>
-
-<!-- Mobile Menu Overlay -->
-@if(mobileMenuOpen) {
-<div class="sm:hidden fixed top-0 left-0 w-full h-full bg-dark_gray_blue bg-opacity-95 z-30 flex flex-col p-4">
-  <button class="self-end text-white mb-4 text-2xl" (click)="toggleMobileMenu()">✕</button>
-  @if(!isLoggedIn) { 
-    @for (link of navLinks; track link.url) {
-      <a
-        [routerLink]="link.url"
-        routerLinkActive="text-gray-300"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="block text-white py-2 text-lg hover:text-gray-300"
-        (click)="toggleMobileMenu()"
+  <div class="flex items-center">
+    @if (!isLoggedIn) {
+      <button
+        class="hidden md:flex items-center gap-2 bg-white/10 text-gray-700 border-2 border-gray-300 px-4 md:px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
+        (click)="login()"
       >
-        {{ link.label }}
-      </a>
+        <span class="hidden md:inline">Login/Signup</span>
+      </button>
+    } @else {
+      <button
+        class="hidden md:flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 text-white px-4 md:px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+        (click)="logout()"
+      >
+        <span class="hidden md:inline">Logout</span>
+      </button>
     }
-  }
-  <p class="text-white font-medium mt-4">Welcome, {{ username }}!</p>
-</div>
-}
+    <app-auth-modal [open]="showAuth" (closed)="handleAuthClosed()" (authenticated)="handleAuthenticated($event)"></app-auth-modal>
+  </div>
+</header>

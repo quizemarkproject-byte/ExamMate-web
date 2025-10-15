@@ -8,6 +8,12 @@ import { Component, Input } from '@angular/core';
 })
 export class TimerComponent {
   @Input() remainingSeconds!: number;
+  @Input() totalSeconds: number = 0;
+
+  get progressPercent(): number {
+    if (!this.totalSeconds || this.totalSeconds <= 0) return 0;
+    return (this.remainingSeconds / this.totalSeconds) * 100;
+  }
 
   get hours(): number {
     return Math.floor(this.remainingSeconds / 3600);

@@ -1,19 +1,20 @@
-import { DecimalPipe } from '@angular/common';
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {CommonModule, DecimalPipe} from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import { QuizResultResponse } from '../../../models/quiz';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { TokenService } from '../../../services/token-service/token-service';
 
 @Component({
   selector: 'app-quiz-result-detail',
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, CommonModule, RouterLink],
   templateUrl: './result-detail.html',
 })
-export class QuizResultDetail {
+export class QuizResultDetail implements OnInit {
   resultId: string = '';
   userId: string = '';
   quizResult!: QuizResultResponse;
+  loading: boolean = false;
 
   constructor(
     private quizService: QuizService,
@@ -30,12 +31,15 @@ export class QuizResultDetail {
   }
 
   getUserQuizResult() {
+    this.loading = true;
     this.quizService.getUserQuizResult(this.resultId, this.userId).subscribe({
       next: (data) => {
         this.quizResult = data;
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error fetching quiz result:', err);
+        this.loading = false;
       },
     });
   }

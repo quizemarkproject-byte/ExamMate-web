@@ -1,7 +1,7 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionComponent } from '../../../components/question-component/question-component';
 import { TimerComponent } from '../../../components/timer-component/timer-component';
 import {
@@ -12,10 +12,11 @@ import {
 } from '../../../models/quiz';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { TokenService } from '../../../services/token-service/token-service';
-import { Subscription } from 'rxjs';
+import { ToastrService } from '../../../services/toastr-service/toastr-service';
 
 @Component({
   selector: 'app-quiz-detail-page',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -25,28 +26,29 @@ import { Subscription } from 'rxjs';
   ],
   templateUrl: './quiz-detail-page.html',
 })
-export class QuizDetailPage {
+export class QuizDetailPage implements OnInit, OnDestroy {
   quizId: string = '';
   quizData: QuizSessionStartResponse | null = null;
+  totalSeconds: number = 0; // initial total time for progress bar
   quizSubmission: QuizSubmission = {
     userId: '',
     sessionId: '',
     answers: [],
   };
   quizSubmissionResult: QuizResultResponse | null = null;
-  termsAccepted = false;
   loadingQuiz: boolean = false;
   submittingQuiz: boolean = false;
   currentQuestionIndex = 0;
   remainingSeconds = 0;
   private countdownInterval: number | null = null;
-  private routerSubscription: Subscription | null = null;
+  autoNavigateOnSubmit: boolean = false;
 
   constructor(
     private quizService: QuizService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -59,40 +61,12 @@ export class QuizDetailPage {
       this.quizData = parsed.quizData;
       this.quizSubmission = parsed.quizSubmission;
       this.currentQuestionIndex = parsed.currentQuestionIndex;
-      this.termsAccepted = parsed.termsAccepted;
     }
 
-    if (this.termsAccepted) {
-      this.loadQuiz();
-    }
-
-    this.routerSubscription = this.router.events.subscribe((event) => {
-      if (
-        event instanceof NavigationStart &&
-        this.quizData &&
-        !this.quizSubmissionResult
-      ) {
-        this.submitQuiz();
-      }
-    });
-  }
-
-  @HostListener('window:beforeunload', ['$event'])
-  handleBeforeUnload(event: BeforeUnloadEvent) {
-    if (this.quizData && !this.quizSubmissionResult) {
-      event.preventDefault();
-    }
-  }
-
-  @HostListener('window:unload')
-  handleUnload() {
-    if (this.quizData && !this.quizSubmissionResult) {
-      this.submitQuiz();
-    }
+    this.loadQuiz();
   }
 
   loadQuiz() {
-    this.termsAccepted = true;
     const startRequest: QuizSessionStartRequest = {
       userId: this.tokenService.getId(),
       quizId: this.quizId,
@@ -102,13 +76,14 @@ export class QuizDetailPage {
       next: (quiz: QuizSessionStartResponse) => {
         this.quizData = quiz;
         this.quizSubmission.sessionId = quiz.sessionId;
+        this.totalSeconds = quiz.totalTimeInSeconds || quiz.remainingSeconds || 0;
 
         if (quiz.remainingSeconds) {
           this.remainingSeconds = quiz.remainingSeconds;
-          this.loadingQuiz = false;
           this.startCountdown();
         }
 
+        this.loadingQuiz = false;
         this.saveState();
       },
       error: (err) => {
@@ -175,7 +150,6 @@ export class QuizDetailPage {
         quizData: this.quizData,
         quizSubmission: this.quizSubmission,
         currentQuestionIndex: this.currentQuestionIndex,
-        termsAccepted: this.termsAccepted,
       })
     );
   }
@@ -191,6 +165,8 @@ export class QuizDetailPage {
       } else {
         window.clearInterval(this.countdownInterval as number);
         this.countdownInterval = null;
+        // Time's up: submit the quiz automatically and auto-navigate to results
+        this.autoNavigateOnSubmit = true;
         this.submitQuiz();
       }
     }, 1000);
@@ -207,6 +183,10 @@ export class QuizDetailPage {
           this.quizSubmissionResult = data;
           localStorage.removeItem(`quiz-${this.quizId}`);
           this.submittingQuiz = false;
+          if (this.autoNavigateOnSubmit && data?.id) {
+            this.toastr.info('Sent you to your latest result');
+            this.router.navigate(['/result', data.id]);
+          }
         },
         error: (err) => {
           console.log(err);
@@ -226,9 +206,6 @@ export class QuizDetailPage {
     if (this.countdownInterval !== null) {
       window.clearInterval(this.countdownInterval as number);
       this.countdownInterval = null;
-    }
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
     }
   }
 }

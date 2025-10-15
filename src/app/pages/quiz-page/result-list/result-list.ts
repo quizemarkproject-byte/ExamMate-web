@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { QuizResultResponse } from '../../../models/quiz';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
@@ -10,7 +10,7 @@ import { TokenService } from '../../../services/token-service/token-service';
   imports: [RouterModule, DecimalPipe, DatePipe],
   templateUrl: './result-list.html',
 })
-export class QuizResultList {
+export class QuizResultList implements OnInit {
   quizResults: QuizResultResponse[] = [];
   userId: string = '';
   loading: boolean = false;
@@ -20,12 +20,12 @@ export class QuizResultList {
     private tokenService: TokenService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.userId = this.tokenService.getId();
     this.getAllUserQuizResults();
   }
 
-  getAllUserQuizResults() {
+  getAllUserQuizResults(): void {
     this.loading = true;
     this.quizService.getAllUserQuizResults(this.userId).subscribe({
       next: (data) => {
