@@ -18,10 +18,10 @@
   <div class="flex items-center">
     @if (!isLoggedIn) {
       <button
-        class="hidden md:flex items-center gap-2 bg-white/10 text-gray-700 border-2 border-gray-300 px-4 md:px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
+        class="hidden md:flex items-center gap-2 bg-white/10 text-gray-700 border-2 border-gray-300 px-4 md:px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 hover:border-gray-400 hover:-translate-y-0.5 transition-all duration-300"
         (click)="login()"
       >
-        <span class="hidden md:inline">Login/Signup</span>
+        <span class="hidden md:inline">Join</span>
       </button>
     } @else {
       <button
