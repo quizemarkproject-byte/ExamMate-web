@@ -18,20 +18,10 @@ interface NavLink {
 export class Header {
   isLoggedIn:boolean = false;
   showAuth = false;
-  // username: string = ''
-  // mobileMenuOpen = false;
-
-  
-  // navLinks: NavLink[] = [
-  //   { label: 'Login', url: '/login'},
-  //   { label: 'Signup', url: '/signup'},
-  // ];
-
   constructor(private tokenService: TokenService, private router: Router, private toastr: ToastrService){}
 
   ngOnInit() {
     this.isLoggedIn = this.tokenService.isLoggedIn();
-    // this.username = this.tokenService.getSub();
   }
 
   @Output() toggleSidebar = new EventEmitter<void>();
