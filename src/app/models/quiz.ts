@@ -5,10 +5,26 @@ export interface Quiz {
   questionLimit: number
 }
 
+export interface QuizRequest {
+  id?: string;
+  name: string;
+  timeLimitMinutes: number;
+  questionLimit: number;
+}
+
+export interface QuestionRequest {
+  id?: string;
+  existingQuestionId?: string;
+  text: string;
+  options: string[];
+  correctAnswer: string;
+}
+
 export interface Question {
   id: string
   text: string
   options: string[]
+  correctAnswer?: string
 }
 
 export interface QuizSessionStartResponse {

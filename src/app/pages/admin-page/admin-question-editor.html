@@ -8,7 +8,7 @@
       <div class="flex items-center gap-4 mt-2">
         <div class="text-sm text-gray-500">ID: {{ quiz.id }}</div>
         <div class="text-sm text-gray-500">Time:
-          <input type="text" [(ngModel)]="quiz.timeLimit" class="w-20 ml-2 px-2 py-1 border rounded text-sm" />
+          <input type="number" min="0" [(ngModel)]="quiz.timeLimitMinutes" class="w-20 ml-2 px-2 py-1 border rounded text-sm" />
           min
         </div>
         <div class="text-sm text-gray-500">Limit:
@@ -34,10 +34,10 @@
           <input [(ngModel)]="question.text" placeholder="Question text" class="w-full px-3 py-2 border rounded mb-3" />
 
           <div class="space-y-2">
-            @for (option of question.options; track option.id; let oi = $index) {
+            @for (option of question.options; track $index; let oi = $index) {
             <div class="flex items-center gap-2">
-              <input type="radio" name="correct-{{ question.id }}" [checked]="question.correctIndex === oi" (click)="onSetCorrect(qi, oi)" class="appearance-none h-4 w-4 rounded-full border-2 border-blue-400 checked:bg-blue-600" />
-              <input [(ngModel)]="option.text" placeholder="Option text" class="flex-1 px-3 py-2 border rounded" />
+              <input type="radio" name="correct-{{ question.id }}" [checked]="question.correctAnswer === option" (click)="onSetCorrect(qi, oi)" class="appearance-none h-4 w-4 rounded-full border-2 border-blue-400 checked:bg-blue-600" />
+              <input [(ngModel)]="question.options[oi]" placeholder="Option text" class="flex-1 px-3 py-2 border rounded" />
               <button (click)="onRemoveOption(qi, oi)" class="text-red-500 ml-2">Remove</button>
             </div>
             }

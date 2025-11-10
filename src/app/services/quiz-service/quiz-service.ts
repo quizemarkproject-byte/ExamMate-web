@@ -3,7 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   CountResponse,
+  Question,
+  QuestionRequest,
   Quiz,
+  QuizRequest,
   QuizResultResponse,
   QuizSessionStartRequest,
   QuizSessionStartResponse,
@@ -24,8 +27,20 @@ export class QuizService {
     return this.http.get<Quiz[]>(this.quizUrl);
   }
 
+  createQuiz(quizRequest: QuizRequest): Observable<Quiz[]> {
+    return this.http.post<Quiz[]>(this.quizUrl, quizRequest);
+  }
+
   getQuizById(quizId: string): Observable<Quiz> {
     return this.http.get<Quiz>(`${this.quizUrl}/${quizId}`);
+  }
+
+  getAllQuestions(): Observable<Question> {
+    return this.http.get<Question>(`${this.quizUrl}/questions`);
+  }
+
+  createQuestions(quizId: string, questionRequest: QuestionRequest): Observable<Question> {
+    return this.http.post<Question>(`${this.quizUrl}/${quizId}/questions/bulk`, questionRequest);
   }
 
   startQuiz(startRequest: QuizSessionStartRequest): Observable<QuizSessionStartResponse> {

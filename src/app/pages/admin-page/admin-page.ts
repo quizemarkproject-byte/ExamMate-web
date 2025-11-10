@@ -6,6 +6,15 @@ import { AdminQuizList } from './admin-quiz-list';
 import { AdminQuestionBank } from './admin-question-bank';
 import { AdminQuestionEditor } from './admin-question-editor';
 import { ToastrService } from '../../services/toastr-service/toastr-service';
+import { QuestionRequest } from '../../models/quiz';
+
+interface AdminQuiz {
+  id?: string;
+  name: string;
+  timeLimitMinutes: number;
+  questionLimit: number;
+  questions?: QuestionRequest[];
+}
 
 @Component({
   selector: 'app-admin-page',
@@ -13,14 +22,11 @@ import { ToastrService } from '../../services/toastr-service/toastr-service';
   templateUrl: './admin-page.html',
 })
 export class AdminPage {
-  quizzes: any[] = [];
-  // central question bank — questions here can be attached to multiple quizzes
-  questionBank: any[] = [];
+  quizzes: AdminQuiz[] = [];
+  questionBank: QuestionRequest[] = [];
   selectedQuizIndex: number | null = null;
-
-  // temporary inputs for new quiz
   newQuizName = '';
-  newQuizTimeLimit = '10'; // minutes as string for input binding
+  newQuizTimeLimit = '10';
   newQuizQuestionLimit = 10;
   
 
@@ -47,24 +53,23 @@ export class AdminPage {
     return this.validateNewQuiz().length === 0;
   }
 
-  validateQuestion(q: any): string[] {
+  validateQuestion(q: QuestionRequest): string[] {
     const errors: string[] = [];
     if (!q.text || !q.text.trim()) errors.push('Question text is required.');
     if (!Array.isArray(q.options) || q.options.length < 2) errors.push('Each question must have at least 2 options.');
     else {
-      q.options.forEach((opt: any, idx: number) => {
-        if (!opt.text || !opt.text.trim()) errors.push(`Option ${idx + 1} cannot be empty.`);
+      q.options.forEach((opt: string, idx: number) => {
+        if (!opt || !opt.trim()) errors.push(`Option ${idx + 1} cannot be empty.`);
       });
     }
-    if (typeof q.correctIndex !== 'number' || q.correctIndex < 0 || q.correctIndex >= (q.options?.length || 0))
-      errors.push('A correct option must be selected.');
+    if (!q.correctAnswer || !q.options.includes(q.correctAnswer)) errors.push('A correct option must be selected.');
     return errors;
   }
 
-  validateQuiz(quiz: any): string[] {
+  validateQuiz(quiz: AdminQuiz): string[] {
     const errors: string[] = [];
     if (!quiz.name || !quiz.name.trim()) errors.push('Quiz title is required.');
-    const time = Number(quiz.timeLimit);
+    const time = Number(quiz.timeLimitMinutes);
     if (Number.isNaN(time) || time <= 0) errors.push('Quiz time limit must be a positive number.');
     const qLimit = Number(quiz.questionLimit);
     if (Number.isNaN(qLimit) || qLimit <= 0) errors.push('Quiz question limit must be a positive integer.');
@@ -96,14 +101,14 @@ export class AdminPage {
       return;
     }
 
-    const quiz = {
+    const quiz: AdminQuiz = {
       id: Date.now().toString(),
       name: this.newQuizName || 'Untitled Quiz',
       // questions hold references to objects from questionBank
       questions: [],
-  // new required fields (use the bound input values)
-  timeLimit: this.newQuizTimeLimit,
-  questionLimit: Number(this.newQuizQuestionLimit),
+      // new required fields (use the bound input values)
+      timeLimitMinutes: Number(this.newQuizTimeLimit),
+      questionLimit: Number(this.newQuizQuestionLimit),
     };
     this.quizzes.push(quiz);
     this.newQuizName = '';
@@ -125,16 +130,18 @@ export class AdminPage {
   addQuestion() {
     if (this.selectedQuizIndex === null) return;
     const quiz = this.quizzes[this.selectedQuizIndex];
-    const q = {
+    const q: QuestionRequest = {
       id: Date.now().toString(),
       text: '',
-      options: [{ id: 'o1', text: '' }],
-      correctIndex: 0,
+      // start with two empty options so validation doesn't fail immediately
+      options: ['', ''],
+      correctAnswer: '',
     };
     // add to bank
     this.questionBank.push(q);
     // attach the same object reference to the quiz so it can be reused
-    this.quizzes[this.selectedQuizIndex].questions.push(q);
+    if (!this.quizzes[this.selectedQuizIndex].questions) this.quizzes[this.selectedQuizIndex].questions = [];
+    this.quizzes[this.selectedQuizIndex].questions!.push(q);
   }
 
   // attach an existing question from the bank to the currently selected quiz
@@ -143,6 +150,7 @@ export class AdminPage {
     const q = this.questionBank[bankIndex];
     const quiz = this.quizzes[this.selectedQuizIndex];
     // avoid duplicate attachments
+    if (!quiz.questions) quiz.questions = [];
     if (!quiz.questions.includes(q)) {
       quiz.questions.push(q);
     }
@@ -150,30 +158,33 @@ export class AdminPage {
 
   removeQuestion(qIndex: number) {
     if (this.selectedQuizIndex === null) return;
-    this.quizzes[this.selectedQuizIndex].questions.splice(qIndex, 1);
+    this.quizzes[this.selectedQuizIndex].questions!.splice(qIndex, 1);
   }
 
   addOption(qIndex: number) {
     if (this.selectedQuizIndex === null) return;
-    const options = this.quizzes[this.selectedQuizIndex].questions[qIndex].options;
-    options.push({ id: 'o' + (options.length + 1), text: '' });
+    const options = this.quizzes[this.selectedQuizIndex].questions![qIndex].options;
+    options.push('');
   }
 
   removeOption(qIndex: number, optIndex: number) {
     if (this.selectedQuizIndex === null) return;
-    const q = this.quizzes[this.selectedQuizIndex].questions[qIndex];
+    const q = this.quizzes[this.selectedQuizIndex].questions![qIndex];
     // prevent removing option when it would leave fewer than 2 options
     if ((q.options?.length || 0) <= 2) {
       this.toastr.warning('Each question must have at least 2 options.');
       return;
     }
-    q.options.splice(optIndex, 1);
-    if (q.correctIndex >= q.options.length) q.correctIndex = Math.max(0, q.options.length - 1);
+    const removed = q.options.splice(optIndex, 1)[0];
+    if (q.correctAnswer === removed) {
+      q.correctAnswer = q.options[0] || '';
+    }
   }
 
   setCorrect(qIndex: number, optIndex: number) {
     if (this.selectedQuizIndex === null) return;
-    this.quizzes[this.selectedQuizIndex].questions[qIndex].correctIndex = optIndex;
+    const q = this.quizzes[this.selectedQuizIndex].questions![qIndex];
+    q.correctAnswer = q.options[optIndex] || '';
   }
 
   // simple save (no backend integration yet)
@@ -196,11 +207,11 @@ export class AdminPage {
   }
 
   createBankQuestion() {
-    const q = {
+    const q: QuestionRequest = {
       id: Date.now().toString(),
       text: '',
-      options: [{ id: 'o1', text: '' }],
-      correctIndex: 0,
+      options: ['', ''],
+      correctAnswer: '',
     };
     this.questionBank.push(q);
   }
