@@ -2,10 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { AdminQuizList } from './admin-quiz-list';
+import { AdminQuestionBank } from './admin-question-bank';
+import { AdminQuestionEditor } from './admin-question-editor';
+import { ToastrService } from '../../services/toastr-service/toastr-service';
 
 @Component({
   selector: 'app-admin-page',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, AdminQuizList, AdminQuestionBank, AdminQuestionEditor],
   templateUrl: './admin-page.html',
 })
 export class AdminPage {
@@ -20,7 +24,7 @@ export class AdminPage {
   newQuizQuestionLimit = 10;
   
 
-  constructor() {}
+  constructor(private toastr: ToastrService) {}
 
   // Validation helpers
   validateNewQuiz(): string[] {
@@ -64,7 +68,9 @@ export class AdminPage {
     if (Number.isNaN(time) || time <= 0) errors.push('Quiz time limit must be a positive number.');
     const qLimit = Number(quiz.questionLimit);
     if (Number.isNaN(qLimit) || qLimit <= 0) errors.push('Quiz question limit must be a positive integer.');
-    if (Array.isArray(quiz.questions) && quiz.questions.length > qLimit) errors.push('Number of attached questions exceeds the question limit.');
+    // questionLimit represents how many questions a user will receive (shuffled count).
+    // Treat it as a minimum number of attached questions required for the quiz to function.
+    if (Array.isArray(quiz.questions) && quiz.questions.length < qLimit) errors.push('Number of attached questions is less than the question limit (this is the minimum number of questions required).');
     // validate each question
     if (Array.isArray(quiz.questions)) {
       quiz.questions.forEach((q: any, idx: number) => {
@@ -86,7 +92,7 @@ export class AdminPage {
   createQuiz() {
     const errs = this.validateNewQuiz();
     if (errs.length) {
-      alert('Cannot create quiz:\n' + errs.join('\n'));
+      this.toastr.error('Cannot create quiz:\n' + errs.join('\n'));
       return;
     }
 
@@ -119,11 +125,6 @@ export class AdminPage {
   addQuestion() {
     if (this.selectedQuizIndex === null) return;
     const quiz = this.quizzes[this.selectedQuizIndex];
-    // enforce question limit
-    if (quiz.questions.length >= Number(quiz.questionLimit)) {
-      alert('Cannot add question: quiz question limit reached.');
-      return;
-    }
     const q = {
       id: Date.now().toString(),
       text: '',
@@ -163,7 +164,7 @@ export class AdminPage {
     const q = this.quizzes[this.selectedQuizIndex].questions[qIndex];
     // prevent removing option when it would leave fewer than 2 options
     if ((q.options?.length || 0) <= 2) {
-      alert('Each question must have at least 2 options.');
+      this.toastr.warning('Each question must have at least 2 options.');
       return;
     }
     q.options.splice(optIndex, 1);
@@ -184,14 +185,14 @@ export class AdminPage {
       errs.forEach((e) => allErrors.push(`Quiz ${idx + 1} (${qz.name}): ${e}`));
     });
     if (allErrors.length) {
-      alert('Validation errors:\n' + allErrors.join('\n'));
+      this.toastr.error('Validation errors:\n' + allErrors.join('\n'));
       console.warn('Validation errors', allErrors);
       return;
     }
     // placeholder - persist to server later
     console.log('Question bank', this.questionBank);
     console.log('Quizzes to save', this.quizzes);
-    alert('Quizzes saved (local only). Check console for data.');
+    this.toastr.success('Quizzes saved (local only).');
   }
 
   createBankQuestion() {

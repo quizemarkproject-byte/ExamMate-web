@@ -1,0 +1,63 @@
+@if (!quiz) {
+<div class="text-gray-500">Select a quiz on the left or create a new one to begin building questions.</div>
+} @else {
+<div>
+  <div class="flex items-center justify-between mb-4 gap-4">
+    <div class="flex-1">
+      <input [(ngModel)]="quiz.name" class="text-xl font-semibold border-b pb-2 w-full" />
+      <div class="flex items-center gap-4 mt-2">
+        <div class="text-sm text-gray-500">ID: {{ quiz.id }}</div>
+        <div class="text-sm text-gray-500">Time:
+          <input type="text" [(ngModel)]="quiz.timeLimit" class="w-20 ml-2 px-2 py-1 border rounded text-sm" />
+          min
+        </div>
+        <div class="text-sm text-gray-500">Limit:
+          <input type="number" min="0" [(ngModel)]="quiz.questionLimit" class="w-20 ml-2 px-2 py-1 border rounded text-sm" />
+        </div>
+      </div>
+    </div>
+    <div>
+      <button (click)="addQuestion.emit()" class="bg-blue-600 text-white px-3 py-2 rounded-lg">+ Add Question</button>
+    </div>
+  </div>
+
+  <div class="min-h-[3rem] mb-3">
+    <!-- parent will show quiz-level messages if needed -->
+  </div>
+
+  <div class="space-y-4">
+    @for (question of quiz.questions; track question.id; let qi = $index) {
+    <div class="border rounded p-4">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <div class="mb-2 text-sm text-gray-600">Question {{ qi + 1 }}</div>
+          <input [(ngModel)]="question.text" placeholder="Question text" class="w-full px-3 py-2 border rounded mb-3" />
+
+          <div class="space-y-2">
+            @for (option of question.options; track option.id; let oi = $index) {
+            <div class="flex items-center gap-2">
+              <input type="radio" name="correct-{{ question.id }}" [checked]="question.correctIndex === oi" (click)="onSetCorrect(qi, oi)" class="appearance-none h-4 w-4 rounded-full border-2 border-blue-400 checked:bg-blue-600" />
+              <input [(ngModel)]="option.text" placeholder="Option text" class="flex-1 px-3 py-2 border rounded" />
+              <button (click)="onRemoveOption(qi, oi)" class="text-red-500 ml-2">Remove</button>
+            </div>
+            }
+          </div>
+
+          <div class="mt-3">
+            <button (click)="addOption.emit(qi)" class="text-sm text-purple-600">+ Add option</button>
+          </div>
+
+          <div class="min-h-[3rem] mt-2 text-xs text-red-500">
+            <!-- per-question validation shown by parent in current layout -->
+          </div>
+        </div>
+
+        <div class="shrink-0">
+          <button (click)="removeQuestion.emit(qi)" class="text-red-500">Delete</button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+}
