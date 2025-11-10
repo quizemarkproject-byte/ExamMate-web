@@ -15,7 +15,7 @@ import { TokenService } from '../../services/token-service/token-service';
 export class AuthModalComponent {
   @Input() open = false;
   @Output() closed = new EventEmitter<void>();
-  @Output() authenticated = new EventEmitter<string>(); // emit token
+  @Output() authenticated = new EventEmitter<string>();
 
   step: 'email' | 'otp' = 'email';
   emailForm: FormGroup;

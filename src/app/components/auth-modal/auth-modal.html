@@ -8,7 +8,7 @@
 
   <!-- Modal -->
   <div
-    class="relative w-[23rem] max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden"
+    class="relative w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden"
   >
     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
       <div class="flex items-center gap-2 text-gray-900">
@@ -71,7 +71,7 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">OTP</label>
         <div
-          class="flex items-center justify-between gap-2"
+          class="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap overflow-x-auto"
           (paste)="onOtpPaste($event)"
         >
           @for (box of [].constructor(otpLength); track $index) {
@@ -80,7 +80,7 @@
             type="text"
             inputmode="numeric"
             maxlength="1"
-            class="w-12 h-12 text-center text-lg rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            class="w-10 h-10 sm:w-12 sm:h-12 text-center text-base sm:text-lg rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
             (input)="onOtpInput($event, $index)"
             (keydown)="onOtpKeyDown($event, $index)"
           />
