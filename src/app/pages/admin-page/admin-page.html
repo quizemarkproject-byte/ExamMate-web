@@ -1,0 +1,147 @@
+<div class="max-w-7xl mx-auto px-6 py-8 h-screen">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold text-gray-800">Admin — Quiz Builder</h1>
+    <div class="flex items-center gap-3">
+      <button (click)="saveAll()" [disabled]="!isAllValid()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:shadow disabled:opacity-50">Save All</button>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6 h-full min-h-0 min-w-0">
+    <!-- Left: Quiz list / create -->
+  <aside class="col-span-1 bg-white rounded-2xl border border-gray-200 p-4 h-full min-h-0 overflow-auto">
+      <h2 class="text-sm font-medium text-gray-700 mb-3">Quizzes</h2>
+
+      <div class="space-y-3">
+        @for (q of quizzes; track q.id; let i = $index) {
+        <div class="flex items-center justify-between gap-3 p-2 rounded-lg hover:bg-gray-50">
+          <button (click)="selectQuiz(i)" class="text-left flex-1">
+            <div class="font-medium text-gray-800">{{ q.name }}</div>
+            <div class="text-xs text-gray-400 mt-1">Time: {{ q.timeLimit }} min · Limit: {{ q.questionLimit }}</div>
+          </button>
+          <button (click)="deleteQuiz(i)" title="Delete quiz" class="text-red-500 hover:text-red-700">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        }
+      </div>
+
+      <div class="mt-5 border-t pt-4">
+        <h3 class="text-sm font-medium text-gray-700 mb-2">Create New Quiz</h3>
+        <div class="mb-2">
+          <label for="newQuizName" class="block text-sm font-medium text-gray-700 mb-1">Quiz title</label>
+          <input id="newQuizName" [(ngModel)]="newQuizName" placeholder="Quiz title" class="w-full px-3 py-2 border rounded" />
+        </div>
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <div>
+            <label for="newQuizTimeLimit" class="block text-sm font-medium text-gray-700 mb-1">Time limit (min)</label>
+            <input id="newQuizTimeLimit" type="number" min="0" [(ngModel)]="newQuizTimeLimit" placeholder="Time limit (min)" class="w-full px-3 py-2 border rounded" />
+          </div>
+          <div>
+            <label for="newQuizQuestionLimit" class="block text-sm font-medium text-gray-700 mb-1">Question limit</label>
+            <input id="newQuizQuestionLimit" type="number" min="0" [(ngModel)]="newQuizQuestionLimit" placeholder="Question limit" class="w-full px-3 py-2 border rounded" />
+          </div>
+        </div>
+        
+        <div class="mt-2">
+          <!-- reserved space for validation messages to avoid layout shift -->
+          <div class="min-h-[4rem]">
+            @if (!isNewQuizValid()) {<div class="text-sm text-red-500">@for (err of validateNewQuiz(); track $index) {<div>{{ err }}</div>} </div>}
+          </div>
+          <button (click)="createQuiz()" [disabled]="!isNewQuizValid()" class="w-full bg-purple-600 text-white px-3 py-2 rounded-lg disabled:opacity-50">+ Create Quiz</button>
+        </div>
+      </div>
+
+      <div class="mt-6 border-t pt-4">
+        <h3 class="text-sm font-medium text-gray-700 mb-2">Question Bank</h3>
+        <div class="space-y-2">
+          @for (bq of questionBank; track bq.id; let bi = $index) {
+          <div class="flex items-center justify-between gap-2 p-2 rounded hover:bg-gray-50">
+            <div class="flex-1 text-sm text-gray-700 truncate">{{ bq.text || 'Untitled question' }}</div>
+            <div class="flex items-center gap-2">
+              <button (click)="attachQuestionFromBank(bi)" [disabled]="selectedQuizIndex === null" class="text-sm text-purple-600">+ Attach</button>
+            </div>
+          </div>
+          }
+        </div>
+
+        <div class="mt-3">
+          <button (click)="createBankQuestion()" class="w-full bg-amber-400 text-white px-3 py-2 rounded-lg">+ Create Bank Question</button>
+        </div>
+      </div>
+    </aside>
+
+  <!-- Right: Editor -->
+  <!-- make this panel handle internal scrolling so left aside stays static -->
+  <section class="col-span-2 bg-white rounded-2xl border border-gray-200 p-6 h-full min-h-0 overflow-auto min-w-0">
+      @if (selectedQuizIndex === null) {
+      <div class="text-gray-500">Select a quiz on the left or create a new one to begin building questions.</div>
+      } @else {
+      <div>
+        <div class="flex items-center justify-between mb-4 gap-4">
+          <div class="flex-1">
+            <input [(ngModel)]="quizzes[selectedQuizIndex].name" class="text-xl font-semibold border-b pb-2 w-full" />
+            <div class="flex items-center gap-4 mt-2">
+              <div class="text-sm text-gray-500">ID: {{ quizzes[selectedQuizIndex].id }}</div>
+              <div class="text-sm text-gray-500">Time:
+                <input type="text" [(ngModel)]="quizzes[selectedQuizIndex].timeLimit" class="w-20 ml-2 px-2 py-1 border rounded text-sm" />
+                min
+              </div>
+              <div class="text-sm text-gray-500">Limit:
+                <input type="number" min="0" [(ngModel)]="quizzes[selectedQuizIndex].questionLimit" class="w-20 ml-2 px-2 py-1 border rounded text-sm" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <button (click)="addQuestion()" [disabled]="quizzes[selectedQuizIndex].questions.length >= quizzes[selectedQuizIndex].questionLimit" class="bg-blue-600 text-white px-3 py-2 rounded-lg disabled:opacity-50">+ Add Question</button>
+          </div>
+        </div>
+
+
+        <!-- fixed container for quiz-level validation (prevents layout shift) -->
+        <div class="min-h-[3rem] mb-3">
+          @if (validateQuiz(quizzes[selectedQuizIndex]).length > 0) {
+          <div class="text-sm text-red-500">
+            @for (err of validateQuiz(quizzes[selectedQuizIndex]); track $index) {<div>{{ err }}</div>}
+          </div>
+          }
+        </div>
+
+        <div class="space-y-4">
+          @for (question of quizzes[selectedQuizIndex].questions; track question.id; let qi = $index) {
+          <div class="border rounded p-4">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="mb-2 text-sm text-gray-600">Question {{ qi + 1 }}</div>
+                <input [(ngModel)]="question.text" placeholder="Question text" class="w-full px-3 py-2 border rounded mb-3" />
+
+                <div class="space-y-2">
+                  @for (option of question.options; track option.id; let oi = $index) {
+                  <div class="flex items-center gap-2">
+                    <input type="radio" name="correct-{{ question.id }}" [checked]="question.correctIndex === oi" (click)="setCorrect(qi, oi)" class="appearance-none h-4 w-4 rounded-full border-2 border-blue-400 checked:bg-blue-600" />
+                    <input [(ngModel)]="option.text" placeholder="Option text" class="flex-1 px-3 py-2 border rounded" />
+                    <button (click)="removeOption(qi, oi)" class="text-red-500 ml-2">Remove</button>
+                  </div>
+                  }
+                </div>
+
+                <div class="mt-3">
+                  <button (click)="addOption(qi)" class="text-sm text-purple-600">+ Add option</button>
+                </div>
+                <!-- reserve space for per-question validation messages to avoid layout shift -->
+                <div class="min-h-[3rem] mt-2 text-xs text-red-500">
+                  @if (validateQuestion(question).length > 0) { @for (err of validateQuestion(question); track $index) {<div>{{ err }}</div>} }
+                </div>
+              </div>
+
+              <div class="shrink-0">
+                <button (click)="removeQuestion(qi)" class="text-red-500">Delete</button>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </section>
+  </div>
+</div>
