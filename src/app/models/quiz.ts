@@ -8,7 +8,7 @@ export interface Quiz {
 export interface QuizRequest {
   id?: string;
   name: string;
-  timeLimitMinutes: number;
+  timeLimitMinutes: string;
   questionLimit: number;
 }
 

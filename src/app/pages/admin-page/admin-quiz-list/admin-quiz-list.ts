@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DurationPipe } from '../../../pipes/duration/duration-pipe';
 
 @Component({
   selector: 'admin-quiz-list',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DurationPipe],
   templateUrl: './admin-quiz-list.html',
 })
 export class AdminQuizList {

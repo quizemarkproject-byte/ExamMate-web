@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -6,15 +6,13 @@ import { AdminQuizList } from '../admin-quiz-list/admin-quiz-list';
 import { AdminQuestionBank } from '../admin-question-bank/admin-question-bank';
 import { AdminQuestionEditor } from '../admin-question-editor/admin-question-editor';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
+import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { QuestionRequest } from '../../../models/quiz';
 
-// Runtime model used inside the admin UI which retains attached questions.
-// We keep this separate from the server-facing QuizRequest DTO which should
-// not include embedded questions according to the API contract.
 interface AdminQuiz {
   id?: string;
   name: string;
-  timeLimitMinutes: number;
+  timeLimitMinutes: string;
   questionLimit: number;
   questions?: QuestionRequest[];
 }
@@ -25,24 +23,33 @@ interface AdminQuiz {
   templateUrl: './admin-page.html',
 })
 export class AdminPage {
-  // Request-shaped models used for creating/updating quizzes and questions
-  // QuizRequest represents the payload to create/update a quiz
-  // QuestionRequest represents a question shape used in the bank and per-quiz
-  
-  // use AdminQuiz for runtime; QuizRequest (imported) remains available when
-  // converting payloads for the backend.
   quizzes: AdminQuiz[] = [];
-  // central question bank — questions here can be attached to multiple quizzes
   questionBank: QuestionRequest[] = [];
   selectedQuizIndex: number | null = null;
-
-  // temporary inputs for new quiz
   newQuizName = '';
-  newQuizTimeLimit = '10'; // minutes as string for input binding
+  newQuizTimeLimit = '10';
   newQuizQuestionLimit = 10;
   
 
-  constructor(private toastr: ToastrService) {}
+  constructor(private toastr: ToastrService, private quizService: QuizService) {}
+
+  ngOnInit(): void {
+    this.quizService.getQuizzes().subscribe({
+      next: (qs) => {
+        this.quizzes = qs.map((qq) => ({
+          id: qq.id,
+          name: qq.name,
+          timeLimitMinutes: qq.timeLimit,
+          questionLimit: Number(qq.questionLimit),
+          questions: [],
+        }));
+      },
+      error: (err) => {
+        console.error('Failed to load quizzes', err);
+        this.toastr.error('Failed to load quizzes from server.');
+      },
+    });
+  }
 
   // Validation helpers
   validateNewQuiz(): string[] {
