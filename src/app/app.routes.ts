@@ -6,7 +6,7 @@ import { QuizPage } from './pages/quiz-page/quiz-page/quiz-page';
 import { QuizResultDetail } from './pages/quiz-page/result-detail/result-detail';
 import { QuizResultList } from './pages/quiz-page/result-list/result-list';
 import { QuizExitGuard } from './guards/quiz-exit-guard/quiz-exit-guard';
-import { AdminPage } from './pages/admin-page/admin-page';
+import { AdminPage } from './pages/admin-page/admin-page/admin-page';
 
 export const routes: Routes = [
   {

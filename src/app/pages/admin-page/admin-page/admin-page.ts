@@ -2,12 +2,15 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { AdminQuizList } from './admin-quiz-list';
-import { AdminQuestionBank } from './admin-question-bank';
-import { AdminQuestionEditor } from './admin-question-editor';
-import { ToastrService } from '../../services/toastr-service/toastr-service';
-import { QuestionRequest } from '../../models/quiz';
+import { AdminQuizList } from '../admin-quiz-list/admin-quiz-list';
+import { AdminQuestionBank } from '../admin-question-bank/admin-question-bank';
+import { AdminQuestionEditor } from '../admin-question-editor/admin-question-editor';
+import { ToastrService } from '../../../services/toastr-service/toastr-service';
+import { QuestionRequest } from '../../../models/quiz';
 
+// Runtime model used inside the admin UI which retains attached questions.
+// We keep this separate from the server-facing QuizRequest DTO which should
+// not include embedded questions according to the API contract.
 interface AdminQuiz {
   id?: string;
   name: string;
@@ -22,11 +25,20 @@ interface AdminQuiz {
   templateUrl: './admin-page.html',
 })
 export class AdminPage {
+  // Request-shaped models used for creating/updating quizzes and questions
+  // QuizRequest represents the payload to create/update a quiz
+  // QuestionRequest represents a question shape used in the bank and per-quiz
+  
+  // use AdminQuiz for runtime; QuizRequest (imported) remains available when
+  // converting payloads for the backend.
   quizzes: AdminQuiz[] = [];
+  // central question bank — questions here can be attached to multiple quizzes
   questionBank: QuestionRequest[] = [];
   selectedQuizIndex: number | null = null;
+
+  // temporary inputs for new quiz
   newQuizName = '';
-  newQuizTimeLimit = '10';
+  newQuizTimeLimit = '10'; // minutes as string for input binding
   newQuizQuestionLimit = 10;
   
 
@@ -66,7 +78,7 @@ export class AdminPage {
     return errors;
   }
 
-  validateQuiz(quiz: AdminQuiz): string[] {
+  validateQuiz(quiz: any): string[] {
     const errors: string[] = [];
     if (!quiz.name || !quiz.name.trim()) errors.push('Quiz title is required.');
     const time = Number(quiz.timeLimitMinutes);
@@ -101,7 +113,7 @@ export class AdminPage {
       return;
     }
 
-    const quiz: AdminQuiz = {
+    const quiz: any = {
       id: Date.now().toString(),
       name: this.newQuizName || 'Untitled Quiz',
       // questions hold references to objects from questionBank
