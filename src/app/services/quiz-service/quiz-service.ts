@@ -5,7 +5,6 @@ import {
   AdminQuiz,
   CountResponse,
   Question,
-  QuestionRequest,
   Quiz,
   QuizRequest,
   QuizResultResponse,
@@ -33,13 +32,13 @@ export class QuizService {
     return this.http.post<AdminQuiz>(this.adminQuizUrl, quizRequest);
   }
 
-  adminGetAllQuestions(): Observable<Question> {
-    return this.http.get<Question>(`${this.adminQuizUrl}/questions`);
+  adminGetAllQuestions(): Observable<Question[]> {
+    return this.http.get<Question[]>(`${this.adminQuizUrl}/questions`);
   }
 
   adminCreateQuestions(
     quizId: string,
-    questionRequest: QuestionRequest
+    questionRequest: Question
   ): Observable<Question> {
     return this.http.post<Question>(
       `${this.adminQuizUrl}/${quizId}/questions/bulk`,

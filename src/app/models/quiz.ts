@@ -10,7 +10,7 @@ export interface AdminQuiz {
   name: string;
   timeLimit: string;
   questionLimit: number;
-  questions?: QuestionRequest[];
+  questions?: Question[];
 }
 
 export interface QuizRequest {
@@ -20,13 +20,6 @@ export interface QuizRequest {
   questionLimit: number;
 }
 
-export interface QuestionRequest {
-  id?: string;
-  existingQuestionId?: string;
-  text: string;
-  options: string[];
-  correctAnswer: string;
-}
 
 export interface Question {
   id: string

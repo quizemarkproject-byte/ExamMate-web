@@ -7,12 +7,7 @@ import { AdminQuestionBank } from '../admin-question-bank/admin-question-bank';
 import { AdminQuestionEditor } from '../admin-question-editor/admin-question-editor';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
-import {
-  QuestionRequest,
-  QuizRequest,
-  Quiz,
-  AdminQuiz,
-} from '../../../models/quiz';
+import { QuizRequest, Quiz, AdminQuiz, Question } from '../../../models/quiz';
 
 @Component({
   selector: 'app-admin-page',
@@ -28,7 +23,7 @@ import {
 })
 export class AdminPage {
   quizzes: AdminQuiz[] = [];
-  questionBank: QuestionRequest[] = [];
+  questionBank: Question[] = [];
   selectedQuizIndex: number | null = null;
   newQuizName: string = '';
   newQuizTimeLimit: string = '10';
@@ -40,15 +35,14 @@ export class AdminPage {
   ) {}
 
   ngOnInit(): void {
+    this.loadQuizzes();
+    this.loadQuestions();
+  }
+
+  loadQuizzes() {
     this.quizService.adminGetAllQuiz().subscribe({
       next: (qs) => {
-        this.quizzes = qs.map((qq) => ({
-          id: qq.id,
-          name: qq.name,
-          timeLimit: qq.timeLimit,
-          questionLimit: qq.questionLimit,
-          questions: [],
-        }));
+        this.quizzes = qs;
       },
       error: (err) => {
         console.error('Failed to load quizzes', err);
@@ -56,6 +50,19 @@ export class AdminPage {
       },
     });
   }
+
+  loadQuestions() {
+    this.quizService.adminGetAllQuestions().subscribe({
+      next: (qs) => {
+        this.questionBank = qs;
+      },
+      error: (err) => {
+        console.error('Failed to load question bank', err);
+        this.toastr.error('Failed to load question bank from server.');
+      },
+    });
+  }
+
 
   // Validation helpers
   validateNewQuiz(): string[] {
@@ -78,7 +85,7 @@ export class AdminPage {
     return this.validateNewQuiz().length === 0;
   }
 
-  validateQuestion(q: QuestionRequest): string[] {
+  validateQuestion(q: Question): string[] {
     const errors: string[] = [];
     if (!q.text || !q.text.trim()) errors.push('Question text is required.');
     if (!Array.isArray(q.options) || q.options.length < 2)
@@ -165,7 +172,7 @@ export class AdminPage {
   addQuestion() {
     if (this.selectedQuizIndex === null) return;
     const quiz = this.quizzes[this.selectedQuizIndex];
-    const q: QuestionRequest = {
+    const q: Question = {
       id: Date.now().toString(),
       text: '',
       // start with two empty options so validation doesn't fail immediately
@@ -244,7 +251,7 @@ export class AdminPage {
   }
 
   createBankQuestion() {
-    const q: QuestionRequest = {
+    const q: Question = {
       id: Date.now().toString(),
       text: '',
       options: ['', ''],
