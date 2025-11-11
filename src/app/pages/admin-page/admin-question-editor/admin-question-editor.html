@@ -4,15 +4,15 @@
 <div>
   <div class="flex items-center justify-between mb-4 gap-4">
     <div class="flex-1">
-      <input [(ngModel)]="quiz.name" class="text-xl font-semibold border-b pb-2 w-full" />
+      <div class="text-xl font-semibold border-b pb-2 w-full">{{ quiz.name }}</div>
       <div class="flex items-center gap-4 mt-2">
-        <div class="text-sm text-gray-500">ID: {{ quiz.id }}</div>
+        <!-- <div class="text-sm text-gray-500">ID: {{ quiz.id }}</div> -->
         <div class="text-sm text-gray-500">Time:
-          <input type="number" min="0" [(ngModel)]="quiz.timeLimitMinutes" class="w-20 ml-2 px-2 py-1 border rounded text-sm" />
-          min
+          <span class="w-20 ml-2 px-2 py-1 text-sm">{{ quiz.timeLimit | duration }}</span>
+          
         </div>
-        <div class="text-sm text-gray-500">Limit:
-          <input type="number" min="0" [(ngModel)]="quiz.questionLimit" class="w-20 ml-2 px-2 py-1 border rounded text-sm" />
+        <div class="text-sm text-gray-500">Questions per Attempt:
+          <span class="w-20 ml-2 px-2 py-1 text-sm">{{ quiz.questionLimit }}</span>
         </div>
       </div>
     </div>

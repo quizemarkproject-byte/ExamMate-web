@@ -7,40 +7,46 @@ import { AdminQuestionBank } from '../admin-question-bank/admin-question-bank';
 import { AdminQuestionEditor } from '../admin-question-editor/admin-question-editor';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
-import { QuestionRequest } from '../../../models/quiz';
-
-interface AdminQuiz {
-  id?: string;
-  name: string;
-  timeLimitMinutes: string;
-  questionLimit: number;
-  questions?: QuestionRequest[];
-}
+import {
+  QuestionRequest,
+  QuizRequest,
+  Quiz,
+  AdminQuiz,
+} from '../../../models/quiz';
 
 @Component({
   selector: 'app-admin-page',
-  imports: [CommonModule, FormsModule, RouterModule, AdminQuizList, AdminQuestionBank, AdminQuestionEditor],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    AdminQuizList,
+    AdminQuestionBank,
+    AdminQuestionEditor,
+  ],
   templateUrl: './admin-page.html',
 })
 export class AdminPage {
   quizzes: AdminQuiz[] = [];
   questionBank: QuestionRequest[] = [];
   selectedQuizIndex: number | null = null;
-  newQuizName = '';
-  newQuizTimeLimit = '10';
-  newQuizQuestionLimit = 10;
-  
+  newQuizName: string = '';
+  newQuizTimeLimit: string = '10';
+  newQuizQuestionLimit: number = 10;
 
-  constructor(private toastr: ToastrService, private quizService: QuizService) {}
+  constructor(
+    private toastr: ToastrService,
+    private quizService: QuizService
+  ) {}
 
   ngOnInit(): void {
-    this.quizService.getQuizzes().subscribe({
+    this.quizService.adminGetAllQuiz().subscribe({
       next: (qs) => {
         this.quizzes = qs.map((qq) => ({
           id: qq.id,
           name: qq.name,
-          timeLimitMinutes: qq.timeLimit,
-          questionLimit: Number(qq.questionLimit),
+          timeLimit: qq.timeLimit,
+          questionLimit: qq.questionLimit,
           questions: [],
         }));
       },
@@ -61,7 +67,7 @@ export class AdminPage {
     if (Number.isNaN(time) || time <= 0) {
       errors.push('Time limit must be a positive number.');
     }
-    const qLimit = Number(this.newQuizQuestionLimit);
+    const qLimit = this.newQuizQuestionLimit;
     if (Number.isNaN(qLimit) || qLimit <= 0) {
       errors.push('Question limit must be a positive integer.');
     }
@@ -75,26 +81,28 @@ export class AdminPage {
   validateQuestion(q: QuestionRequest): string[] {
     const errors: string[] = [];
     if (!q.text || !q.text.trim()) errors.push('Question text is required.');
-    if (!Array.isArray(q.options) || q.options.length < 2) errors.push('Each question must have at least 2 options.');
+    if (!Array.isArray(q.options) || q.options.length < 2)
+      errors.push('Each question must have at least 2 options.');
     else {
       q.options.forEach((opt: string, idx: number) => {
-        if (!opt || !opt.trim()) errors.push(`Option ${idx + 1} cannot be empty.`);
+        if (!opt || !opt.trim())
+          errors.push(`Option ${idx + 1} cannot be empty.`);
       });
     }
-    if (!q.correctAnswer || !q.options.includes(q.correctAnswer)) errors.push('A correct option must be selected.');
+    if (!q.correctAnswer || !q.options.includes(q.correctAnswer))
+      errors.push('A correct option must be selected.');
     return errors;
   }
 
   validateQuiz(quiz: any): string[] {
     const errors: string[] = [];
-    if (!quiz.name || !quiz.name.trim()) errors.push('Quiz title is required.');
-    const time = Number(quiz.timeLimitMinutes);
-    if (Number.isNaN(time) || time <= 0) errors.push('Quiz time limit must be a positive number.');
     const qLimit = Number(quiz.questionLimit);
-    if (Number.isNaN(qLimit) || qLimit <= 0) errors.push('Quiz question limit must be a positive integer.');
     // questionLimit represents how many questions a user will receive (shuffled count).
     // Treat it as a minimum number of attached questions required for the quiz to function.
-    if (Array.isArray(quiz.questions) && quiz.questions.length < qLimit) errors.push('Number of attached questions is less than the question limit (this is the minimum number of questions required).');
+    if (Array.isArray(quiz.questions) && quiz.questions.length < qLimit)
+      errors.push(
+        'Number of attached questions is less than the question limit (this is the minimum number of questions required).'
+      );
     // validate each question
     if (Array.isArray(quiz.questions)) {
       quiz.questions.forEach((q: any, idx: number) => {
@@ -119,21 +127,29 @@ export class AdminPage {
       this.toastr.error('Cannot create quiz:\n' + errs.join('\n'));
       return;
     }
-
-    const quiz: any = {
-      id: Date.now().toString(),
+    // prepare payload for backend (QuizRequest expects minutes as string)
+    const payload: QuizRequest = {
       name: this.newQuizName || 'Untitled Quiz',
-      // questions hold references to objects from questionBank
-      questions: [],
-      // new required fields (use the bound input values)
-      timeLimitMinutes: Number(this.newQuizTimeLimit),
-      questionLimit: Number(this.newQuizQuestionLimit),
+      // input `newQuizTimeLimit` is already a string (minutes), use directly
+      timeLimitMinutes: this.newQuizTimeLimit,
+      questionLimit: this.newQuizQuestionLimit,
     };
-    this.quizzes.push(quiz);
-    this.newQuizName = '';
-    this.newQuizTimeLimit = '10';
-    this.newQuizQuestionLimit = 10;
-    this.selectedQuizIndex = this.quizzes.length - 1;
+
+    this.quizService.adminCreateQuiz(payload).subscribe({
+      next: (c: AdminQuiz) => {
+        // map server Quiz -> AdminQuiz and append
+        this.quizzes.push(c);
+        this.toastr.success('Quiz created.');
+        this.newQuizName = '';
+        this.newQuizTimeLimit = '10';
+        this.newQuizQuestionLimit = 10;
+        this.selectedQuizIndex = this.quizzes.length - 1;
+      },
+      error: (err) => {
+        console.error('Failed to create quiz', err);
+        this.toastr.error('Failed to create quiz on server.');
+      },
+    });
   }
 
   selectQuiz(i: number) {
@@ -159,7 +175,8 @@ export class AdminPage {
     // add to bank
     this.questionBank.push(q);
     // attach the same object reference to the quiz so it can be reused
-    if (!this.quizzes[this.selectedQuizIndex].questions) this.quizzes[this.selectedQuizIndex].questions = [];
+    if (!this.quizzes[this.selectedQuizIndex].questions)
+      this.quizzes[this.selectedQuizIndex].questions = [];
     this.quizzes[this.selectedQuizIndex].questions!.push(q);
   }
 
@@ -182,7 +199,8 @@ export class AdminPage {
 
   addOption(qIndex: number) {
     if (this.selectedQuizIndex === null) return;
-    const options = this.quizzes[this.selectedQuizIndex].questions![qIndex].options;
+    const options =
+      this.quizzes[this.selectedQuizIndex].questions![qIndex].options;
     options.push('');
   }
 

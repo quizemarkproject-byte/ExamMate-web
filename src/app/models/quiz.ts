@@ -5,6 +5,14 @@ export interface Quiz {
   questionLimit: number
 }
 
+export interface AdminQuiz {
+  id?: string;
+  name: string;
+  timeLimit: string;
+  questionLimit: number;
+  questions?: QuestionRequest[];
+}
+
 export interface QuizRequest {
   id?: string;
   name: string;

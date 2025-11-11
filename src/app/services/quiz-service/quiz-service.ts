@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  AdminQuiz,
   CountResponse,
   Question,
   QuestionRequest,
@@ -19,41 +20,54 @@ import { environment } from '../../../environments/environment';
 })
 export class QuizService {
   private quizUrl = environment.backend_url + '/api/v1/quizzes';
+  private adminQuizUrl = environment.backend_url + '/api/v1/admin/quizzes';
   private quizSessionUrl = environment.backend_url + '/api/v1/quiz-sessions';
 
   constructor(private http: HttpClient) {}
 
-  getQuizzes(): Observable<Quiz[]> {
-    return this.http.get<Quiz[]>(this.quizUrl);
+  adminGetAllQuiz(): Observable<AdminQuiz[]> {
+    return this.http.get<AdminQuiz[]>(this.adminQuizUrl);
   }
 
-  createQuiz(quizRequest: QuizRequest): Observable<Quiz[]> {
-    return this.http.post<Quiz[]>(this.quizUrl, quizRequest);
+  adminCreateQuiz(quizRequest: QuizRequest): Observable<AdminQuiz> {
+    return this.http.post<AdminQuiz>(this.adminQuizUrl, quizRequest);
+  }
+
+  adminGetAllQuestions(): Observable<Question> {
+    return this.http.get<Question>(`${this.adminQuizUrl}/questions`);
+  }
+
+  adminCreateQuestions(
+    quizId: string,
+    questionRequest: QuestionRequest
+  ): Observable<Question> {
+    return this.http.post<Question>(
+      `${this.adminQuizUrl}/${quizId}/questions/bulk`,
+      questionRequest
+    );
+  }
+
+  getQuizzes(): Observable<Quiz[]> {
+    return this.http.get<Quiz[]>(this.quizUrl);
   }
 
   getQuizById(quizId: string): Observable<Quiz> {
     return this.http.get<Quiz>(`${this.quizUrl}/${quizId}`);
   }
 
-  getAllQuestions(): Observable<Question> {
-    return this.http.get<Question>(`${this.quizUrl}/questions`);
-  }
-
-  createQuestions(quizId: string, questionRequest: QuestionRequest): Observable<Question> {
-    return this.http.post<Question>(`${this.quizUrl}/${quizId}/questions/bulk`, questionRequest);
-  }
-
-  startQuiz(startRequest: QuizSessionStartRequest): Observable<QuizSessionStartResponse> {
+  startQuiz(
+    startRequest: QuizSessionStartRequest
+  ): Observable<QuizSessionStartResponse> {
     return this.http.post<QuizSessionStartResponse>(
-      `${this.quizSessionUrl}/start`, startRequest
+      `${this.quizSessionUrl}/start`,
+      startRequest
     );
   }
 
-  submitQuiz(
-    quizSubmission: QuizSubmission
-  ): Observable<QuizResultResponse> {
+  submitQuiz(quizSubmission: QuizSubmission): Observable<QuizResultResponse> {
     return this.http.post<QuizResultResponse>(
-      `${this.quizSessionUrl}/submit`, quizSubmission
+      `${this.quizSessionUrl}/submit`,
+      quizSubmission
     );
   }
 
