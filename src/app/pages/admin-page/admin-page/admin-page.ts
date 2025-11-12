@@ -25,6 +25,7 @@ export class AdminPage {
   quizzes: AdminQuiz[] = [];
   questionBank: Question[] = [];
   selectedQuizIndex: number | null = null;
+  selectedQuizErrors: string[] = [];
   newQuizName: string = '';
   newQuizTimeLimit: string = '10';
   newQuizQuestionLimit: number = 10;
@@ -104,6 +105,8 @@ export class AdminPage {
   validateQuiz(quiz: AdminQuiz): string[] {
     const errors: string[] = [];
     const qLimit = Number(quiz.questionLimit);
+    console.log('Validating quiz', quiz.name, 'with question limit', qLimit);
+    console.log(quiz.questions)
     if (Array.isArray(quiz.questions) && quiz.questions.length < qLimit)
       errors.push(
         'Number of attached questions is less than the question limit (this is the minimum number of questions required).'
@@ -115,15 +118,17 @@ export class AdminPage {
         qErrors.forEach((e) => errors.push(`Q${idx + 1}: ${e}`));
       });
     }
+    console.log(errors)
     return errors;
   }
 
-  // check if all quizzes are valid
-  isAllValid(): boolean {
-    for (const quiz of this.quizzes) {
-      if (this.validateQuiz(quiz).length > 0) return false;
+  private updateSelectedQuizErrors() {
+    if (this.selectedQuizIndex === null) {
+      this.selectedQuizErrors = [];
+      return;
     }
-    return true;
+    const quiz = this.quizzes[this.selectedQuizIndex];
+    this.selectedQuizErrors = this.validateQuiz(quiz);
   }
 
   createQuiz() {
@@ -149,6 +154,7 @@ export class AdminPage {
         this.newQuizTimeLimit = '10';
         this.newQuizQuestionLimit = 10;
         this.selectedQuizIndex = this.quizzes.length - 1;
+        this.updateSelectedQuizErrors();
       },
       error: (err) => {
         console.error('Failed to create quiz', err);
@@ -159,6 +165,7 @@ export class AdminPage {
 
   selectQuiz(i: number) {
     this.selectedQuizIndex = i;
+    this.updateSelectedQuizErrors();
   }
 
   deleteQuiz(i: number) {
@@ -182,6 +189,7 @@ export class AdminPage {
     if (!this.quizzes[this.selectedQuizIndex].questions)
       this.quizzes[this.selectedQuizIndex].questions = [];
     this.quizzes[this.selectedQuizIndex].questions!.push(q);
+    this.updateSelectedQuizErrors();
   }
 
   // attach an existing question from the bank to the currently selected quiz
@@ -193,12 +201,14 @@ export class AdminPage {
     if (!quiz.questions) quiz.questions = [];
     if (!quiz.questions.includes(q)) {
       quiz.questions.push(q);
+      this.updateSelectedQuizErrors();
     }
   }
 
   removeQuestion(qIndex: number) {
     if (this.selectedQuizIndex === null) return;
     this.quizzes[this.selectedQuizIndex].questions!.splice(qIndex, 1);
+    this.updateSelectedQuizErrors();
   }
 
   addOption(qIndex: number) {
@@ -206,6 +216,7 @@ export class AdminPage {
     const options =
       this.quizzes[this.selectedQuizIndex].questions![qIndex].options;
     options.push('');
+    this.updateSelectedQuizErrors();
   }
 
   removeOption(qIndex: number, optIndex: number) {
@@ -220,32 +231,17 @@ export class AdminPage {
     if (q.correctAnswer === removed) {
       q.correctAnswer = q.options[0] || '';
     }
+    this.updateSelectedQuizErrors();
   }
 
   setCorrect(qIndex: number, optIndex: number) {
     if (this.selectedQuizIndex === null) return;
     const q = this.quizzes[this.selectedQuizIndex].questions![qIndex];
     q.correctAnswer = q.options[optIndex] || '';
+    this.updateSelectedQuizErrors();
   }
 
-  // simple save (no backend integration yet)
-  saveAll() {
-    // run validations across all quizzes and questions before "saving"
-    const allErrors: string[] = [];
-    this.quizzes.forEach((qz, idx) => {
-      const errs = this.validateQuiz(qz);
-      errs.forEach((e) => allErrors.push(`Quiz ${idx + 1} (${qz.name}): ${e}`));
-    });
-    if (allErrors.length) {
-      this.toastr.error('Validation errors:\n' + allErrors.join('\n'));
-      console.warn('Validation errors', allErrors);
-      return;
-    }
-    // placeholder - persist to server later
-    console.log('Question bank', this.questionBank);
-    console.log('Quizzes to save', this.quizzes);
-    this.toastr.success('Quizzes saved (local only).');
-  }
+  // NOTE: saveAll moved to AdminQuestionEditor. Validation for saving should be triggered from the editor
 
   createBankQuestion() {
     const q: Question = {
