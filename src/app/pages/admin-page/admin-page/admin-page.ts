@@ -101,7 +101,7 @@ export class AdminPage {
     return errors;
   }
 
-  validateQuiz(quiz: any): string[] {
+  validateQuiz(quiz: AdminQuiz): string[] {
     const errors: string[] = [];
     const qLimit = Number(quiz.questionLimit);
     if (Array.isArray(quiz.questions) && quiz.questions.length < qLimit)
@@ -110,7 +110,7 @@ export class AdminPage {
       );
     // validate each question
     if (Array.isArray(quiz.questions)) {
-      quiz.questions.forEach((q: any, idx: number) => {
+      quiz.questions.forEach((q: Question, idx: number) => {
         const qErrors = this.validateQuestion(q);
         qErrors.forEach((e) => errors.push(`Q${idx + 1}: ${e}`));
       });

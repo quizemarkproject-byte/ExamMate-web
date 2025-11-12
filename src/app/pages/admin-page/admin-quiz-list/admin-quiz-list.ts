@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DurationPipe } from '../../../pipes/duration/duration-pipe';
+import { AdminQuiz } from '../../../models/quiz';
 
 @Component({
   selector: 'admin-quiz-list',
@@ -9,7 +10,7 @@ import { DurationPipe } from '../../../pipes/duration/duration-pipe';
   templateUrl: './admin-quiz-list.html',
 })
 export class AdminQuizList {
-  @Input() quizzes: any[] = [];
+  @Input() quizzes: AdminQuiz[] = [];
   @Input() selectedIndex: number | null = null;
 
   // bound create fields (parent owns state; child emits changes)
@@ -27,7 +28,7 @@ export class AdminQuizList {
   @Output() selectQuiz = new EventEmitter<number>();
   @Output() deleteQuiz = new EventEmitter<number>();
 
-  onNameChange(v: any) { this.newQuizNameChange.emit(v); }
-  onTimeChange(v: any) { this.newQuizTimeLimitChange.emit(v); }
-  onLimitChange(v: any) { this.newQuizQuestionLimitChange.emit(Number(v)); }
+  onNameChange(v: string) { this.newQuizNameChange.emit(v); }
+  onTimeChange(v: string) { this.newQuizTimeLimitChange.emit(v); }
+  onLimitChange(v: string | number) { this.newQuizQuestionLimitChange.emit(Number(v)); }
 }
