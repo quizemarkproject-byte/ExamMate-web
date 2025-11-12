@@ -35,6 +35,8 @@
           >Email<span class="text-red-500">*</span></label
         >
         <input
+          id="auth-email"
+          name="auth-email"
           formControlName="email"
           type="email"
           placeholder="you@example.com"
@@ -77,6 +79,8 @@
           @for (box of [].constructor(otpLength); track $index) {
           <input
             #otpBox
+            id="otp-{{ $index }}"
+            name="otp-{{ $index }}"
             type="text"
             inputmode="numeric"
             maxlength="1"
