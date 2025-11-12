@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -104,8 +104,6 @@ export class AdminPage {
   validateQuiz(quiz: any): string[] {
     const errors: string[] = [];
     const qLimit = Number(quiz.questionLimit);
-    // questionLimit represents how many questions a user will receive (shuffled count).
-    // Treat it as a minimum number of attached questions required for the quiz to function.
     if (Array.isArray(quiz.questions) && quiz.questions.length < qLimit)
       errors.push(
         'Number of attached questions is less than the question limit (this is the minimum number of questions required).'
@@ -175,7 +173,6 @@ export class AdminPage {
     const q: Question = {
       id: Date.now().toString(),
       text: '',
-      // start with two empty options so validation doesn't fail immediately
       options: ['', ''],
       correctAnswer: '',
     };
