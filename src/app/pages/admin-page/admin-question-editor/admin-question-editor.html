@@ -18,7 +18,7 @@
     </div>
     <div class="flex items-center gap-2">
       <button (click)="addQuestion.emit()" class="bg-blue-600 text-white px-3 py-2 rounded-lg">+ Add Question</button>
-      <button (click)="saveAll()" class="bg-green-600 text-white px-3 py-2 rounded-lg">Save</button>
+  <button (click)="saveAll()" [disabled]="hasValidationErrors" class="bg-green-600 text-white px-3 py-2 rounded-lg disabled:opacity-50">Save</button>
     </div>
   </div>
 

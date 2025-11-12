@@ -77,4 +77,18 @@ export class AdminQuestionEditor {
     console.log('Quiz validated', this.quiz);
     this.toastr.success('Quiz validated (local only).');
   }
+
+  // computed property for template binding to disable the Save button when validation errors exist
+  get hasValidationErrors(): boolean {
+    if (!this.quiz) return true;
+    const qLimit = Number(this.quiz.questionLimit);
+    if (Array.isArray(this.quiz.questions) && this.quiz.questions.length < qLimit) return true;
+    if (Array.isArray(this.quiz.questions)) {
+      for (let i = 0; i < this.quiz.questions.length; i++) {
+        const errs = this.validateQuestion(this.quiz.questions[i]);
+        if (errs.length) return true;
+      }
+    }
+    return false;
+  }
 }

@@ -239,8 +239,6 @@ export class AdminPage {
     });
   }
 
-  // NOTE: saveAll moved to AdminQuestionEditor. Validation for saving should be triggered from the editor
-
   createBankQuestion() {
     const q: Question = {
       id: Date.now().toString(),
