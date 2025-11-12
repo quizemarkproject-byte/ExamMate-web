@@ -7,7 +7,9 @@ import { AdminQuestionBank } from '../admin-question-bank/admin-question-bank';
 import { AdminQuestionEditor } from '../admin-question-editor/admin-question-editor';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
-import { QuizRequest, Quiz, AdminQuiz, Question } from '../../../models/quiz';
+import { QuizRequest, AdminQuiz, Question } from '../../../models/quiz';
+// forkJoin not needed when sending full list
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-page',
@@ -26,6 +28,7 @@ export class AdminPage {
   questionBank: Question[] = [];
   selectedQuizIndex: number | null = null;
   selectedQuizErrors: string[] = [];
+  saving: boolean = false;
   newQuizName: string = '';
   newQuizTimeLimit: string = '10';
   newQuizQuestionLimit: number = 10;
@@ -64,7 +67,6 @@ export class AdminPage {
     });
   }
 
-
   // Validation helpers
   validateNewQuiz(): string[] {
     const errors: string[] = [];
@@ -89,16 +91,24 @@ export class AdminPage {
   validateQuestion(q: Question): string[] {
     const errors: string[] = [];
     if (!q.text || !q.text.trim()) errors.push('Question text is required.');
-    if (!Array.isArray(q.options) || q.options.length < 2)
-      errors.push('Each question must have at least 2 options.');
-    else {
-      q.options.forEach((opt: string, idx: number) => {
-        if (!opt || !opt.trim())
-          errors.push(`Option ${idx + 1} cannot be empty.`);
-      });
+
+    const filledOptions = Array.isArray(q.options)
+      ? q.options
+          .map((o) => (o ? String(o).trim() : ''))
+          .filter((o) => o.length > 0)
+      : [];
+
+    if (filledOptions.length < 2) {
+      errors.push('Each question must have at least 2 non-empty options.');
+      return errors;
     }
-    if (!q.correctAnswer || !q.options.includes(q.correctAnswer))
-      errors.push('A correct option must be selected.');
+
+    const correct = q.correctAnswer ? String(q.correctAnswer).trim() : '';
+    if (!correct || !filledOptions.includes(correct))
+      errors.push(
+        'A correct option must be selected from the non-empty options.'
+      );
+
     return errors;
   }
 
@@ -121,7 +131,9 @@ export class AdminPage {
 
   // convenience getter for the currently selected quiz object
   get selectedQuiz(): AdminQuiz | null {
-    return this.selectedQuizIndex === null ? null : this.quizzes[this.selectedQuizIndex];
+    return this.selectedQuizIndex === null
+      ? null
+      : this.quizzes[this.selectedQuizIndex];
   }
 
   // helper to apply a mutation to the selected quiz and refresh cached errors
@@ -132,7 +144,7 @@ export class AdminPage {
     this.updateSelectedQuizErrors();
   }
 
-  private updateSelectedQuizErrors() {
+  updateSelectedQuizErrors() {
     if (this.selectedQuizIndex === null) {
       this.selectedQuizErrors = [];
       return;
@@ -166,9 +178,9 @@ export class AdminPage {
         this.selectedQuizIndex = this.quizzes.length - 1;
         this.updateSelectedQuizErrors();
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Failed to create quiz', err);
-        this.toastr.error('Failed to create quiz on server.');
+        this.toastr.error(err.error.error);
       },
     });
   }
@@ -186,11 +198,10 @@ export class AdminPage {
   // create a new question in the bank and attach it to the selected quiz
   addQuestion() {
     const q: Question = {
-      id: Date.now().toString(),
       text: '',
       options: ['', ''],
       correctAnswer: '',
-    };
+    } as Question;
     // add to bank and attach to selected quiz
     this.questionBank.push(q);
     this.mutateSelectedQuiz((quiz) => {
@@ -241,11 +252,69 @@ export class AdminPage {
 
   createBankQuestion() {
     const q: Question = {
-      id: Date.now().toString(),
+      // avoid client-generated ids; server will provide ids when persisted
       text: '',
       options: ['', ''],
       correctAnswer: '',
-    };
+    } as Question;
     this.questionBank.push(q);
   }
+
+  // Persist questions for a given quiz by calling adminCreateQuestions for each question
+  persistQuiz(quiz: AdminQuiz) {
+    if (!quiz || !quiz.id) {
+      this.toastr.error('Quiz must have an id before saving questions.');
+      return;
+    }
+    const questions = quiz.questions || [];
+    if (questions.length === 0) {
+      this.toastr.warning('No questions to save for this quiz.');
+      return;
+    }
+
+    // Prepare payload: shallow-copy questions
+    const payload: Question[] = questions.map((q) => ({ ...(q as any) } as Question));
+
+    console.log('Persisting questions for quiz', quiz.id, payload);
+      // Show saving indicator while request is in-flight
+      this.saving = true;
+
+    // Send the full list for this quiz (server should handle new vs existing)
+    this.quizService.adminCreateQuestions(quiz.id!, payload).subscribe({
+      next: (created: Question[]) => {
+        // Map server responses back to local quiz.questions by index
+        const n = Math.min(created.length, quiz.questions!.length);
+        for (let i = 0; i < n; i++) {
+          const serverQ = created[i];
+          if (!serverQ) continue;
+          const local = quiz.questions![i];
+          Object.assign(local, serverQ);
+          const bankIdx = this.questionBank.findIndex((b) => b === local);
+          if (bankIdx === -1) this.questionBank.push(local);
+          else this.questionBank[bankIdx] = local;
+        }
+
+        // If server returned additional questions, append them to bank/quiz
+        if (created.length > quiz.questions!.length) {
+          for (let i = quiz.questions!.length; i < created.length; i++) {
+            const c = created[i];
+            if (!c) continue;
+            quiz.questions!.push(c);
+            this.questionBank.push(c);
+          }
+        }
+
+        this.toastr.success('Questions saved to server.');
+        this.updateSelectedQuizErrors();
+          this.saving = false;
+      },
+      error: (err) => {
+        console.error('Failed to save questions', err);
+        this.toastr.error('Failed to save questions to server.');
+          this.saving = false;
+      },
+    });
+  }
+
+  // (removed mark-dirty plumbing since persist sends full question list)
 }

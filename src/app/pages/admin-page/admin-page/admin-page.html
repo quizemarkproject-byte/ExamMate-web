@@ -50,8 +50,11 @@
             }
         </div>
 
-        <admin-question-editor
+          <admin-question-editor
           [quiz]="selectedQuizIndex === null ? null : quizzes[selectedQuizIndex]"
+          [saving]="saving"
+          (saveQuiz)="persistQuiz($event)"
+          (questionEdited)="updateSelectedQuizErrors()"
           (addQuestion)="addQuestion()"
           (removeQuestion)="removeQuestion($event)"
           (addOption)="addOption($event)"

@@ -38,11 +38,21 @@ export class QuizService {
 
   adminCreateQuestions(
     quizId: string,
-    questionRequest: Question
-  ): Observable<Question> {
-    return this.http.post<Question>(
+    questionRequest: Question[]
+  ): Observable<Question[]> {
+    return this.http.post<Question[]>(
       `${this.adminQuizUrl}/${quizId}/questions/bulk`,
       questionRequest
+    );
+  }
+
+  adminUpdateQuestion(
+    questionId: string,
+    question: Question
+  ): Observable<Question> {
+    return this.http.put<Question>(
+      `${this.adminQuizUrl}/questions/${questionId}`,
+      question
     );
   }
 

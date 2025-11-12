@@ -5,7 +5,7 @@
       @if (!quizzes || quizzes.length === 0) {
       <div class="text-sm text-gray-500">No quizzes yet. Create one below to get started.</div>
       } @else {
-      @for (q of quizzes; track q.id; let i = $index) {
+  @for (q of quizzes; track q.id || $index; let i = $index) {
     <div class="flex items-center justify-between gap-3 p-2 rounded-lg hover:bg-gray-50">
       <button (click)="selectQuiz.emit(i)" class="text-left flex-1">
   <div class="font-medium text-gray-800">{{ q.name }}</div>
