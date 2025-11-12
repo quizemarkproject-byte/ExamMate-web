@@ -104,9 +104,7 @@ export class AdminPage {
 
   validateQuiz(quiz: AdminQuiz): string[] {
     const errors: string[] = [];
-    const qLimit = Number(quiz.questionLimit);
-    console.log('Validating quiz', quiz.name, 'with question limit', qLimit);
-    console.log(quiz.questions)
+    const qLimit = quiz.questionLimit;
     if (Array.isArray(quiz.questions) && quiz.questions.length < qLimit)
       errors.push(
         'Number of attached questions is less than the question limit (this is the minimum number of questions required).'
@@ -118,8 +116,20 @@ export class AdminPage {
         qErrors.forEach((e) => errors.push(`Q${idx + 1}: ${e}`));
       });
     }
-    console.log(errors)
     return errors;
+  }
+
+  // convenience getter for the currently selected quiz object
+  get selectedQuiz(): AdminQuiz | null {
+    return this.selectedQuizIndex === null ? null : this.quizzes[this.selectedQuizIndex];
+  }
+
+  // helper to apply a mutation to the selected quiz and refresh cached errors
+  private mutateSelectedQuiz(mutator: (q: AdminQuiz) => void) {
+    const q = this.selectedQuiz;
+    if (!q) return;
+    mutator(q);
+    this.updateSelectedQuizErrors();
   }
 
   private updateSelectedQuizErrors() {
@@ -175,70 +185,58 @@ export class AdminPage {
 
   // create a new question in the bank and attach it to the selected quiz
   addQuestion() {
-    if (this.selectedQuizIndex === null) return;
-    const quiz = this.quizzes[this.selectedQuizIndex];
     const q: Question = {
       id: Date.now().toString(),
       text: '',
       options: ['', ''],
       correctAnswer: '',
     };
-    // add to bank
+    // add to bank and attach to selected quiz
     this.questionBank.push(q);
-    // attach the same object reference to the quiz so it can be reused
-    if (!this.quizzes[this.selectedQuizIndex].questions)
-      this.quizzes[this.selectedQuizIndex].questions = [];
-    this.quizzes[this.selectedQuizIndex].questions!.push(q);
-    this.updateSelectedQuizErrors();
+    this.mutateSelectedQuiz((quiz) => {
+      if (!quiz.questions) quiz.questions = [];
+      quiz.questions.push(q);
+    });
   }
 
   // attach an existing question from the bank to the currently selected quiz
   attachQuestionFromBank(bankIndex: number) {
-    if (this.selectedQuizIndex === null) return;
     const q = this.questionBank[bankIndex];
-    const quiz = this.quizzes[this.selectedQuizIndex];
-    // avoid duplicate attachments
-    if (!quiz.questions) quiz.questions = [];
-    if (!quiz.questions.includes(q)) {
-      quiz.questions.push(q);
-      this.updateSelectedQuizErrors();
-    }
+    this.mutateSelectedQuiz((quiz) => {
+      if (!quiz.questions) quiz.questions = [];
+      if (!quiz.questions.includes(q)) quiz.questions.push(q);
+    });
   }
 
   removeQuestion(qIndex: number) {
-    if (this.selectedQuizIndex === null) return;
-    this.quizzes[this.selectedQuizIndex].questions!.splice(qIndex, 1);
-    this.updateSelectedQuizErrors();
+    this.mutateSelectedQuiz((quiz) => {
+      quiz.questions!.splice(qIndex, 1);
+    });
   }
 
   addOption(qIndex: number) {
-    if (this.selectedQuizIndex === null) return;
-    const options =
-      this.quizzes[this.selectedQuizIndex].questions![qIndex].options;
-    options.push('');
-    this.updateSelectedQuizErrors();
+    this.mutateSelectedQuiz((quiz) => {
+      quiz.questions![qIndex].options.push('');
+    });
   }
 
   removeOption(qIndex: number, optIndex: number) {
-    if (this.selectedQuizIndex === null) return;
-    const q = this.quizzes[this.selectedQuizIndex].questions![qIndex];
-    // prevent removing option when it would leave fewer than 2 options
-    if ((q.options?.length || 0) <= 2) {
-      this.toastr.warning('Each question must have at least 2 options.');
-      return;
-    }
-    const removed = q.options.splice(optIndex, 1)[0];
-    if (q.correctAnswer === removed) {
-      q.correctAnswer = q.options[0] || '';
-    }
-    this.updateSelectedQuizErrors();
+    this.mutateSelectedQuiz((quiz) => {
+      const q = quiz.questions![qIndex];
+      if ((q.options?.length || 0) <= 2) {
+        this.toastr.warning('Each question must have at least 2 options.');
+        return;
+      }
+      const removed = q.options.splice(optIndex, 1)[0];
+      if (q.correctAnswer === removed) q.correctAnswer = q.options[0] || '';
+    });
   }
 
   setCorrect(qIndex: number, optIndex: number) {
-    if (this.selectedQuizIndex === null) return;
-    const q = this.quizzes[this.selectedQuizIndex].questions![qIndex];
-    q.correctAnswer = q.options[optIndex] || '';
-    this.updateSelectedQuizErrors();
+    this.mutateSelectedQuiz((quiz) => {
+      const q = quiz.questions![qIndex];
+      q.correctAnswer = q.options[optIndex] || '';
+    });
   }
 
   // NOTE: saveAll moved to AdminQuestionEditor. Validation for saving should be triggered from the editor
