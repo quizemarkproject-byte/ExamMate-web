@@ -22,7 +22,7 @@ export const networkErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
 			// Client errors - show server-provided message when available
 			if (err && err.status >= 400 && err.status < 500) {
-				const serverMessage = err?.error?.message || err?.message;
+				const serverMessage = err?.error.error;
 				if (serverMessage) {
 					toastr.error(String(serverMessage));
 				}
