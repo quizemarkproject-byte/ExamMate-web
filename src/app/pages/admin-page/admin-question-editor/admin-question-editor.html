@@ -54,7 +54,9 @@
                   class="appearance-none h-4 w-4 rounded-full border-2 border-blue-400 checked:bg-blue-600"
                 />
               <input id="question-{{ qi }}-option-{{ oi }}" name="question-{{ qi }}-option-{{ oi }}" maxlength="255" [(ngModel)]="question.options[oi]" (ngModelChange)="onQuestionEdited(qi)" placeholder="Option text" class="flex-1 px-3 py-2 border rounded" />
-              <button (click)="onRemoveOption(qi, oi)" [disabled]="saving" class="text-red-500 ml-2 disabled:opacity-50">Remove</button>
+              <button (click)="onRemoveOption(qi, oi)" title="Remove option" [disabled]="saving" class="text-red-500 ml-2 disabled:opacity-50">
+        <i class="fas fa-xmark"></i>
+      </button>
             </div>
             }
           </div>
@@ -69,7 +71,9 @@
         </div>
 
         <div class="shrink-0">
-          <button (click)="removeQuestion.emit(qi)" [disabled]="saving" class="text-red-500 disabled:opacity-50">Delete</button>
+          <button (click)="removeQuestion.emit(qi)" title="Delete question" [disabled]="saving" class="text-red-500 ml-2 disabled:opacity-50">
+        <i class="fas fa-trash"></i>
+          </button>
         </div>
       </div>
     </div>

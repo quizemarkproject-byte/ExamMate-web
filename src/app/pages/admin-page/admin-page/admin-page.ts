@@ -302,7 +302,7 @@ export class AdminPage {
           }
         }
 
-        this.toastr.success('Questions saved to server.');
+        this.toastr.success('Questions saved.');
         this.updateSelectedQuizErrors();
           this.saving = false;
       },
