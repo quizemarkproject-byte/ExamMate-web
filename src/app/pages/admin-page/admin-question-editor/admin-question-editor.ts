@@ -59,7 +59,10 @@ export class AdminQuestionEditor {
   // Validate a single question
   validateQuestion(q: Question): string[] {
     const errors: string[] = [];
+    const MAX_LEN = 255;
     if (!q.text || !q.text.trim()) errors.push('Question text is required.');
+    else if (String(q.text).trim().length > MAX_LEN)
+      errors.push(`Question text must be at most ${MAX_LEN} characters.`);
 
     // consider only non-empty options when validating presence
     const filledOptions = Array.isArray(q.options)
@@ -71,6 +74,13 @@ export class AdminQuestionEditor {
       // if we don't have two valid options, skip the correct-answer membership check
       return errors;
     }
+
+    // validate option lengths
+    const rawOptions = Array.isArray(q.options) ? q.options : [];
+    rawOptions.forEach((opt, i) => {
+      const len = opt ? String(opt).trim().length : 0;
+      if (len > MAX_LEN) errors.push(`Option ${i + 1} must be at most ${MAX_LEN} characters.`);
+    });
 
     // if we have at least 2 options, ensure the correctAnswer is one of them (trimmed)
     const correct = q.correctAnswer ? String(q.correctAnswer).trim() : '';
