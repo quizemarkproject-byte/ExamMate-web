@@ -48,10 +48,6 @@ export class AdminPage {
       next: (qs) => {
         this.quizzes = qs;
       },
-      error: (err) => {
-        console.error('Failed to load quizzes', err);
-        this.toastr.error('Failed to load quizzes from server.');
-      },
     });
   }
 
@@ -59,10 +55,6 @@ export class AdminPage {
     this.quizService.adminGetAllQuestions().subscribe({
       next: (qs) => {
         this.questionBank = qs;
-      },
-      error: (err) => {
-        console.error('Failed to load question bank', err);
-        this.toastr.error('Failed to load question bank from server.');
       },
     });
   }
@@ -187,10 +179,6 @@ export class AdminPage {
         this.newQuizQuestionLimit = 10;
         this.selectedQuizIndex = this.quizzes.length - 1;
         this.updateSelectedQuizErrors();
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Failed to create quiz', err);
-        this.toastr.error(err.error.error);
       },
     });
   }
@@ -318,13 +306,7 @@ export class AdminPage {
         this.updateSelectedQuizErrors();
           this.saving = false;
       },
-      error: (err) => {
-        console.error('Failed to save questions', err);
-        this.toastr.error('Failed to save questions to server.');
-          this.saving = false;
-      },
     });
   }
 
-  // (removed mark-dirty plumbing since persist sends full question list)
 }
