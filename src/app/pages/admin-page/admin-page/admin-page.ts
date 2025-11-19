@@ -70,8 +70,8 @@ export class AdminPage {
       errors.push('Time limit must be a positive number.');
     }
     const qLimit = this.newQuizQuestionLimit;
-    if (Number.isNaN(qLimit) || qLimit <= 0) {
-      errors.push('Question limit must be a positive integer.');
+    if (Number.isNaN(qLimit) || !Number.isInteger(qLimit) || qLimit < 2) {
+      errors.push('Question limit must be a positive integer, minimum of 2.');
     }
     return errors;
   }
