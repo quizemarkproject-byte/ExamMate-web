@@ -36,7 +36,7 @@ export class QuizService {
     return this.http.get<Question[]>(`${this.adminQuizUrl}/questions`);
   }
 
-  adminCreateQuestions(
+  updateQuizQuestions(
     quizId: string,
     questionRequest: Question[]
   ): Observable<Question[]> {
@@ -53,6 +53,12 @@ export class QuizService {
     return this.http.put<Question>(
       `${this.adminQuizUrl}/questions/${questionId}`,
       question
+    );
+  }
+
+  adminDeleteQuestion(questionId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.adminQuizUrl}/questions/${questionId}`
     );
   }
 

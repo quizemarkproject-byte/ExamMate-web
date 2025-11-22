@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { AdminQuizList } from '../admin-quiz-list/admin-quiz-list';
 import { AdminQuestionBank } from '../admin-question-bank/admin-question-bank';
 import { AdminQuestionEditor } from '../admin-question-editor/admin-question-editor';
+import { EditQuestionModal } from '../../../components/edit-question-modal/edit-question-modal';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { QuizRequest, AdminQuiz, Question } from '../../../models/quiz';
@@ -20,6 +21,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     AdminQuizList,
     AdminQuestionBank,
     AdminQuestionEditor,
+    EditQuestionModal,
   ],
   templateUrl: './admin-page.html',
 })
@@ -216,9 +218,15 @@ export class AdminPage {
   // attach an existing question from the bank to the currently selected quiz
   attachQuestionFromBank(bankIndex: number) {
     const q = this.questionBank[bankIndex];
+    if (!q) return;
     this.mutateSelectedQuiz((quiz) => {
       if (!quiz.questions) quiz.questions = [];
-      if (!quiz.questions.includes(q)) quiz.questions.push(q);
+      const exists = quiz.questions.some((qq) => qq === q || (qq.id && q.id && String(qq.id) === String(q.id)));
+      if (exists) {
+        this.toastr.warning('Question is already attached to this quiz.');
+        return;
+      }
+      quiz.questions.push(q);
     });
   }
 
@@ -263,6 +271,67 @@ export class AdminPage {
     this.questionBank.push(q);
   }
 
+  // Called when a question in the bank has been edited.
+  // Ensures any quizzes that reference this question are updated in-place.
+  onBankQuestionEdited(bankIndex: number) {
+    const updated = this.questionBank[bankIndex];
+    if (!updated) return;
+
+    // Walk all quizzes and replace matching questions (by reference or by id)
+    this.quizzes.forEach((quiz) => {
+      if (!Array.isArray(quiz.questions)) return;
+      for (let i = 0; i < quiz.questions.length; i++) {
+        const qq = quiz.questions[i];
+        if (qq === updated) {
+          // same object reference — nothing needed (already mutated), but keep for clarity
+          Object.assign(qq, updated);
+        } else if (qq && qq.id && updated.id && String(qq.id) === String(updated.id)) {
+          Object.assign(qq, updated);
+        }
+      }
+    });
+
+    // Re-run validation for the selected quiz
+    this.updateSelectedQuizErrors();
+  }
+
+  deleteBankQuestion(bankIndex: number) {
+    const q = this.questionBank[bankIndex];
+    if (!q) return;
+
+    const removeLocal = () => {
+      // remove from bank
+      this.questionBank.splice(bankIndex, 1);
+      // remove from any quizzes that reference this question (by reference or id)
+      this.quizzes.forEach((quiz) => {
+        if (!Array.isArray(quiz.questions)) return;
+        for (let i = quiz.questions.length - 1; i >= 0; i--) {
+          const qq = quiz.questions[i];
+          if (qq === q || (qq.id && q.id && String(qq.id) === String(q.id))) {
+            quiz.questions.splice(i, 1);
+          }
+        }
+      });
+      this.updateSelectedQuizErrors();
+    };
+
+    if (q.id) {
+      this.quizService.adminDeleteQuestion(String(q.id)).subscribe({
+        next: () => {
+          removeLocal();
+          this.toastr.success('Question deleted.');
+        },
+        error: () => {
+          this.toastr.error('Failed to delete question.');
+        },
+      });
+    } else {
+      // not persisted yet — just remove locally
+      removeLocal();
+      this.toastr.success('Question removed.');
+    }
+  }
+
   // Persist questions for a given quiz by calling adminCreateQuestions for each question
   persistQuiz(quiz: AdminQuiz) {
     if (!quiz || !quiz.id) {
@@ -283,7 +352,7 @@ export class AdminPage {
       this.saving = true;
 
     // Send the full list for this quiz (server should handle new vs existing)
-    this.quizService.adminCreateQuestions(quiz.id!, payload).subscribe({
+    this.quizService.updateQuizQuestions(quiz.id!, payload).subscribe({
       next: (created: Question[]) => {
         // Map server responses back to local quiz.questions by index
         const n = Math.min(created.length, quiz.questions!.length);
