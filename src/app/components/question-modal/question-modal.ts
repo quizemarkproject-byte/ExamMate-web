@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { EditQuestionService } from '../../services/edit-question-service/edit-question-service';
 import { Question } from '../../models/quiz';
+import { validateQuestion as validateQuestionUtil } from '../../utils/question-validators';
 
 @Component({
   selector: 'app-question-modal',
@@ -68,53 +69,35 @@ export class QuestionModal {
   
 
   // helper: text control errors as strings for template
-  get textErrors(): string[] {
+  // validator messages derived from the shared validator
+  private get validatorMessages(): string[] {
     if (!this.form) return [];
-    const tc = this.form.get('text');
-    if (!tc || !tc.errors) return [];
-    const e = tc.errors as any;
-    const arr: string[] = [];
-    if (e.required) arr.push('Question text is required.');
-    if (e.maxlength) arr.push(`Question text must be at most ${this.MAX_LEN} characters.`);
-    return arr;
+    const value = this.form.value as { text: string; options: string[]; correctAnswer: string };
+    const question: Question = {
+      text: value.text ? String(value.text).trim() : '',
+      options: Array.isArray(value.options) ? value.options.map((o) => (o ? String(o).trim() : '')) : [],
+      correctAnswer: value.correctAnswer ? String(value.correctAnswer).trim() : '',
+    } as Question;
+    return validateQuestionUtil(question);
+  }
+
+  get textErrors(): string[] {
+    // derive text-related messages from the shared validator for consistency
+    return this.validatorMessages.filter((m) => m.startsWith('Question text'));
   }
 
   // helper: group-level option errors
   get optionsGroupErrors(): string[] {
-    if (!this.form || !this.form.errors) return [];
-    const fe = this.form.errors as any;
-    const arr: string[] = [];
-    if (fe['minOptions']) arr.push('At least 2 non-empty options are required.');
-    if (fe['correctNotInOptions']) arr.push('A correct answer must be selected from the non-empty options.');
-    return arr;
-  }
-
-  // helper: per-option control errors
-  optionErrorsAt(i: number): string[] {
-    const opts = this.options;
-    const c = opts.at(i);
-    if (!c || !c.errors) return [];
-    const e = c.errors as any;
-    const arr: string[] = [];
-    // show required only when control/form has been touched
-    if (e.required && (c.touched || (this.form && this.form.touched))) {
-      arr.push('Option is required.');
-    }
-    // maxlength from control validators
-    if (e.maxlength) arr.push(`Option must be at most ${this.MAX_LEN} characters.`);
-    return arr;
+    // derive group-level messages from shared validator (e.g. minOptions, correct answer)
+    return this.validatorMessages.filter((m) => m.startsWith('Each question') || m.includes('correct option'));
   }
 
   // aggregate all per-option errors into a single array with indices
   optionErrorsAll(): string[] {
-    const opts = this.options;
-    const msgs: string[] = [];
-    for (let i = 0; i < opts.length; i++) {
-      const es = this.optionErrorsAt(i);
-      es.forEach((m) => msgs.push(`Option ${i + 1}: ${m}`));
-    }
-    return msgs;
+    // Only return per-option messages (those that start with 'Option')
+    return this.validatorMessages.filter((m) => m.startsWith('Option'));
   }
+  // (optionErrorsAll implemented above using validatorMessages)
 
 
   addOption() {
