@@ -1,6 +1,6 @@
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { ConfirmService, ConfirmState } from '../../services/confirm-service/confirm-service';
+import { ConfirmService } from '../../services/confirm-service/confirm-service';
 
 @Component({
   selector: 'app-confirm-modal',
@@ -9,25 +9,16 @@ import { ConfirmService, ConfirmState } from '../../services/confirm-service/con
   templateUrl: './confirm-modal.html',
 })
 export class ConfirmModalComponent {
-  state: ConfirmState = {
-    open: false,
-    title: 'Confirm',
-    message: '',
-    confirmText: 'Yes',
-    cancelText: 'Cancel',
-  };
+  private confirm = inject(ConfirmService);
 
-  constructor(private confirm: ConfirmService) {}
+  // expose the observable so template can use async pipe
+  state$ = this.confirm.confirm$;
 
-  ngOnInit() {
-    this.confirm.confirm$.subscribe((s) => (this.state = s));
-  }
-
-  onConfirm() {
+  confirmAction() {
     this.confirm.confirm();
   }
 
-  onCancel() {
+  cancelAction() {
     this.confirm.cancel();
   }
 }

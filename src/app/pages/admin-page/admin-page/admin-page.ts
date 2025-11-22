@@ -189,10 +189,15 @@ export class AdminPage {
   }
 
   deleteQuiz(i: number) {
+    // TODO: implement delete quiz functionality
     this.quizzes.splice(i, 1);
     if (this.selectedQuizIndex === i) this.selectedQuizIndex = null;
   }
 
+  editQuiz(i: number) {
+    // TODO: implement edit quiz functionality
+    console.log('Editing quiz at index', i);
+  }
   // create a new question in the bank and attach it to the selected quiz
   addQuestion() {
     const q: Question = {

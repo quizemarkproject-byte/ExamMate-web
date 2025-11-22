@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminQuiz } from '../../../models/quiz';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
+import { ConfirmService } from '../../../services/confirm-service/confirm-service';
 import { Question } from '../../../models/quiz';
 import { DurationPipe } from '../../../pipes/duration/duration-pipe';
 
@@ -17,6 +18,8 @@ export class AdminQuestionEditor {
   // question bank may be useful for creation or lookups; if needed it can be added as an Input
 
   constructor(private toastr: ToastrService) {}
+
+  private confirm = inject(ConfirmService);
 
   @Output() addQuestion = new EventEmitter<void>();
   @Output() removeQuestion = new EventEmitter<number>();
@@ -41,6 +44,18 @@ export class AdminQuestionEditor {
 
   onQuestionEdited(qIndex: number) {
     this.questionEdited.emit(qIndex);
+  }
+
+  onDeleteQuestion(qIndex: number) {
+    const q = this.quiz?.questions?.[qIndex];
+    const title = 'Delete question';
+    const message = q?.text
+      ? `Are you sure you want to delete this question: "${q.text.substring(0,60)}"?`
+      : 'Are you sure you want to delete this question?';
+
+    this.confirm.open({ title, message, confirmText: 'Delete', cancelText: 'Cancel' }).subscribe((ok: boolean) => {
+      if (ok) this.removeQuestion.emit(qIndex);
+    });
   }
 
   // helpers used by the template to avoid selecting empty option slots
