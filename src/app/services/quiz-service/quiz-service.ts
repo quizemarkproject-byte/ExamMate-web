@@ -36,13 +36,22 @@ export class QuizService {
     return this.http.get<Question[]>(`${this.adminQuizUrl}/questions`);
   }
 
-  updateQuizQuestions(
+  adminUpdateQuizQuestions(
     quizId: string,
     questionRequest: Question[]
   ): Observable<Question[]> {
     return this.http.post<Question[]>(
       `${this.adminQuizUrl}/${quizId}/questions/bulk`,
       questionRequest
+    );
+  }
+
+  adminCreateQuestion(
+    question: Question
+  ): Observable<Question> {
+    return this.http.post<Question>(
+      `${this.adminQuizUrl}/questions`,
+      question
     );
   }
 

@@ -5,9 +5,10 @@ import { RouterModule } from '@angular/router';
 import { AdminQuizList } from '../admin-quiz-list/admin-quiz-list';
 import { AdminQuestionBank } from '../admin-question-bank/admin-question-bank';
 import { AdminQuestionEditor } from '../admin-question-editor/admin-question-editor';
-import { EditQuestionModal } from '../../../components/edit-question-modal/edit-question-modal';
+import { QuestionModal } from '../../../components/question-modal/question-modal';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
+import { EditQuestionService } from '../../../services/edit-question-service/edit-question-service';
 import { QuizRequest, AdminQuiz, Question } from '../../../models/quiz';
 // forkJoin not needed when sending full list
 import { HttpErrorResponse } from '@angular/common/http';
@@ -21,7 +22,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     AdminQuizList,
     AdminQuestionBank,
     AdminQuestionEditor,
-    EditQuestionModal,
+    QuestionModal,
   ],
   templateUrl: './admin-page.html',
 })
@@ -37,7 +38,8 @@ export class AdminPage {
 
   constructor(
     private toastr: ToastrService,
-    private quizService: QuizService
+    private quizService: QuizService,
+    private editService: EditQuestionService
   ) {}
 
   ngOnInit(): void {
@@ -262,13 +264,31 @@ export class AdminPage {
   }
 
   createBankQuestion() {
-    const q: Question = {
-      // avoid client-generated ids; server will provide ids when persisted
-      text: '',
-      options: ['', ''],
-      correctAnswer: '',
-    } as Question;
-    this.questionBank.push(q);
+    // Open the edit modal to create a new question, then persist via adminCreateQuestion
+    this.editService.open().subscribe((created) => {
+      if (!created) return; // user cancelled
+
+      // Normalize/trim fields before sending
+      created.text = created.text ? String(created.text).trim() : '';
+      created.options = Array.isArray(created.options) ? created.options.map((o) => (o ? String(o).trim() : '')) : [];
+      created.correctAnswer = created.correctAnswer ? String(created.correctAnswer).trim() : '';
+
+      const errs = this.validateQuestion(created as Question);
+      if (errs.length) {
+        this.toastr.error('Cannot create question:\n' + errs.join('\n'));
+        return;
+      }
+
+      this.quizService.adminCreateQuestion(created as Question).subscribe({
+        next: (serverQ) => {
+          this.questionBank.push(serverQ);
+          this.toastr.success('Question created.');
+        },
+        error: () => {
+          this.toastr.error('Failed to create question.');
+        },
+      });
+    });
   }
 
   // Called when a question in the bank has been edited.
@@ -352,7 +372,7 @@ export class AdminPage {
       this.saving = true;
 
     // Send the full list for this quiz (server should handle new vs existing)
-    this.quizService.updateQuizQuestions(quiz.id!, payload).subscribe({
+    this.quizService.adminUpdateQuizQuestions(quiz.id!, payload).subscribe({
       next: (created: Question[]) => {
         // Map server responses back to local quiz.questions by index
         const n = Math.min(created.length, quiz.questions!.length);
