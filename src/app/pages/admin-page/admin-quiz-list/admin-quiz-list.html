@@ -17,9 +17,12 @@
     } @else { @for (q of quizzes; track q.id || $index; let i = $index) {
     <div
       class="flex items-center justify-between gap-3 p-2 rounded-lg hover:bg-gray-50"
+      [class.bg-purple-50]="selectedIndex === i"
+      [class.border-l-4]="selectedIndex === i"
+      [class.border-purple-600]="selectedIndex === i"
     >
       <button (click)="selectQuiz.emit(i)" class="text-left flex-1">
-        <div class="font-medium text-gray-800">{{ q.name }}</div>
+        <div class="font-medium" [class.text-purple-700]="selectedIndex === i" [class.text-gray-800]="selectedIndex !== i">{{ q.name }}</div>
         <div class="text-xs text-gray-400 mt-1">
           Time: {{ q.timeLimit | duration }} · Limit: {{ q.questionLimit }}
         </div>
