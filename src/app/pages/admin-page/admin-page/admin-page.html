@@ -12,14 +12,6 @@
       <admin-quiz-list
         [quizzes]="quizzes"
         [selectedIndex]="selectedQuizIndex"
-        [newQuizName]="newQuizName"
-        [newQuizTimeLimit]="newQuizTimeLimit"
-        [newQuizQuestionLimit]="newQuizQuestionLimit"
-        [isNewQuizValid]="isNewQuizValid()"
-        [newQuizErrors]="validateNewQuiz()"
-        (newQuizNameChange)="newQuizName = $event"
-        (newQuizTimeLimitChange)="newQuizTimeLimit = $event"
-        (newQuizQuestionLimitChange)="newQuizQuestionLimit = $event"
         (createQuiz)="createQuiz()"
         (selectQuiz)="selectQuiz($event)"
         (deleteQuiz)="deleteQuiz($event)"
@@ -65,4 +57,7 @@
       }
     </section>
   </div>
+
+  <!-- Create/Edit quiz modal -->
+  <app-quiz-modal></app-quiz-modal>
 </div>

@@ -266,18 +266,9 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   saveAll() {
     if (!this.quiz || !this.quizForm) return;
 
-    // Mark all controls as touched to show validation errors
     this.quizForm.markAllAsTouched();
 
     if (this.quizForm.invalid) {
-      const errors: string[] = [];
-      this.emitValidationErrors();
-      
-      // Get current errors from the last emit
-      this.validationErrors.subscribe(errs => {
-        errors.push(...errs);
-      });
-
       this.toastr.error('Please fix validation errors before saving.');
       return;
     }
@@ -291,7 +282,6 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
       correctAnswer: q.correctAnswer?.trim() || ''
     }));
 
-    // Emit the validated quiz so the parent can persist
     this.saveQuiz.emit(this.quiz);
   }
 
