@@ -6,6 +6,7 @@ import { AnalyticsService } from '../../services/analytics-service/analytics-ser
 import { AnalyticsResponse } from '../../models/analytics';
 import { QuizService } from '../../services/quiz-service/quiz-service';
 import { UserService } from '../../services/user-service/user-service';
+import { ToastrService } from '../../services/toastr-service/toastr-service';
 import { Quiz } from '../../models/quiz';
 import { UserModel } from '../../models/user-service';
 
@@ -30,19 +31,19 @@ export class AnalyticsPage implements OnInit, OnDestroy {
   totalAttempts: number = 0;
   avgScore: number = 0;
   medianScore: number = 0;
+  hasData: boolean = false;
+  isLoading: boolean = false;
 
   private analyticsService = inject(AnalyticsService);
   private quizService = inject(QuizService);
   private userService = inject(UserService);
+  private toastrService = inject(ToastrService);
   private sparkChart?: Chart;
   private attemptsChart?: Chart;
   private distributionChart?: Chart;
   private questionChart?: Chart;
 
   ngOnInit() {
-    // Load mock data initially
-    this.loadMockData();
-    
     // Load quizzes and users
     this.loadQuizzes();
     this.loadUsers();
@@ -79,47 +80,17 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     this.questionChart?.destroy();
   }
 
-  loadMockData() {
-    const mockData: AnalyticsResponse = {
-      totalAttempts: 123,
-      averageScore: 72.34,
-      medianScore: 75.0,
-      scoreDistribution: {
-        "0-10": 2,
-        "10-20": 3,
-        "20-30": 6,
-        "30-40": 8,
-        "40-50": 12,
-        "50-60": 18,
-        "60-70": 22,
-        "70-80": 25,
-        "80-90": 15,
-        "90-100": 12
-      },
-      attemptsByDay: {
-        "2025-11-10": 3,
-        "2025-11-11": 8,
-        "2025-11-12": 12,
-        "2025-11-13": 20,
-        "2025-11-14": 18,
-        "2025-11-15": 25,
-        "2025-11-16": 37
-      }
-    };
-    
-    this.renderAnalytics(mockData);
-  }
-
   loadData() {
     const id = this.mode === 'quiz' ? this.selectedQuizId : this.selectedUserId;
     
     console.log('loadData called with id:', id, 'mode:', this.mode, 'isAdmin:', this.isAdmin);
     
     if (!id || !id.trim()) {
-      alert('Please select a ' + (this.mode === 'quiz' ? 'quiz' : 'user'));
+      this.toastrService.show('Please select a ' + (this.mode === 'quiz' ? 'quiz' : 'user'), 'warning');
       return;
     }
 
+    this.isLoading = true;
     let observable$;
     
     if (this.isAdmin) {
@@ -137,12 +108,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     observable$.subscribe({
       next: (data) => {
         console.log('Analytics data received:', data);
+        this.isLoading = false;
         // Use setTimeout to ensure DOM is ready for chart rendering
         setTimeout(() => this.renderAnalytics(data), 0);
       },
       error: (error) => {
         console.error('Error loading analytics:', error);
-        alert('Error: ' + error.message);
+        this.isLoading = false;
+        this.toastrService.show('Error loading analytics: ' + error.message, 'error');
       }
     });
     
@@ -151,6 +124,21 @@ export class AnalyticsPage implements OnInit, OnDestroy {
 
   private renderAnalytics(data: AnalyticsResponse) {
     console.log('Rendering analytics with data:', data);
+    
+    // Check if there's any data
+    const hasAttempts = data.totalAttempts > 0;
+    const hasTimeSeries = Object.keys(data.attemptsByDay || {}).length > 0;
+    const hasDistribution = Object.keys(data.scoreDistribution || {}).length > 0;
+    
+    this.hasData = hasAttempts || hasTimeSeries || hasDistribution;
+    
+    if (!this.hasData) {
+      console.log('No data available');
+      this.updateKpis({ totalAttempts: 0, averageScore: 0, medianScore: 0, scoreDistribution: {}, attemptsByDay: {} });
+      this.destroyCharts();
+      return;
+    }
+    
     this.updateKpis(data);
     
     const timeSeries = this.sortedTimeSeries(data.attemptsByDay);
