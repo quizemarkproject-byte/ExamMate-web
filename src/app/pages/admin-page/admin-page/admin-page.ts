@@ -11,6 +11,7 @@ import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { EditQuestionService } from '../../../services/edit-question-service/edit-question-service';
 import { QuizRequest, AdminQuiz, Question } from '../../../models/quiz';
 import { validateQuestion as validateQuestionUtil } from '../../../utils/question-validators';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-admin-page',
@@ -26,6 +27,8 @@ import { validateQuestion as validateQuestionUtil } from '../../../utils/questio
   templateUrl: './admin-page.html',
 })
 export class AdminPage {
+  @ViewChild(AdminQuestionEditor) editorComponent?: AdminQuestionEditor;
+  
   quizzes: AdminQuiz[] = [];
   questionBank: Question[] = [];
   selectedQuizIndex: number | null = null;
@@ -166,15 +169,27 @@ export class AdminPage {
   attachQuestionFromBank(bankIndex: number) {
     const q = this.questionBank[bankIndex];
     if (!q) return;
-    this.mutateSelectedQuiz((quiz) => {
-      if (!quiz.questions) quiz.questions = [];
-      const exists = quiz.questions.some((qq) => qq === q || (qq.id && q.id && String(qq.id) === String(q.id)));
-      if (exists) {
-        this.toastr.warning('Question is already attached to this quiz.');
-        return;
-      }
-      quiz.questions.push(q);
-    });
+    
+    const quiz = this.selectedQuiz;
+    if (!quiz) return;
+    
+    // Initialize questions array if needed
+    if (!quiz.questions) quiz.questions = [];
+    
+    // Check if already attached
+    const exists = quiz.questions.some((qq) => qq === q || (qq.id && q.id && String(qq.id) === String(q.id)));
+    if (exists) {
+      this.toastr.warning('Question is already attached to this quiz.');
+      return;
+    }
+    
+    // Add to quiz questions
+    quiz.questions.push(q);
+    
+    // Refresh the form to include the new question
+    if (this.editorComponent) {
+      this.editorComponent.refreshForm();
+    }
   }
 
   createBankQuestion() {

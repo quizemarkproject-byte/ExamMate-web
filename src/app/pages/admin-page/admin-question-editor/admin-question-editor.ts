@@ -22,6 +22,7 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   private fb = inject(FormBuilder);
   private toastr = inject(ToastrService);
   private confirm = inject(ConfirmService);
+  private lastQuizId: string | number | null = null;
 
   @Output() saveQuiz = new EventEmitter<AdminQuiz>();
   @Output() validationErrors = new EventEmitter<string[]>();
@@ -32,6 +33,16 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
+    // Only rebuild form if quiz ID changed or quiz is null
+    const currentQuizId = this.quiz?.id || null;
+    if (currentQuizId !== this.lastQuizId) {
+      this.lastQuizId = currentQuizId;
+      this.initializeForm();
+    }
+  }
+
+  // Public method to force form refresh when questions are modified externally
+  refreshForm() {
     this.initializeForm();
   }
 
@@ -174,24 +185,20 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
 
   onAddQuestion() {
     if (!this.quiz) return;
+    
     const newQuestion: Question = {
       text: '',
       options: ['', ''],
       correctAnswer: '',
     } as Question;
     
-    this.quiz.questions = this.quiz.questions || [];
-    this.quiz.questions.push(newQuestion);
+    // Add to form array
     this.questionsArray.push(this.createQuestionGroup(newQuestion));
   }
 
   onAddOption(questionIndex: number) {
     const optionsArray = this.getOptionsArray(questionIndex);
     optionsArray.push(this.fb.control('', Validators.required));
-    
-    if (this.quiz?.questions?.[questionIndex]) {
-      this.quiz.questions[questionIndex].options.push('');
-    }
   }
 
   onRemoveOption(qi: number, oi: number) {
@@ -201,15 +208,13 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
       return;
     }
     
+    const removedValue = optionsArray.at(oi).value;
     optionsArray.removeAt(oi);
     
-    if (this.quiz?.questions?.[qi]) {
-      const q = this.quiz.questions[qi];
-      const removed = q.options.splice(oi, 1)[0];
-      if (q.correctAnswer === removed) {
-        q.correctAnswer = q.options[0] || '';
-        this.getQuestionGroup(qi).get('correctAnswer')?.setValue(q.correctAnswer);
-      }
+    // If removed option was the correct answer, clear it
+    const correctAnswer = this.getQuestionGroup(qi).get('correctAnswer')?.value;
+    if (correctAnswer === removedValue) {
+      this.getQuestionGroup(qi).get('correctAnswer')?.setValue('');
     }
   }
 
@@ -220,10 +225,6 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
     if (!option) return;
     
     this.getQuestionGroup(qi).get('correctAnswer')?.setValue(option);
-    
-    if (this.quiz?.questions?.[qi]) {
-      this.quiz.questions[qi].correctAnswer = option;
-    }
   }
 
   onDeleteQuestion(qIndex: number) {
@@ -237,9 +238,6 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
     this.confirm.open({ title, message, confirmText: 'Delete', cancelText: 'Cancel' }).subscribe((ok: boolean) => {
       if (ok) {
         this.questionsArray.removeAt(qIndex);
-        if (this.quiz?.questions) {
-          this.quiz.questions.splice(qIndex, 1);
-        }
       }
     });
   }
