@@ -69,6 +69,12 @@ export class AdminPage {
       : this.quizzes[this.selectedQuizIndex];
   }
 
+  private isSameQuestion(q1: Question, q2: Question): boolean {
+    if (q1 === q2) return true;
+    if (!q1.id || !q2.id) return false;
+    return String(q1.id) === String(q2.id);
+  }
+
   onValidationChange(errors: string[]) {
     this.selectedQuizErrors = errors;
   }
@@ -155,28 +161,21 @@ export class AdminPage {
 
   attachQuestionFromBank(bankIndex: number) {
     const q = this.questionBank[bankIndex];
-    if (!q) return;
-    
     const quiz = this.selectedQuiz;
-    if (!quiz) return;
     
-    // Initialize questions array if needed
-    if (!quiz.questions) quiz.questions = [];
+    if (!q || !quiz) return;
+    
+    quiz.questions = quiz.questions || [];
     
     // Check if already attached
-    const exists = quiz.questions.some((qq) => qq === q || (qq.id && q.id && String(qq.id) === String(q.id)));
+    const exists = quiz.questions.some(qq => this.isSameQuestion(qq, q));
     if (exists) {
       this.toastr.warning('Question is already attached to this quiz.');
       return;
     }
     
-    // Add to quiz questions
     quiz.questions.push(q);
-    
-    // Refresh the form to include the new question
-    if (this.editorComponent) {
-      this.editorComponent.refreshForm();
-    }
+    this.editorComponent?.refreshForm();
   }
 
   createQuestion() {
@@ -199,7 +198,7 @@ export class AdminPage {
   // Updates the question on the server first, then propagates to all affected quizzes locally.
   onQuestionEdited(bankIndex: number) {
     const updated = this.questionBank[bankIndex];
-    if (!updated || !updated.id) return;
+    if (!updated?.id) return;
 
     // Update the question on the server first
     this.quizService.adminUpdateQuestion(String(updated.id), updated).subscribe({
@@ -207,23 +206,18 @@ export class AdminPage {
         // Update the question with server response
         Object.assign(this.questionBank[bankIndex], serverQuestion);
 
-        // Now propagate to all affected quizzes locally
-        this.quizzes.forEach((quiz) => {
-          if (!Array.isArray(quiz.questions)) return;
-          
-          for (let i = 0; i < quiz.questions.length; i++) {
-            const qq = quiz.questions[i];
-            if (qq.id && serverQuestion.id && String(qq.id) === String(serverQuestion.id)) {
-              Object.assign(qq, serverQuestion);
+        // Propagate to all affected quizzes locally
+        this.quizzes.forEach(quiz => {
+          quiz.questions?.forEach(q => {
+            if (this.isSameQuestion(q, serverQuestion)) {
+              Object.assign(q, serverQuestion);
             }
-          }
+          });
         });
 
         // If the selected quiz was affected, refresh the form
-        if (this.selectedQuiz?.questions?.some(q => 
-          q.id && serverQuestion.id && String(q.id) === String(serverQuestion.id)
-        ) && this.editorComponent) {
-          this.editorComponent.refreshForm();
+        if (this.selectedQuiz?.questions?.some(q => this.isSameQuestion(q, serverQuestion))) {
+          this.editorComponent?.refreshForm();
         }
 
         this.toastr.success('Question updated.');
@@ -240,11 +234,10 @@ export class AdminPage {
 
     const removeQuestionFromQuizzes = () => {
       this.questionBank.splice(bankIndex, 1);
-      this.quizzes.forEach((quiz) => {
-        if (!quiz.questions) return;
-        quiz.questions = quiz.questions.filter(
-          (qq) => qq !== q && !(qq.id && q.id && String(qq.id) === String(q.id))
-        );
+      this.quizzes.forEach(quiz => {
+        if (quiz.questions) {
+          quiz.questions = quiz.questions.filter(qq => !this.isSameQuestion(qq, q));
+        }
       });
     };
 
@@ -285,11 +278,9 @@ export class AdminPage {
           }
           
           // Sync to question bank
-          const bankIdx = this.questionBank.findIndex(b => 
-            b === quiz.questions![i] || (b.id && serverQ.id && String(b.id) === String(serverQ.id))
-          );
+          const bankIdx = this.questionBank.findIndex(b => this.isSameQuestion(b, serverQ));
           if (bankIdx >= 0) {
-            this.questionBank[bankIdx] = serverQ;
+            Object.assign(this.questionBank[bankIdx], serverQ);
           } else {
             this.questionBank.push(serverQ);
           }

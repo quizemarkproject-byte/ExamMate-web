@@ -58,10 +58,8 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   }
 
   private initializeForm() {
-    // Clear previous subscriptions by triggering destroy and recreating
-    if (this.quizForm) {
-      this.destroy$.next();
-    }
+    // Clear previous subscriptions
+    this.destroy$.next();
 
     if (!this.quiz) {
       this.quizForm = this.fb.group({
@@ -73,7 +71,7 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
 
     const questionsArray = this.fb.array(
       (this.quiz.questions || []).map(q => this.createQuestionGroup(q)),
-      [this.minQuestionsValidator(this.quiz.questionLimit)]
+      [this.minQuestionsValidator()]
     );
 
     this.quizForm = this.fb.group({
@@ -85,8 +83,8 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.emitValidationErrors());
 
-    // Emit initial validation state after a brief delay to ensure form is ready
-    setTimeout(() => this.emitValidationErrors(), 0);
+    // Emit initial validation state
+    this.emitValidationErrors();
   }
 
   private createQuestionGroup(question: Question): FormGroup {
@@ -135,11 +133,10 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   }
 
   // Custom validator for minimum questions - always checks current quiz's questionLimit
-  private minQuestionsValidator(minCount: number) {
+  private minQuestionsValidator() {
     return (control: AbstractControl): ValidationErrors | null => {
       const array = control as FormArray;
-      // Use current quiz's questionLimit, fallback to initial minCount
-      const requiredCount = this.quiz?.questionLimit || minCount;
+      const requiredCount = this.quiz?.questionLimit || 0;
       if (array.length < requiredCount) {
         return { minQuestions: { required: requiredCount, actual: array.length } };
       }
@@ -211,7 +208,6 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
       correctAnswer: '',
     } as Question;
     
-    // Add to form array
     this.questionsArray.push(this.createQuestionGroup(newQuestion));
   }
 
@@ -238,12 +234,10 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   }
 
   onSetCorrect(qi: number, oi: number) {
-    const optionsArray = this.getOptionsArray(qi);
-    const option = optionsArray.at(oi).value?.trim();
-    
-    if (!option) return;
-    
-    this.getQuestionGroup(qi).get('correctAnswer')?.setValue(option);
+    const option = this.getOptionsArray(qi).at(oi).value?.trim();
+    if (option) {
+      this.getQuestionGroup(qi).get('correctAnswer')?.setValue(option);
+    }
   }
 
   onDeleteQuestion(qIndex: number) {

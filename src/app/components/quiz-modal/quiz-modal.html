@@ -24,13 +24,15 @@
           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           [class.border-red-500]="nameControl?.invalid && nameControl?.touched"
         />
-        @if (nameControl?.invalid && nameControl?.touched) {
-          <div class="text-red-500 text-xs mt-1">
-            @if (nameControl?.hasError('required')) {
-              <span>Quiz title is required.</span>
-            }
-          </div>
-        }
+        <div class="h-5 mt-1">
+          @if (nameControl?.invalid && nameControl?.touched) {
+            <div class="text-red-500 text-xs">
+              @if (nameControl?.hasError('required')) {
+                <span>Quiz title is required.</span>
+              }
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Time Limit and Question Limit -->
@@ -48,16 +50,18 @@
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             [class.border-red-500]="timeLimitControl?.invalid && timeLimitControl?.touched"
           />
-          @if (timeLimitControl?.invalid && timeLimitControl?.touched) {
-            <div class="text-red-500 text-xs mt-1">
-              @if (timeLimitControl?.hasError('required')) {
-                <span>Time limit is required.</span>
-              }
-              @if (timeLimitControl?.hasError('min')) {
-                <span>Must be at least 1 minute.</span>
-              }
-            </div>
-          }
+          <div class="h-5 mt-1">
+            @if (timeLimitControl?.invalid && timeLimitControl?.touched) {
+              <div class="text-red-500 text-xs">
+                @if (timeLimitControl?.hasError('required')) {
+                  <span>Time limit is required.</span>
+                }
+                @if (timeLimitControl?.hasError('min')) {
+                  <span>Must be at least 1 minute.</span>
+                }
+              </div>
+            }
+          </div>
         </div>
 
         <div>
@@ -73,16 +77,18 @@
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             [class.border-red-500]="questionLimitControl?.invalid && questionLimitControl?.touched"
           />
-          @if (questionLimitControl?.invalid && questionLimitControl?.touched) {
-            <div class="text-red-500 text-xs mt-1">
-              @if (questionLimitControl?.hasError('required')) {
-                <span>Question limit is required.</span>
-              }
-              @if (questionLimitControl?.hasError('min')) {
-                <span>Must be at least 2.</span>
-              }
-            </div>
-          }
+          <div class="h-5 mt-1">
+            @if (questionLimitControl?.invalid && questionLimitControl?.touched) {
+              <div class="text-red-500 text-xs">
+                @if (questionLimitControl?.hasError('required')) {
+                  <span>Question limit is required.</span>
+                }
+                @if (questionLimitControl?.hasError('min')) {
+                  <span>Must be at least 2.</span>
+                }
+              </div>
+            }
+          </div>
         </div>
       </div>
 

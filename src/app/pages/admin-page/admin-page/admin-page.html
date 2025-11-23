@@ -34,26 +34,23 @@
 
     <!-- Right: Editor (delegated to child component) -->
     <section class="col-span-2 bg-white rounded-2xl border border-gray-200 p-6 h-full min-h-0 overflow-auto min-w-0">
-      <!-- show quiz-level validation in parent to keep single source of truth -->
       @if (selectedQuizIndex === null) {
       <div class="text-gray-500">Select a quiz on the left or create a new one to begin building questions.</div>
       } @else {
-      <div class="mb-3">
-        <div class="min-h-[3rem] mb-3">
-            @if (selectedQuizErrors.length > 0) {
-            <div class="text-sm text-red-500">
-              @for (err of selectedQuizErrors; track $index) {<div>{{ err }}</div>}
-            </div>
-            }
+      <div class="min-h-[3rem] mb-3">
+        @if (selectedQuizErrors.length > 0) {
+        <div class="text-sm text-red-500">
+          @for (err of selectedQuizErrors; track $index) {<div>{{ err }}</div>}
         </div>
-
-          <admin-question-editor
-          [quiz]="selectedQuizIndex === null ? null : quizzes[selectedQuizIndex]"
-          [saving]="saving"
-          (saveQuiz)="persistQuiz($event)"
-          (validationErrors)="onValidationChange($event)">
-        </admin-question-editor>
+        }
       </div>
+
+      <admin-question-editor
+        [quiz]="quizzes[selectedQuizIndex]"
+        [saving]="saving"
+        (saveQuiz)="persistQuiz($event)"
+        (validationErrors)="onValidationChange($event)">
+      </admin-question-editor>
       }
     </section>
   </div>

@@ -26,9 +26,11 @@ export class AdminQuestionBank {
   private toastr = inject(ToastrService);
 
   onDelete(bi: number) {
-    const q = this.questionBank?.[bi];
+    const q = this.questionBank[bi];
+    if (!q) return;
+
     const title = 'Delete question';
-    const message = q?.text
+    const message = q.text
       ? `Are you sure you want to delete this question: "${q.text.substring(0,60)}"?`
       : 'Are you sure you want to delete this question?';
 
@@ -38,26 +40,28 @@ export class AdminQuestionBank {
   }
 
   onEdit(bi: number) {
-    const q = this.questionBank?.[bi] ?? null;
+    const q = this.questionBank[bi];
+    if (!q) return;
+
     this.editService.open(q).subscribe((updated) => {
-      if (updated) {
-        // If the question exists on the server (has an id), persist update
-        if (updated.id) {
-          this.quizService.adminUpdateQuestion(String(updated.id), updated).subscribe({
-            next: (serverQ) => {
-              if (this.questionBank && this.questionBank[bi]) Object.assign(this.questionBank[bi], serverQ);
-              this.editQuestion.emit(bi);
-              this.toastr.success('Question updated.');
-            },
-            error: (err) => {
-              this.toastr.error('Failed to update question.');
-            },
-          });
-        } else {
-          // Apply locally for new/unpersisted bank questions
-          if (this.questionBank && this.questionBank[bi]) Object.assign(this.questionBank[bi], updated);
-          this.editQuestion.emit(bi);
-        }
+      if (!updated) return;
+
+      // If the question exists on the server (has an id), persist update
+      if (updated.id) {
+        this.quizService.adminUpdateQuestion(String(updated.id), updated).subscribe({
+          next: (serverQ) => {
+            Object.assign(this.questionBank[bi], serverQ);
+            this.editQuestion.emit(bi);
+            this.toastr.success('Question updated.');
+          },
+          error: () => {
+            this.toastr.error('Failed to update question.');
+          },
+        });
+      } else {
+        // Apply locally for new/unpersisted questions
+        Object.assign(this.questionBank[bi], updated);
+        this.editQuestion.emit(bi);
       }
     });
   }

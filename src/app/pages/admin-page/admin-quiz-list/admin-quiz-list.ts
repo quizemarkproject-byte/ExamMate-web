@@ -20,9 +20,11 @@ export class AdminQuizList {
   private confirm = inject(ConfirmService);
 
   onDelete(i: number) {
-    const quiz = this.quizzes?.[i];
+    const quiz = this.quizzes[i];
+    if (!quiz) return;
+
     const title = 'Delete quiz';
-    const message = quiz?.name
+    const message = quiz.name
       ? `Are you sure you want to delete the quiz "${quiz.name}"? This action cannot be undone.`
       : 'Are you sure you want to delete this quiz?';
 
