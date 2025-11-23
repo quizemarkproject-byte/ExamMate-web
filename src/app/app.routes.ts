@@ -7,6 +7,7 @@ import { QuizResultDetail } from './pages/quiz-page/result-detail/result-detail'
 import { QuizResultList } from './pages/quiz-page/result-list/result-list';
 import { QuizExitGuard } from './guards/quiz-exit-guard/quiz-exit-guard';
 import { AdminPage } from './pages/admin-page/admin-page/admin-page';
+import { AnalyticsPage } from './pages/analytics-page/analytics-page';
 
 export const routes: Routes = [
   {
@@ -56,5 +57,10 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminPage,
     title: 'ExamMate | Admin',
+  },
+  {
+    path: 'analytics',
+    component: AnalyticsPage,
+    title: 'ExamMate | Admin Analytics',
   }
 ];

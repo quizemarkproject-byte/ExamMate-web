@@ -1,0 +1,89 @@
+<div class="max-w-7xl mx-auto px-6 py-8">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Admin — Analytics Dashboard</h2>
+  
+  <!-- Controls -->
+  <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+    <div class="flex items-center gap-4 flex-wrap">
+      <label class="flex items-center gap-2">
+        <input type="radio" name="mode" [(ngModel)]="mode" value="quiz" class="text-purple-600" />
+        <span>Quiz analytics</span>
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="radio" name="mode" [(ngModel)]="mode" value="user" class="text-purple-600" />
+        <span>User analytics</span>
+      </label>
+      
+      @if (mode === 'quiz') {
+        <select 
+          [(ngModel)]="selectedQuizId"
+          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
+        >
+          <option value="">Select a quiz</option>
+          @for (quiz of quizzes; track quiz.id) {
+            <option [value]="quiz.id">{{ quiz.name }}</option>
+          }
+        </select>
+      } @else {
+        <select 
+          [(ngModel)]="selectedUserId"
+          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
+        >
+          <option value="">Select a user</option>
+          @for (user of users; track user.id) {
+            <option [value]="user.id">{{ user.fullName }} ({{ user.username }})</option>
+          }
+        </select>
+      }
+      
+      <button 
+        (click)="loadData()"
+        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+        type="button"
+      >
+        Load
+      </button>
+      <button 
+        (click)="loadMockData()"
+        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+      >
+        Load mock
+      </button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
+      <div class="text-gray-600 text-sm mb-2">Total attempts</div>
+      <div class="text-3xl font-bold text-gray-800 mb-4">{{ totalAttempts }}</div>
+      <canvas id="sparkline" width="200" height="40"></canvas>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
+      <div class="text-gray-600 text-sm mb-2">Average</div>
+      <div class="text-3xl font-bold text-gray-800">{{ avgScore.toFixed(1) }}%</div>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
+      <div class="text-gray-600 text-sm mb-2">Median</div>
+      <div class="text-3xl font-bold text-gray-800">{{ medianScore.toFixed(1) }}%</div>
+    </div>
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Attempts by day</h3>
+      <div style="height: 300px;">
+        <canvas id="attemptsChart"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Score distribution</h3>
+      <div style="height: 300px;">
+        <canvas id="distributionChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
