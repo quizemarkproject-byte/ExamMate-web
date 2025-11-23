@@ -81,7 +81,7 @@ export class AdminPage {
 
       const payload: QuizRequest = {
         name: quiz.name,
-        timeLimitMinutes: quiz.timeLimit,
+        timeLimitMinutes: Number(quiz.timeLimit),
         questionLimit: quiz.questionLimit,
       };
 
@@ -100,14 +100,57 @@ export class AdminPage {
   }
 
   deleteQuiz(i: number) {
-    // TODO: implement delete quiz functionality
-    this.quizzes.splice(i, 1);
-    if (this.selectedQuizIndex === i) this.selectedQuizIndex = null;
+    const quiz = this.quizzes[i];
+    if (!quiz?.id) {
+      this.quizzes.splice(i, 1);
+      if (this.selectedQuizIndex === i) this.selectedQuizIndex = null;
+      return;
+    }
+
+    this.quizService.adminDeleteQuiz(quiz.id).subscribe({
+      next: () => {
+        this.quizzes.splice(i, 1);
+        if (this.selectedQuizIndex === i) this.selectedQuizIndex = null;
+        this.toastr.success('Quiz deleted.');
+      },
+      error: () => {
+        this.toastr.error('Failed to delete quiz.');
+      },
+    });
   }
 
   editQuiz(i: number) {
-    // TODO: implement edit quiz functionality
-    console.log('Editing quiz at index', i);
+    if (!this.quizModal) return;
+
+    const quiz = this.quizzes[i];
+    if (!quiz) return;
+
+    this.quizModal.open(quiz).subscribe((updatedQuiz) => {
+      if (!updatedQuiz || !updatedQuiz.id) return;
+
+      const payload: QuizRequest = {
+        id: updatedQuiz.id,
+        name: updatedQuiz.name,
+        timeLimitMinutes: Number(updatedQuiz.timeLimit),
+        questionLimit: updatedQuiz.questionLimit,
+      };
+
+      this.quizService.adminUpdateQuiz(payload).subscribe({
+        next: (updated: AdminQuiz) => {
+          Object.assign(this.quizzes[i], updated);
+          
+          // If this is the selected quiz, update validators to reflect new questionLimit
+          if (this.selectedQuizIndex === i && this.editorComponent) {
+            this.editorComponent.updateValidators();
+          }
+          
+          this.toastr.success('Quiz updated.');
+        },
+        error: () => {
+          this.toastr.error('Failed to update quiz.');
+        },
+      });
+    });
   }
 
   attachQuestionFromBank(bankIndex: number) {

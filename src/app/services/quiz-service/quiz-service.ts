@@ -32,6 +32,14 @@ export class QuizService {
     return this.http.post<AdminQuiz>(this.adminQuizUrl, quizRequest);
   }
 
+  adminUpdateQuiz(quizRequest: QuizRequest): Observable<AdminQuiz> {
+    return this.http.put<AdminQuiz>(`${this.adminQuizUrl}/${quizRequest.id}`, quizRequest);
+  }
+
+  adminDeleteQuiz(quizId: string): Observable<void> {
+    return this.http.delete<void>(`${this.adminQuizUrl}/${quizId}`);
+  }
+
   adminGetAllQuestions(): Observable<Question[]> {
     return this.http.get<Question[]>(`${this.adminQuizUrl}/questions`);
   }

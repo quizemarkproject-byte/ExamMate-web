@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { AdminQuiz } from '../../models/quiz';
+import { parseDurationToMinutes } from '../../utils/duration-utils';
 
 @Component({
   selector: 'app-quiz-modal',
@@ -26,7 +27,7 @@ export class QuizModal {
     this.quizForm = this.fb.group({
       id: [quiz?.id || null],
       name: [quiz?.name || '', [Validators.required, Validators.minLength(1)]],
-      timeLimit: [quiz?.timeLimit || 10, [Validators.required, Validators.min(1)]],
+      timeLimit: [quiz?.timeLimit ? parseDurationToMinutes(quiz.timeLimit) : 10, [Validators.required, Validators.min(1)]],
       questionLimit: [quiz?.questionLimit || 10, [Validators.required, Validators.min(2)]],
     });
 

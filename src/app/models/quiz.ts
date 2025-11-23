@@ -16,7 +16,7 @@ export interface AdminQuiz {
 export interface QuizRequest {
   id?: string;
   name: string;
-  timeLimitMinutes: string;
+  timeLimitMinutes: number;
   questionLimit: number;
 }
 

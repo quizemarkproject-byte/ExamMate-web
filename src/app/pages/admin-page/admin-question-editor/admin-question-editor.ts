@@ -49,6 +49,14 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
     this.initializeForm();
   }
 
+  // Public method to update validators when quiz metadata changes (like questionLimit)
+  updateValidators() {
+    if (this.questionsArray) {
+      this.questionsArray.updateValueAndValidity();
+      this.emitValidationErrors();
+    }
+  }
+
   private initializeForm() {
     // Clear previous subscriptions by triggering destroy and recreating
     if (this.quizForm) {
@@ -126,12 +134,14 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
     };
   }
 
-  // Custom validator for minimum questions
+  // Custom validator for minimum questions - always checks current quiz's questionLimit
   private minQuestionsValidator(minCount: number) {
     return (control: AbstractControl): ValidationErrors | null => {
       const array = control as FormArray;
-      if (array.length < minCount) {
-        return { minQuestions: { required: minCount, actual: array.length } };
+      // Use current quiz's questionLimit, fallback to initial minCount
+      const requiredCount = this.quiz?.questionLimit || minCount;
+      if (array.length < requiredCount) {
+        return { minQuestions: { required: requiredCount, actual: array.length } };
       }
       return null;
     };
