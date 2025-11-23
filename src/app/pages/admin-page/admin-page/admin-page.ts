@@ -179,7 +179,7 @@ export class AdminPage {
     }
   }
 
-  createBankQuestion() {
+  createQuestion() {
     this.editService.open().subscribe((created) => {
       if (!created) return;
 
@@ -195,28 +195,46 @@ export class AdminPage {
     });
   }
 
-  // Called when a question in the bank has been edited.
-  // Ensures any quizzes that reference this question are updated in-place.
-  onBankQuestionEdited(bankIndex: number) {
+  // Called when a question has been edited.
+  // Updates the question on the server first, then propagates to all affected quizzes locally.
+  onQuestionEdited(bankIndex: number) {
     const updated = this.questionBank[bankIndex];
-    if (!updated) return;
+    if (!updated || !updated.id) return;
 
-    // Walk all quizzes and replace matching questions (by reference or by id)
-    this.quizzes.forEach((quiz) => {
-      if (!Array.isArray(quiz.questions)) return;
-      for (let i = 0; i < quiz.questions.length; i++) {
-        const qq = quiz.questions[i];
-        if (qq === updated) {
-          // same object reference — nothing needed (already mutated), but keep for clarity
-          Object.assign(qq, updated);
-        } else if (qq && qq.id && updated.id && String(qq.id) === String(updated.id)) {
-          Object.assign(qq, updated);
+    // Update the question on the server first
+    this.quizService.adminUpdateQuestion(String(updated.id), updated).subscribe({
+      next: (serverQuestion: Question) => {
+        // Update the question with server response
+        Object.assign(this.questionBank[bankIndex], serverQuestion);
+
+        // Now propagate to all affected quizzes locally
+        this.quizzes.forEach((quiz) => {
+          if (!Array.isArray(quiz.questions)) return;
+          
+          for (let i = 0; i < quiz.questions.length; i++) {
+            const qq = quiz.questions[i];
+            if (qq.id && serverQuestion.id && String(qq.id) === String(serverQuestion.id)) {
+              Object.assign(qq, serverQuestion);
+            }
+          }
+        });
+
+        // If the selected quiz was affected, refresh the form
+        if (this.selectedQuiz?.questions?.some(q => 
+          q.id && serverQuestion.id && String(q.id) === String(serverQuestion.id)
+        ) && this.editorComponent) {
+          this.editorComponent.refreshForm();
         }
-      }
+
+        this.toastr.success('Question updated.');
+      },
+      error: () => {
+        this.toastr.error('Failed to update question.');
+      },
     });
   }
 
-  deleteBankQuestion(bankIndex: number) {
+  deleteQuestion(bankIndex: number) {
     const q = this.questionBank[bankIndex];
     if (!q) return;
 

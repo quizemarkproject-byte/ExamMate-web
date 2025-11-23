@@ -23,9 +23,9 @@
           [questionBank]="questionBank"
           [selectedQuizIndex]="selectedQuizIndex"
           (attachQuestion)="attachQuestionFromBank($event)"
-          (createBankQuestion)="createBankQuestion()"
-          (deleteQuestion)="deleteBankQuestion($event)"
-          (editQuestion)="onBankQuestionEdited($event)">
+          (createBankQuestion)="createQuestion()"
+          (deleteQuestion)="deleteQuestion($event)"
+          (editQuestion)="onQuestionEdited($event)">
         </admin-question-bank>
         <!-- Create/Edit question modal (scoped to admin page) -->
         <app-question-modal></app-question-modal>
