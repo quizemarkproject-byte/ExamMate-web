@@ -1,166 +1,294 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AdminQuiz } from '../../../models/quiz';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
 import { ConfirmService } from '../../../services/confirm-service/confirm-service';
 import { Question } from '../../../models/quiz';
 import { DurationPipe } from '../../../pipes/duration/duration-pipe';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'admin-question-editor',
-  imports: [CommonModule, FormsModule, DurationPipe],
+  imports: [CommonModule, ReactiveFormsModule, DurationPipe],
   templateUrl: './admin-question-editor.html',
 })
-export class AdminQuestionEditor {
+export class AdminQuestionEditor implements OnChanges, OnDestroy {
   @Input() quiz: AdminQuiz | null = null
   @Input() saving: boolean = false;
-  // question bank may be useful for creation or lookups; if needed it can be added as an Input
 
-  constructor(private toastr: ToastrService) {}
-
+  quizForm!: FormGroup;
+  private destroy$ = new Subject<void>();
+  private fb = inject(FormBuilder);
+  private toastr = inject(ToastrService);
   private confirm = inject(ConfirmService);
 
-  @Output() addQuestion = new EventEmitter<void>();
-  @Output() removeQuestion = new EventEmitter<number>();
-  @Output() addOption = new EventEmitter<number>();
-  @Output() removeOption = new EventEmitter<{
-    qIndex: number;
-    optIndex: number;
-  }>();
-  @Output() setCorrect = new EventEmitter<{
-    qIndex: number;
-    optIndex: number;
-  }>();
-  @Output() questionEdited = new EventEmitter<number>();
   @Output() saveQuiz = new EventEmitter<AdminQuiz>();
+  @Output() validationErrors = new EventEmitter<string[]>();
 
-  onSetCorrect(qi: number, oi: number) {
-    this.setCorrect.emit({ qIndex: qi, optIndex: oi });
-  }
-  onRemoveOption(qi: number, oi: number) {
-    this.removeOption.emit({ qIndex: qi, optIndex: oi });
-  }
-
-  onQuestionEdited(qIndex: number) {
-    this.questionEdited.emit(qIndex);
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  onDeleteQuestion(qIndex: number) {
-    const q = this.quiz?.questions?.[qIndex];
-    const title = 'Delete question';
-    const message = q?.text
-      ? `Are you sure you want to delete this question: "${q.text.substring(0,60)}"?`
-      : 'Are you sure you want to delete this question?';
-
-    this.confirm.open({ title, message, confirmText: 'Delete', cancelText: 'Cancel' }).subscribe((ok: boolean) => {
-      if (ok) this.removeQuestion.emit(qIndex);
-    });
+  ngOnChanges() {
+    this.initializeForm();
   }
 
-  // helpers used by the template to avoid selecting empty option slots
-  trim(value?: string): string {
-    return value ? String(value).trim() : '';
-  }
-  
-  optionHasText(option?: string): boolean {
-    return this.trim(option).length > 0;
-  }
-
-  isCheckedOption(option: string | undefined, question: Question): boolean {
-    return this.optionHasText(option) && this.trim(question.correctAnswer) === this.trim(option);
-  }
-
-  // Validate a single question
-  validateQuestion(q: Question): string[] {
-    const errors: string[] = [];
-    const MAX_LEN = 255;
-    if (!q.text || !q.text.trim()) errors.push('Question text is required.');
-    else if (String(q.text).trim().length > MAX_LEN)
-      errors.push(`Question text must be at most ${MAX_LEN} characters.`);
-
-    // consider only non-empty options when validating presence
-    const filledOptions = Array.isArray(q.options)
-      ? q.options.map((o) => (o ? String(o).trim() : '')).filter((o) => o.length > 0)
-      : [];
-
-    if (filledOptions.length < 2) {
-      errors.push('Each question must have at least 2 non-empty options.');
-      // if we don't have two valid options, skip the correct-answer membership check
-      return errors;
+  private initializeForm() {
+    if (!this.quiz) {
+      this.quizForm = this.fb.group({
+        questions: this.fb.array([])
+      });
+      this.validationErrors.emit([]);
+      return;
     }
 
-    // validate option lengths
-    const rawOptions = Array.isArray(q.options) ? q.options : [];
-    rawOptions.forEach((opt, i) => {
-      const len = opt ? String(opt).trim().length : 0;
-      if (len > MAX_LEN) errors.push(`Option ${i + 1} must be at most ${MAX_LEN} characters.`);
+    const questionsArray = this.fb.array(
+      (this.quiz.questions || []).map(q => this.createQuestionGroup(q)),
+      [this.minQuestionsValidator(this.quiz.questionLimit)]
+    );
+
+    this.quizForm = this.fb.group({
+      questions: questionsArray
     });
 
-    // if we have at least 2 options, ensure the correctAnswer is one of them (trimmed)
-    const correct = q.correctAnswer ? String(q.correctAnswer).trim() : '';
-    if (!correct || !filledOptions.includes(correct))
-      errors.push('A correct option must be selected from the non-empty options.');
+    // Subscribe to form value changes for real-time validation
+    this.quizForm.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.emitValidationErrors());
+
+    // Emit initial validation state
+    this.emitValidationErrors();
+  }
+
+  private createQuestionGroup(question: Question): FormGroup {
+    const optionsArray = this.fb.array(
+      (question.options || []).map(opt => this.fb.control(opt || '', Validators.required)),
+      [Validators.minLength(2)]
+    );
+
+    return this.fb.group({
+      id: [question.id || null],
+      text: [question.text || '', [Validators.required, this.trimValidator()]],
+      options: optionsArray,
+      correctAnswer: [question.correctAnswer || '', [Validators.required, this.trimValidator()]]
+    }, { validators: this.questionValidator() });
+  }
+
+  // Custom validator to ensure trimmed value is not empty
+  private trimValidator() {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (value && typeof value === 'string' && value.trim().length === 0) {
+        return { whitespace: true };
+      }
+      return null;
+    };
+  }
+
+  // Custom validator for question group
+  private questionValidator() {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const fg = group as FormGroup;
+      const correctAnswer = fg.get('correctAnswer')?.value?.trim();
+      const options = (fg.get('options') as FormArray)?.value || [];
+      const validOptions = options.filter((o: string) => o && o.trim().length > 0);
+
+      if (correctAnswer && !validOptions.some((o: string) => o.trim() === correctAnswer)) {
+        return { correctAnswerNotInOptions: true };
+      }
+
+      if (validOptions.length < 2) {
+        return { minOptions: true };
+      }
+
+      return null;
+    };
+  }
+
+  // Custom validator for minimum questions
+  private minQuestionsValidator(minCount: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const array = control as FormArray;
+      if (array.length < minCount) {
+        return { minQuestions: { required: minCount, actual: array.length } };
+      }
+      return null;
+    };
+  }
+
+  private emitValidationErrors() {
+    const errors: string[] = [];
+
+    if (this.quizForm.hasError('minQuestions')) {
+      const err = this.quizForm.getError('minQuestions');
+      errors.push(
+        `Number of attached questions (${err.actual}) is less than the question limit (${err.required}).`
+      );
+    }
+
+    this.questionsArray.controls.forEach((control, idx) => {
+      const qErrors = this.getQuestionErrors(control as FormGroup, idx + 1);
+      errors.push(...qErrors);
+    });
+
+    this.validationErrors.emit(errors);
+  }
+
+  private getQuestionErrors(questionGroup: FormGroup, qNum: number): string[] {
+    const errors: string[] = [];
+
+    if (questionGroup.hasError('minOptions')) {
+      errors.push(`Q${qNum}: Must have at least 2 options.`);
+    }
+
+    if (questionGroup.hasError('correctAnswerNotInOptions')) {
+      errors.push(`Q${qNum}: Correct answer must match one of the options.`);
+    }
+
+    const textControl = questionGroup.get('text');
+    if (textControl?.hasError('required') || textControl?.hasError('whitespace')) {
+      errors.push(`Q${qNum}: Question text is required.`);
+    }
+
+    const correctControl = questionGroup.get('correctAnswer');
+    if (correctControl?.hasError('required') || correctControl?.hasError('whitespace')) {
+      errors.push(`Q${qNum}: Correct answer is required.`);
+    }
 
     return errors;
   }
 
-  // Validate the currently selected quiz and its attached questions, then show toasts
-  saveAll() {
+  get questionsArray(): FormArray {
+    return this.quizForm?.get('questions') as FormArray;
+  }
+
+  getQuestionGroup(index: number): FormGroup {
+    return this.questionsArray.at(index) as FormGroup;
+  }
+
+  getOptionsArray(questionIndex: number): FormArray {
+    return this.getQuestionGroup(questionIndex).get('options') as FormArray;
+  }
+
+  onAddQuestion() {
     if (!this.quiz) return;
-    // normalize inputs (trim strings) to avoid whitespace-only values causing validation failures
-    this.quiz.questions = (this.quiz.questions || []).map((qq) => {
-      qq.text = qq.text ? String(qq.text).trim() : '';
-      qq.options = Array.isArray(qq.options)
-        ? qq.options.map((o) => (o ? String(o).trim() : ''))
-        : [];
-      qq.correctAnswer = qq.correctAnswer ? String(qq.correctAnswer).trim() : '';
-      return qq;
-    });
+    const newQuestion: Question = {
+      text: '',
+      options: ['', ''],
+      correctAnswer: '',
+    } as Question;
+    
+    this.quiz.questions = this.quiz.questions || [];
+    this.quiz.questions.push(newQuestion);
+    this.questionsArray.push(this.createQuestionGroup(newQuestion));
+  }
 
-    const allErrors: string[] = [];
-    const qLimit = this.quiz.questionLimit;
-    if (Array.isArray(this.quiz.questions) && this.quiz.questions.length < qLimit)
-      allErrors.push('Number of attached questions is less than the question limit (this is the minimum number of questions required).');
-
-    if (Array.isArray(this.quiz.questions)) {
-      this.quiz.questions.forEach((q: Question, idx: number) => {
-        const errs = this.validateQuestion(q);
-        errs.forEach((e) => allErrors.push(`Q${idx + 1}: ${e}`));
-      });
+  onAddOption(questionIndex: number) {
+    const optionsArray = this.getOptionsArray(questionIndex);
+    optionsArray.push(this.fb.control('', Validators.required));
+    
+    if (this.quiz?.questions?.[questionIndex]) {
+      this.quiz.questions[questionIndex].options.push('');
     }
+  }
 
-    if (allErrors.length) {
-      // log the normalized question objects to help debug unexpected validation failures
-      try {
-        // use a structured log to inspect values in the browser console
-        console.groupCollapsed('Question validation failed');
-        this.quiz.questions.forEach((q, i) => console.log(`Q${i + 1}:`, q));
-        console.groupEnd();
-      } catch (e) {
-        console.warn('Failed to log questions for debug', e);
+  onRemoveOption(qi: number, oi: number) {
+    const optionsArray = this.getOptionsArray(qi);
+    if (optionsArray.length <= 2) {
+      this.toastr.warning('Each question must have at least 2 options.');
+      return;
+    }
+    
+    optionsArray.removeAt(oi);
+    
+    if (this.quiz?.questions?.[qi]) {
+      const q = this.quiz.questions[qi];
+      const removed = q.options.splice(oi, 1)[0];
+      if (q.correctAnswer === removed) {
+        q.correctAnswer = q.options[0] || '';
+        this.getQuestionGroup(qi).get('correctAnswer')?.setValue(q.correctAnswer);
       }
+    }
+  }
 
-      this.toastr.error('Validation errors:\n' + allErrors.join('\n'));
-      console.warn('Validation errors', allErrors);
+  onSetCorrect(qi: number, oi: number) {
+    const optionsArray = this.getOptionsArray(qi);
+    const option = optionsArray.at(oi).value?.trim();
+    
+    if (!option) return;
+    
+    this.getQuestionGroup(qi).get('correctAnswer')?.setValue(option);
+    
+    if (this.quiz?.questions?.[qi]) {
+      this.quiz.questions[qi].correctAnswer = option;
+    }
+  }
+
+  onDeleteQuestion(qIndex: number) {
+    const questionGroup = this.getQuestionGroup(qIndex);
+    const text = questionGroup.get('text')?.value;
+    const title = 'Delete question';
+    const message = text
+      ? `Are you sure you want to delete this question: "${text.substring(0,60)}"?`
+      : 'Are you sure you want to delete this question?';
+
+    this.confirm.open({ title, message, confirmText: 'Delete', cancelText: 'Cancel' }).subscribe((ok: boolean) => {
+      if (ok) {
+        this.questionsArray.removeAt(qIndex);
+        if (this.quiz?.questions) {
+          this.quiz.questions.splice(qIndex, 1);
+        }
+      }
+    });
+  }
+
+  // Helper to check if option has text
+  optionHasText(option?: string): boolean {
+    return option ? option.trim().length > 0 : false;
+  }
+
+  // Helper to check if option is selected as correct answer
+  isCheckedOption(option: string | undefined, questionIndex: number): boolean {
+    if (!option || !this.optionHasText(option)) return false;
+    const correctAnswer = this.getQuestionGroup(questionIndex).get('correctAnswer')?.value;
+    return option.trim() === correctAnswer?.trim();
+  }
+
+  saveAll() {
+    if (!this.quiz || !this.quizForm) return;
+
+    // Mark all controls as touched to show validation errors
+    this.quizForm.markAllAsTouched();
+
+    if (this.quizForm.invalid) {
+      const errors: string[] = [];
+      this.emitValidationErrors();
+      
+      // Get current errors from the last emit
+      this.validationErrors.subscribe(errs => {
+        errors.push(...errs);
+      });
+
+      this.toastr.error('Please fix validation errors before saving.');
       return;
     }
 
-    // emit the validated quiz so the parent can persist using QuizService
+    // Sync form values back to quiz object with trimmed values
+    const formValue = this.quizForm.value;
+    this.quiz.questions = formValue.questions.map((q: any) => ({
+      id: q.id,
+      text: q.text?.trim() || '',
+      options: (q.options || []).map((o: string) => o?.trim() || ''),
+      correctAnswer: q.correctAnswer?.trim() || ''
+    }));
+
+    // Emit the validated quiz so the parent can persist
     this.saveQuiz.emit(this.quiz);
   }
 
-  // computed property for template binding to disable the Save button when validation errors exist
   get hasValidationErrors(): boolean {
-    if (!this.quiz) return true;
-    const qLimit = Number(this.quiz.questionLimit);
-    if (Array.isArray(this.quiz.questions) && this.quiz.questions.length < qLimit) return true;
-    if (Array.isArray(this.quiz.questions)) {
-      for (let i = 0; i < this.quiz.questions.length; i++) {
-        const errs = this.validateQuestion(this.quiz.questions[i]);
-        if (errs.length) return true;
-      }
-    }
-    return false;
+    return !this.quizForm || this.quizForm.invalid;
   }
 }

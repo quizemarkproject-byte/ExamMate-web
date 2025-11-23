@@ -11,8 +11,6 @@ import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { EditQuestionService } from '../../../services/edit-question-service/edit-question-service';
 import { QuizRequest, AdminQuiz, Question } from '../../../models/quiz';
 import { validateQuestion as validateQuestionUtil } from '../../../utils/question-validators';
-// forkJoin not needed when sending full list
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-page',
@@ -89,23 +87,6 @@ export class AdminPage {
     return validateQuestionUtil(q);
   }
 
-  validateQuiz(quiz: AdminQuiz): string[] {
-    const errors: string[] = [];
-    const qLimit = quiz.questionLimit;
-    if (Array.isArray(quiz.questions) && quiz.questions.length < qLimit)
-      errors.push(
-        'Number of attached questions is less than the question limit (this is the minimum number of questions required).'
-      );
-    // validate each question
-    if (Array.isArray(quiz.questions)) {
-      quiz.questions.forEach((q: Question, idx: number) => {
-        const qErrors = this.validateQuestion(q);
-        qErrors.forEach((e) => errors.push(`Q${idx + 1}: ${e}`));
-      });
-    }
-    return errors;
-  }
-
   // convenience getter for the currently selected quiz object
   get selectedQuiz(): AdminQuiz | null {
     return this.selectedQuizIndex === null
@@ -113,21 +94,16 @@ export class AdminPage {
       : this.quizzes[this.selectedQuizIndex];
   }
 
-  // helper to apply a mutation to the selected quiz and refresh cached errors
+  // Called by child component when validation state changes
+  onValidationChange(errors: string[]) {
+    this.selectedQuizErrors = errors;
+  }
+
+  // helper to apply a mutation to the selected quiz
   private mutateSelectedQuiz(mutator: (q: AdminQuiz) => void) {
     const q = this.selectedQuiz;
     if (!q) return;
     mutator(q);
-    this.updateSelectedQuizErrors();
-  }
-
-  updateSelectedQuizErrors() {
-    if (this.selectedQuizIndex === null) {
-      this.selectedQuizErrors = [];
-      return;
-    }
-    const quiz = this.quizzes[this.selectedQuizIndex];
-    this.selectedQuizErrors = this.validateQuiz(quiz);
   }
 
   createQuiz() {
@@ -153,14 +129,12 @@ export class AdminPage {
         this.newQuizTimeLimit = '10';
         this.newQuizQuestionLimit = 10;
         this.selectedQuizIndex = this.quizzes.length - 1;
-        this.updateSelectedQuizErrors();
       },
     });
   }
 
   selectQuiz(i: number) {
     this.selectedQuizIndex = i;
-    this.updateSelectedQuizErrors();
   }
 
   deleteQuiz(i: number) {
@@ -200,37 +174,6 @@ export class AdminPage {
         return;
       }
       quiz.questions.push(q);
-    });
-  }
-
-  removeQuestion(qIndex: number) {
-    this.mutateSelectedQuiz((quiz) => {
-      quiz.questions!.splice(qIndex, 1);
-    });
-  }
-
-  addOption(qIndex: number) {
-    this.mutateSelectedQuiz((quiz) => {
-      quiz.questions![qIndex].options.push('');
-    });
-  }
-
-  removeOption(qIndex: number, optIndex: number) {
-    this.mutateSelectedQuiz((quiz) => {
-      const q = quiz.questions![qIndex];
-      if ((q.options?.length || 0) <= 2) {
-        this.toastr.warning('Each question must have at least 2 options.');
-        return;
-      }
-      const removed = q.options.splice(optIndex, 1)[0];
-      if (q.correctAnswer === removed) q.correctAnswer = q.options[0] || '';
-    });
-  }
-
-  setCorrect(qIndex: number, optIndex: number) {
-    this.mutateSelectedQuiz((quiz) => {
-      const q = quiz.questions![qIndex];
-      q.correctAnswer = q.options[optIndex] || '';
     });
   }
 
@@ -281,9 +224,6 @@ export class AdminPage {
         }
       }
     });
-
-    // Re-run validation for the selected quiz
-    this.updateSelectedQuizErrors();
   }
 
   deleteBankQuestion(bankIndex: number) {
@@ -303,7 +243,6 @@ export class AdminPage {
           }
         }
       });
-      this.updateSelectedQuizErrors();
     };
 
     if (q.id) {
@@ -368,7 +307,6 @@ export class AdminPage {
         }
 
         this.toastr.success('Questions saved.');
-        this.updateSelectedQuizErrors();
           this.saving = false;
       },
     });

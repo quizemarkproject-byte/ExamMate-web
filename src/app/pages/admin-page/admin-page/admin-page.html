@@ -59,12 +59,7 @@
           [quiz]="selectedQuizIndex === null ? null : quizzes[selectedQuizIndex]"
           [saving]="saving"
           (saveQuiz)="persistQuiz($event)"
-          (questionEdited)="updateSelectedQuizErrors()"
-          (addQuestion)="addQuestion()"
-          (removeQuestion)="removeQuestion($event)"
-          (addOption)="addOption($event)"
-          (removeOption)="removeOption($event.qIndex, $event.optIndex)"
-          (setCorrect)="setCorrect($event.qIndex, $event.optIndex)">
+          (validationErrors)="onValidationChange($event)">
         </admin-question-editor>
       </div>
       }

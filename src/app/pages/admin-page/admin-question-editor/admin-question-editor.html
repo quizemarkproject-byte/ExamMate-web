@@ -1,15 +1,13 @@
 @if (!quiz) {
 <div class="text-gray-500">Select a quiz on the left or create a new one to begin building questions.</div>
 } @else {
-<div>
+<div [formGroup]="quizForm">
   <div class="flex items-center justify-between mb-4 gap-4">
     <div class="flex-1">
       <div class="text-xl font-semibold border-b pb-2 w-full">{{ quiz.name }}</div>
       <div class="flex items-center gap-4 mt-2">
-        <!-- <div class="text-sm text-gray-500">ID: {{ quiz.id }}</div> -->
         <div class="text-sm text-gray-500">Time:
           <span class="w-20 ml-2 px-2 py-1 text-sm">{{ quiz.timeLimit | duration }}</span>
-          
         </div>
         <div class="text-sm text-gray-500">Questions per Attempt:
           <span class="w-20 ml-2 px-2 py-1 text-sm">{{ quiz.questionLimit }}</span>
@@ -17,15 +15,15 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-  <button (click)="addQuestion.emit()" [disabled]="saving" class="bg-blue-600 text-white px-3 py-2 rounded-lg disabled:opacity-50">+ Add Question</button>
-  <button (click)="saveAll()" [disabled]="hasValidationErrors || saving" class="bg-green-600 text-white px-3 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2">
-    @if (saving) {
-      <img src="assets/svg/loading.svg" alt="Saving" class="h-4 w-4" />
-      <span>Saving…</span>
-    } @else {
-      <span>Save</span>
-    }
-  </button>
+      <button (click)="onAddQuestion()" [disabled]="saving" class="bg-blue-600 text-white px-3 py-2 rounded-lg disabled:opacity-50">+ Add Question</button>
+      <button (click)="saveAll()" [disabled]="hasValidationErrors || saving" class="bg-green-600 text-white px-3 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2">
+        @if (saving) {
+          <img src="assets/svg/loading.svg" alt="Saving" class="h-4 w-4" />
+          <span>Saving…</span>
+        } @else {
+          <span>Save</span>
+        }
+      </button>
     </div>
   </div>
 
@@ -33,50 +31,60 @@
     <!-- parent will show quiz-level messages if needed -->
   </div>
 
-  <div class="space-y-4">
-  @for (question of quiz.questions; track $index; let qi = $index) {
-    <div class="border rounded p-4">
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex-1">
-          <div class="mb-2 text-sm text-gray-600">Question {{ qi + 1 }}</div>
-          <input id="question-text-{{ qi }}" name="question-text-{{ qi }}" maxlength="255" [(ngModel)]="question.text" (ngModelChange)="onQuestionEdited(qi)" placeholder="Question text" class="w-full px-3 py-2 border rounded mb-3" />
+  <div class="space-y-4" formArrayName="questions">
+    @for (questionControl of questionsArray.controls; track $index; let qi = $index) {
+      <div class="border rounded p-4" [formGroupName]="qi">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1">
+            <div class="mb-2 text-sm text-gray-600">Question {{ qi + 1 }}</div>
+            <input 
+              id="question-text-{{ qi }}" 
+              formControlName="text"
+              maxlength="255" 
+              placeholder="Question text" 
+              class="w-full px-3 py-2 border rounded mb-3" />
 
-          <div class="space-y-2">
-            @for (option of question.options; track $index; let oi = $index) {
-            <div class="flex items-center gap-2">
-                <input
-                  id="correct-{{ qi }}-{{ oi }}"
-                  type="radio"
-                  name="correct-{{ qi }}"
-                  [checked]="isCheckedOption(option, question)"
-                  (click)="!saving && optionHasText(option) && onSetCorrect(qi, oi)"
-                  [disabled]="saving || !optionHasText(option)"
-                  class="appearance-none h-4 w-4 rounded-full border-2 border-blue-400 checked:bg-blue-600"
-                />
-              <input id="question-{{ qi }}-option-{{ oi }}" name="question-{{ qi }}-option-{{ oi }}" maxlength="255" [(ngModel)]="question.options[oi]" (ngModelChange)="onQuestionEdited(qi)" placeholder="Option text" class="flex-1 px-3 py-2 border rounded" />
-              <button (click)="onRemoveOption(qi, oi)" title="Remove option" [disabled]="saving" class="text-red-500 ml-2 disabled:opacity-50">
-        <i class="fas fa-xmark"></i>
-      </button>
+            <div class="space-y-2" formArrayName="options">
+              @for (optionControl of getOptionsArray(qi).controls; track $index; let oi = $index) {
+                <div class="flex items-center gap-2">
+                  <input
+                    id="correct-{{ qi }}-{{ oi }}"
+                    type="radio"
+                    name="correct-{{ qi }}"
+                    [checked]="isCheckedOption(optionControl.value, qi)"
+                    (click)="!saving && optionHasText(optionControl.value) && onSetCorrect(qi, oi)"
+                    [disabled]="saving || !optionHasText(optionControl.value)"
+                    class="appearance-none h-4 w-4 rounded-full border-2 border-blue-400 checked:bg-blue-600"
+                  />
+                  <input 
+                    id="question-{{ qi }}-option-{{ oi }}" 
+                    [formControlName]="oi"
+                    maxlength="255" 
+                    placeholder="Option text" 
+                    class="flex-1 px-3 py-2 border rounded" />
+                  <button (click)="onRemoveOption(qi, oi)" title="Remove option" [disabled]="saving" class="text-red-500 ml-2 disabled:opacity-50">
+                    <i class="fas fa-xmark"></i>
+                  </button>
+                </div>
+              }
             </div>
-            }
+
+            <div class="mt-3">
+              <button (click)="onAddOption(qi)" [disabled]="saving" class="text-sm text-purple-600 disabled:opacity-50">+ Add option</button>
+            </div>
+
+            <div class="min-h-[3rem] mt-2 text-xs text-red-500">
+              <!-- per-question validation shown by parent in current layout -->
+            </div>
           </div>
 
-          <div class="mt-3">
-            <button (click)="addOption.emit(qi)" [disabled]="saving" class="text-sm text-purple-600 disabled:opacity-50">+ Add option</button>
+          <div class="shrink-0">
+            <button (click)="onDeleteQuestion(qi)" title="Delete question" [disabled]="saving" class="text-red-500 ml-2 disabled:opacity-50">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
-
-          <div class="min-h-[3rem] mt-2 text-xs text-red-500">
-            <!-- per-question validation shown by parent in current layout -->
-          </div>
-        </div>
-
-        <div class="shrink-0">
-          <button (click)="onDeleteQuestion(qi)" title="Delete question" [disabled]="saving" class="text-red-500 ml-2 disabled:opacity-50">
-        <i class="fas fa-trash"></i>
-          </button>
         </div>
       </div>
-    </div>
     }
   </div>
 </div>
