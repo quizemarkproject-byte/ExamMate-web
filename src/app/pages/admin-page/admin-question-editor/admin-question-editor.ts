@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AdminQuiz } from '../../../models/quiz';
@@ -32,12 +32,15 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
     this.destroy$.complete();
   }
 
-  ngOnChanges() {
-    // Only rebuild form if quiz ID changed or quiz is null
-    const currentQuizId = this.quiz?.id || null;
-    if (currentQuizId !== this.lastQuizId) {
-      this.lastQuizId = currentQuizId;
-      this.initializeForm();
+  ngOnChanges(changes: SimpleChanges) {
+    // Reinitialize form whenever quiz input changes
+    if (changes['quiz']) {
+      const currentQuizId = this.quiz?.id || null;
+      // Always rebuild if quiz changed, or if it's a different ID
+      if (changes['quiz'].firstChange || currentQuizId !== this.lastQuizId) {
+        this.lastQuizId = currentQuizId;
+        this.initializeForm();
+      }
     }
   }
 
@@ -47,6 +50,11 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   }
 
   private initializeForm() {
+    // Clear previous subscriptions by triggering destroy and recreating
+    if (this.quizForm) {
+      this.destroy$.next();
+    }
+
     if (!this.quiz) {
       this.quizForm = this.fb.group({
         questions: this.fb.array([])
@@ -69,8 +77,8 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.emitValidationErrors());
 
-    // Emit initial validation state
-    this.emitValidationErrors();
+    // Emit initial validation state after a brief delay to ensure form is ready
+    setTimeout(() => this.emitValidationErrors(), 0);
   }
 
   private createQuestionGroup(question: Question): FormGroup {
@@ -132,8 +140,9 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   private emitValidationErrors() {
     const errors: string[] = [];
 
-    if (this.quizForm.hasError('minQuestions')) {
-      const err = this.quizForm.getError('minQuestions');
+    // Check for minQuestions error on the FormArray
+    if (this.questionsArray.hasError('minQuestions')) {
+      const err = this.questionsArray.getError('minQuestions');
       errors.push(
         `Number of attached questions (${err.actual}) is less than the question limit (${err.required}).`
       );
