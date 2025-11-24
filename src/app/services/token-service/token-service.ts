@@ -69,6 +69,11 @@ export class TokenService {
     return payload?.role || null;
   }
 
+  isAdmin(): boolean {
+    const role = this.getRole();
+    return role === 'ADMIN';
+  }
+
   private getUserId(): string {
     let userId = localStorage.getItem(this.USER_ID_KEY);
 

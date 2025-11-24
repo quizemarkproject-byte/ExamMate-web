@@ -7,6 +7,7 @@ import { AnalyticsResponse } from '../../models/analytics';
 import { QuizService } from '../../services/quiz-service/quiz-service';
 import { UserService } from '../../services/user-service/user-service';
 import { ToastrService } from '../../services/toastr-service/toastr-service';
+import { TokenService } from '../../services/token-service/token-service';
 import { Quiz } from '../../models/quiz';
 import { UserModel } from '../../models/user-service';
 
@@ -21,7 +22,7 @@ Chart.register(...registerables);
 export class AnalyticsPage implements OnInit, OnDestroy {
   mode: 'quiz' | 'user' = 'quiz';
   inputId: string = '';
-  isAdmin: boolean = true; // Toggle this based on user role
+  isAdmin: boolean = false;
   
   quizzes: Quiz[] = [];
   users: UserModel[] = [];
@@ -38,6 +39,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
   private quizService = inject(QuizService);
   private userService = inject(UserService);
   private toastrService = inject(ToastrService);
+  private tokenService = inject(TokenService);
   private cdr = inject(ChangeDetectorRef);
   private sparkChart?: Chart;
   private attemptsChart?: Chart;
@@ -45,9 +47,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
   private questionChart?: Chart;
 
   ngOnInit() {
+    // Set admin status from token
+    this.isAdmin = this.tokenService.isAdmin();
+    console.log('isAdmin:', this.isAdmin);
     // Load quizzes and users
     this.loadQuizzes();
-    this.loadUsers();
+    if (this.isAdmin) {
+      this.loadUsers();
+    }
   }
 
   onModeChange() {
@@ -56,6 +63,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     this.selectedUserId = '';
     this.hasData = false;
     this.destroyCharts();
+    
+    // For regular users in user mode, automatically load their own analytics
+    if (!this.isAdmin && this.mode === 'user') {
+      const userId = this.tokenService.getId();
+      this.selectedUserId = userId;
+      // Small delay to ensure selectedUserId is set
+      setTimeout(() => this.loadData(), 0);
+    }
   }
 
   onSelectionChange() {
@@ -102,14 +117,29 @@ export class AnalyticsPage implements OnInit, OnDestroy {
   }
 
   loadData() {
-    const id = this.mode === 'quiz' ? this.selectedQuizId : this.selectedUserId;
+    let id: string;
+    
+    if (this.mode === 'quiz') {
+      id = this.selectedQuizId;
+      if (!id || !id.trim()) {
+        this.toastrService.show('Please select a quiz', 'warning');
+        return;
+      }
+    } else {
+      // For user mode
+      if (this.isAdmin) {
+        id = this.selectedUserId;
+        if (!id || !id.trim()) {
+          this.toastrService.show('Please select a user', 'warning');
+          return;
+        }
+      } else {
+        // Regular users always use their own ID
+        id = this.tokenService.getId();
+      }
+    }
     
     console.log('loadData called with id:', id, 'mode:', this.mode, 'isAdmin:', this.isAdmin);
-    
-    if (!id || !id.trim()) {
-      this.toastrService.show('Please select a ' + (this.mode === 'quiz' ? 'quiz' : 'user'), 'warning');
-      return;
-    }
 
     this.isLoading = true;
     let observable$;
@@ -120,8 +150,16 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         ? this.analyticsService.adminQuizAnalytics(id)
         : this.analyticsService.adminUserAnalytics(id);
     } else {
-      // Regular users can only view their own analytics
-      observable$ = this.analyticsService.userAnalytics(id);
+      // Regular users can view their own quiz analytics or their own overall analytics
+      if (this.mode === 'quiz') {
+        // Quiz-specific analytics for the current user
+        const userId = this.tokenService.getId();
+        observable$ = this.analyticsService.userAnalyticsByQuiz(userId, id);
+      } else {
+        // Overall analytics for the current user (using their own ID)
+        const userId = this.tokenService.getId();
+        observable$ = this.analyticsService.userAnalytics(userId);
+      }
     }
 
     console.log('Subscribing to observable...');

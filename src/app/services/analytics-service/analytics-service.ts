@@ -22,7 +22,10 @@ private userAnalyticsUrl = environment.backend_url + '/api/v1/user/analytics';
   }
 
   userAnalytics(userId: string): Observable<AnalyticsResponse> {
-    return this.http.get<AnalyticsResponse>(`${this.userAnalyticsUrl}/users/${userId}`);
+    return this.http.get<AnalyticsResponse>(`${this.userAnalyticsUrl}/${userId}`);
   }
   
+  userAnalyticsByQuiz(userId:string,quizId: string): Observable<AnalyticsResponse> {
+    return this.http.get<AnalyticsResponse>(`${this.userAnalyticsUrl}/${userId}/quiz/${quizId}`);
+  }
 }

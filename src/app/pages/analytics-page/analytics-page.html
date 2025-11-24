@@ -1,5 +1,11 @@
 <div class="max-w-7xl mx-auto px-6 py-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Admin — Analytics Dashboard</h2>
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+    @if (isAdmin) {
+      Admin — Analytics Dashboard
+    } @else {
+      Analytics Dashboard
+    }
+  </h2>
   
   <!-- Controls -->
   <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
@@ -10,7 +16,7 @@
       </label>
       <label class="flex items-center gap-2">
         <input type="radio" name="mode" [(ngModel)]="mode" (ngModelChange)="onModeChange()" value="user" class="text-purple-600" />
-        <span>User analytics</span>
+        <span>@if (isAdmin) { User analytics } @else { My Analytics }</span>
       </label>
       
       @if (mode === 'quiz') {
@@ -25,16 +31,20 @@
           }
         </select>
       } @else {
-        <select 
-          [(ngModel)]="selectedUserId"
-          (ngModelChange)="onSelectionChange()"
-          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
-        >
-          <option value="">Select a user</option>
-          @for (user of users; track user.id) {
-            <option [value]="user.id">{{ user.fullName }} ({{ user.username }})</option>
-          }
-        </select>
+        @if (isAdmin) {
+          <select 
+            [(ngModel)]="selectedUserId"
+            (ngModelChange)="onSelectionChange()"
+            class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
+          >
+            <option value="">Select a user</option>
+            @for (user of users; track user.id) {
+              <option [value]="user.id">{{ user.fullName }} ({{ user.username }})</option>
+            }
+          </select>
+        } @else {
+          <span class="text-gray-600 text-sm">Viewing your overall analytics</span>
+        }
       }
     </div>
   </div>
