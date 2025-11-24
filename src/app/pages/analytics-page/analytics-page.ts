@@ -381,7 +381,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
           }
         },
         scales: {
-          y: { beginAtZero: true, title: { display: true, text: 'Count' } },
+          y: { 
+            beginAtZero: true, 
+            title: { display: true, text: 'Count' },
+            ticks: {
+              stepSize: 1,
+              precision: 0
+            }
+          },
           x: { title: { display: true, text: 'Score range (%)' } }
         }
       }
