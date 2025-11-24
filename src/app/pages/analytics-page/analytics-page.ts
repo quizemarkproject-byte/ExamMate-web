@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
@@ -38,6 +38,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
   private quizService = inject(QuizService);
   private userService = inject(UserService);
   private toastrService = inject(ToastrService);
+  private cdr = inject(ChangeDetectorRef);
   private sparkChart?: Chart;
   private attemptsChart?: Chart;
   private distributionChart?: Chart;
@@ -47,6 +48,26 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     // Load quizzes and users
     this.loadQuizzes();
     this.loadUsers();
+  }
+
+  onModeChange() {
+    // Reset selections when mode changes
+    this.selectedQuizId = '';
+    this.selectedUserId = '';
+    this.hasData = false;
+    this.destroyCharts();
+  }
+
+  onSelectionChange() {
+    // Automatically load data when a selection is made
+    const id = this.mode === 'quiz' ? this.selectedQuizId : this.selectedUserId;
+    if (id && id.trim()) {
+      this.loadData();
+    } else {
+      // Clear data if selection is cleared
+      this.hasData = false;
+      this.destroyCharts();
+    }
   }
 
   ngOnDestroy() {
@@ -109,8 +130,10 @@ export class AnalyticsPage implements OnInit, OnDestroy {
       next: (data) => {
         console.log('Analytics data received:', data);
         this.isLoading = false;
-        // Use setTimeout to ensure DOM is ready for chart rendering
-        setTimeout(() => this.renderAnalytics(data), 0);
+        // Force change detection to update the view
+        this.cdr.detectChanges();
+        // Render analytics after view update
+        this.renderAnalytics(data);
       },
       error: (error) => {
         console.error('Error loading analytics:', error);
@@ -132,6 +155,9 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     
     this.hasData = hasAttempts || hasTimeSeries || hasDistribution;
     
+    // Force change detection to render the canvas elements
+    this.cdr.detectChanges();
+    
     if (!this.hasData) {
       console.log('No data available');
       this.updateKpis({ totalAttempts: 0, averageScore: 0, medianScore: 0, scoreDistribution: {}, attemptsByDay: {} });
@@ -141,14 +167,19 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     
     this.updateKpis(data);
     
-    const timeSeries = this.sortedTimeSeries(data.attemptsByDay);
-    console.log('Time series:', timeSeries);
-    this.renderSparkline(timeSeries.labels, timeSeries.data);
-    this.renderAttemptsChart(timeSeries.labels, timeSeries.data);
-    
-    const distribution = this.ensureBuckets(data.scoreDistribution);
-    console.log('Distribution:', distribution);
-    this.renderDistributionChart(distribution.labels, distribution.data, data.averageScore, data.medianScore);
+    // Use requestAnimationFrame to ensure DOM is ready, then render charts
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const timeSeries = this.sortedTimeSeries(data.attemptsByDay);
+        console.log('Time series:', timeSeries);
+        this.renderSparkline(timeSeries.labels, timeSeries.data);
+        this.renderAttemptsChart(timeSeries.labels, timeSeries.data);
+        
+        const distribution = this.ensureBuckets(data.scoreDistribution);
+        console.log('Distribution:', distribution);
+        this.renderDistributionChart(distribution.labels, distribution.data, data.averageScore, data.medianScore);
+      });
+    });
   }
 
   private updateKpis(data: AnalyticsResponse) {
@@ -181,7 +212,10 @@ export class AnalyticsPage implements OnInit, OnDestroy {
 
   private renderSparkline(labels: string[], data: number[]) {
     const canvas = document.getElementById('sparkline') as HTMLCanvasElement;
-    if (!canvas) return;
+    if (!canvas) {
+      console.warn('Sparkline canvas not found');
+      return;
+    }
     
     this.sparkChart?.destroy();
     
@@ -210,7 +244,10 @@ export class AnalyticsPage implements OnInit, OnDestroy {
 
   private renderAttemptsChart(labels: string[], data: number[]) {
     const canvas = document.getElementById('attemptsChart') as HTMLCanvasElement;
-    if (!canvas) return;
+    if (!canvas) {
+      console.warn('Attempts chart canvas not found');
+      return;
+    }
     
     this.attemptsChart?.destroy();
     
@@ -236,7 +273,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         },
         scales: {
           x: { title: { display: true, text: 'Date' } },
-          y: { title: { display: true, text: 'Attempts' }, beginAtZero: true }
+          y: { 
+            title: { display: true, text: 'Attempts' }, 
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              precision: 0
+            }
+          }
         }
       }
     });
@@ -244,7 +288,10 @@ export class AnalyticsPage implements OnInit, OnDestroy {
 
   private renderDistributionChart(labels: string[], data: number[], avg?: number, median?: number) {
     const canvas = document.getElementById('distributionChart') as HTMLCanvasElement;
-    if (!canvas) return;
+    if (!canvas) {
+      console.warn('Distribution chart canvas not found');
+      return;
+    }
     
     this.distributionChart?.destroy();
     
