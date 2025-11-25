@@ -46,7 +46,15 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
 
   // Public method to force form refresh when questions are modified externally
   refreshForm() {
+    // Sync current form data back to quiz before reinitializing
+    this.syncFormToQuiz();
     this.initializeForm();
+  }
+
+  // Public method to append a question to the existing form without rebuilding
+  appendQuestion(question: Question) {
+    if (!this.questionsArray) return;
+    this.questionsArray.push(this.createQuestionGroup(question));
   }
 
   // Public method to update validators when quiz metadata changes (like questionLimit)
@@ -267,6 +275,19 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
     return option.trim() === correctAnswer?.trim();
   }
 
+  // Helper method to sync form data back to quiz object
+  private syncFormToQuiz() {
+    if (!this.quiz || !this.quizForm) return;
+    
+    const formValue = this.quizForm.value;
+    this.quiz.questions = formValue.questions.map((q: any) => ({
+      id: q.id,
+      text: q.text?.trim() || '',
+      options: (q.options || []).map((o: string) => o?.trim() || ''),
+      correctAnswer: q.correctAnswer?.trim() || ''
+    }));
+  }
+
   saveAll() {
     if (!this.quiz || !this.quizForm) return;
 
@@ -277,14 +298,8 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
       return;
     }
 
-    // Sync form values back to quiz object with trimmed values
-    const formValue = this.quizForm.value;
-    this.quiz.questions = formValue.questions.map((q: any) => ({
-      id: q.id,
-      text: q.text?.trim() || '',
-      options: (q.options || []).map((o: string) => o?.trim() || ''),
-      correctAnswer: q.correctAnswer?.trim() || ''
-    }));
+    // Sync form values back to quiz object
+    this.syncFormToQuiz();
 
     this.saveQuiz.emit(this.quiz);
   }

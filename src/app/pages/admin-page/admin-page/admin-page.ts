@@ -174,8 +174,9 @@ export class AdminPage {
       return;
     }
     
+    // Add to quiz questions and directly append to form array
     quiz.questions.push(q);
-    this.editorComponent?.refreshForm();
+    this.editorComponent?.appendQuestion(q);
   }
 
   createQuestion() {
