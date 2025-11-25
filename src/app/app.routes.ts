@@ -25,7 +25,6 @@ export const routes: Routes = [
   {
     path: 'result',
     component: QuizPage,
-    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -41,7 +40,6 @@ export const routes: Routes = [
     path: 'quiz',
     component: QuizPage,
     title: 'ExamMate | Quiz',
-    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -66,7 +64,6 @@ export const routes: Routes = [
   {
     path: 'analytics',
     component: AnalyticsPage,
-    title: 'ExamMate | Analytics',
-    canActivate: [authGuard],
+    title: 'ExamMate | Analytics'
   }
 ];

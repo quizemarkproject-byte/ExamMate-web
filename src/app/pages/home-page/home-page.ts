@@ -17,7 +17,10 @@ export class HomePage {
 
   ngOnInit() {
     this.isLoggedIn = this.tokenService.isLoggedIn();
-    // this.username = this.tokenService.getSub();
+  }
+
+  get isAdmin(): boolean {
+    return this.tokenService.isAdmin();
   }
 
   startQuiz() {
