@@ -1,29 +1,55 @@
 <div class="max-w-7xl mx-auto px-6 py-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">
-    @if (isAdmin) {
-      Admin — Analytics Dashboard
-    } @else {
-      Analytics Dashboard
-    }
-  </h2>
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">
+      @if (isAdmin) {
+        Admin — Analytics Dashboard
+      } @else {
+        Analytics Dashboard
+      }
+    </h2>
+    <div class="flex items-center gap-3">
+      <a 
+        routerLink="/home" 
+        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+      >
+        <i class="fas fa-home mr-1"></i>Home
+      </a>
+      <a 
+        routerLink="/quiz" 
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        <i class="fas fa-book mr-1"></i>Quizzes
+      </a>
+      @if (isAdmin) {
+      <a 
+        routerLink="/admin" 
+        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+      >
+        <i class="fas fa-cog mr-1"></i>Admin
+      </a>
+      }
+    </div>
+  </div>
   
   <!-- Controls -->
   <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
     <div class="flex items-center gap-4 flex-wrap">
-      <label class="flex items-center gap-2">
-        <input type="radio" name="mode" [(ngModel)]="mode" (ngModelChange)="onModeChange()" value="quiz" class="text-purple-600" />
-        <span>Quiz analytics</span>
-      </label>
-      <label class="flex items-center gap-2">
-        <input type="radio" name="mode" [(ngModel)]="mode" (ngModelChange)="onModeChange()" value="user" class="text-purple-600" />
-        <span>@if (isAdmin) { User analytics } @else { My Analytics }</span>
-      </label>
+      <div class="flex items-center gap-4">
+        <label class="flex items-center gap-2">
+          <input type="radio" name="mode" [(ngModel)]="mode" (ngModelChange)="onModeChange()" value="quiz" class="text-purple-600" />
+          <span>Quiz analytics</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="radio" name="mode" [(ngModel)]="mode" (ngModelChange)="onModeChange()" value="user" class="text-purple-600" />
+          <span>@if (isAdmin) { User analytics } @else { My Analytics }</span>
+        </label>
+      </div>
       
       @if (mode === 'quiz') {
         <select 
           [(ngModel)]="selectedQuizId"
           (ngModelChange)="onSelectionChange()"
-          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
+          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px] max-w-xs"
         >
           <option value="">Select a quiz</option>
           @for (quiz of quizzes; track quiz.id) {
@@ -34,8 +60,8 @@
         @if (isAdmin) {
         <select 
           [(ngModel)]="selectedUserId"
-            (ngModelChange)="onSelectionChange()"
-          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
+          (ngModelChange)="onSelectionChange()"
+          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px] max-w-xs"
         >
           <option value="">Select a user</option>
           @for (user of users; track user.id) {

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { AnalyticsService } from '../../services/analytics-service/analytics-service';
 import { AnalyticsResponse } from '../../models/analytics';
@@ -16,7 +17,7 @@ Chart.register(...registerables);
 
 @Component({
   selector: 'app-analytics-page',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './analytics-page.html',
 })
 export class AnalyticsPage implements OnInit, OnDestroy {
