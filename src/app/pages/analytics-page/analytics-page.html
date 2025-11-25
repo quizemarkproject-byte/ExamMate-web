@@ -33,7 +33,7 @@
   
   <!-- Controls -->
   <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-    <div class="flex items-center gap-4 flex-wrap">
+    <div class="flex items-center justify-between gap-4">
       <div class="flex items-center gap-4">
         <label class="flex items-center gap-2">
           <input type="radio" name="mode" [(ngModel)]="mode" (ngModelChange)="onModeChange()" value="quiz" class="text-purple-600" />
@@ -45,33 +45,35 @@
         </label>
       </div>
       
-      @if (mode === 'quiz') {
-        <select 
-          [(ngModel)]="selectedQuizId"
-          (ngModelChange)="onSelectionChange()"
-          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px] max-w-xs"
-        >
-          <option value="">Select a quiz</option>
-          @for (quiz of quizzes; track quiz.id) {
-            <option [value]="quiz.id">{{ quiz.name }}</option>
-          }
-        </select>
-      } @else {
-        @if (isAdmin) {
-        <select 
-          [(ngModel)]="selectedUserId"
-          (ngModelChange)="onSelectionChange()"
-          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px] max-w-xs"
-        >
-          <option value="">Select a user</option>
-          @for (user of users; track user.id) {
-            <option [value]="user.id">{{ user.fullName }} ({{ user.username }})</option>
-          }
-        </select>
+      <div class="flex-shrink-0 w-[200px]">
+        @if (mode === 'quiz') {
+          <select 
+            [(ngModel)]="selectedQuizId"
+            (ngModelChange)="onSelectionChange()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="">Select a quiz</option>
+            @for (quiz of quizzes; track quiz.id) {
+              <option [value]="quiz.id">{{ quiz.name }}</option>
+            }
+          </select>
         } @else {
-          <span class="text-gray-600 text-sm">Viewing your overall analytics</span>
+          @if (isAdmin) {
+          <select 
+            [(ngModel)]="selectedUserId"
+            (ngModelChange)="onSelectionChange()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="">Select a user</option>
+            @for (user of users; track user.id) {
+              <option [value]="user.id">{{ user.fullName }} ({{ user.username }})</option>
+            }
+          </select>
+          } @else {
+            <span class="text-gray-600 text-sm block py-2">Viewing your overall analytics</span>
+          }
         }
-      }
+      </div>
     </div>
   </div>
 
@@ -129,7 +131,7 @@
   </div>
 
   <!-- Charts Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <div class="bg-white rounded-lg border border-gray-200 p-6">
       <h3 class="text-lg font-semibold text-gray-800 mb-4">Attempts by day</h3>
       <div style="height: 300px;">
@@ -142,6 +144,14 @@
       <div style="height: 300px;">
         <canvas id="distributionChart"></canvas>
       </div>
+    </div>
+  </div>
+
+  <!-- Per-question difficulty -->
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Per-question difficulty (hardest first)</h3>
+    <div style="height: 400px;">
+      <canvas id="questionChart"></canvas>
     </div>
   </div>
   }

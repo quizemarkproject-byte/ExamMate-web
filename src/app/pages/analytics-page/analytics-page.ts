@@ -217,6 +217,11 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     const distribution = this.ensureBuckets(data.scoreDistribution);
     console.log('Distribution:', distribution);
     this.renderDistributionChart(distribution.labels, distribution.data, data.averageScore, data.medianScore);
+    
+    // Render question difficulty chart if data is available
+    if (data.questionStats && data.questionStats.length > 0) {
+      this.renderQuestionChart(data.questionStats);
+    }
       });
     });
   }
@@ -393,6 +398,77 @@ export class AnalyticsPage implements OnInit, OnDestroy {
             }
           },
           x: { title: { display: true, text: 'Score range (%)' } }
+        }
+      }
+    });
+  }
+
+  private renderQuestionChart(questionStats: any[]) {
+    const canvas = document.getElementById('questionChart') as HTMLCanvasElement;
+    if (!canvas) {
+      console.warn('Question chart canvas not found');
+      return;
+    }
+    
+    this.questionChart?.destroy();
+    
+    if (!questionStats || questionStats.length === 0) {
+      return;
+    }
+    
+    // Sort by difficulty (hardest first) and take top 20
+    const stats = questionStats
+      .slice()
+      .sort((a, b) => (a.pctCorrect || 0) - (b.pctCorrect || 0))
+      .slice(0, 20);
+    
+    // Truncate labels for display but keep full text for tooltips
+    const truncateText = (text: string, maxLength: number = 40) => {
+      if (!text) return 'Q';
+      if (text.length <= maxLength) return text;
+      return text.substring(0, maxLength) + '...';
+    };
+    
+    const labels = stats.map(q => truncateText(q.text || q.id || 'Q'));
+    const fullLabels = stats.map(q => q.text || q.id || 'Q');
+    const data = stats.map(q => Math.round((q.pctCorrect || 0) * 100));
+    
+    this.questionChart = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: '% correct',
+          data,
+          backgroundColor: 'rgba(255,99,71,0.85)'
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: { display: true, text: 'Per-question % correct (hardest first)' },
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (tooltipItems: any[]) => {
+                // Show full question text in tooltip
+                const index = tooltipItems[0].dataIndex;
+                return fullLabels[index];
+              },
+              label: (context: any) => {
+                return `${context.parsed.x}% correct`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { 
+            beginAtZero: true, 
+            max: 100,
+            title: { display: true, text: '% correct' }
+          }
         }
       }
     });
