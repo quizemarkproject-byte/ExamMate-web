@@ -4,7 +4,7 @@ import { inject } from '@angular/core';
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenService);
-  if (req.url.includes('/blog')) {
+  if (req.url.includes('/api/v1/admin')) {
     const token = tokenService.getAccessToken();
     if (token) {
       const clonedReq = req.clone({
