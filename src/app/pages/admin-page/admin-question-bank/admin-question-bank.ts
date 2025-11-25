@@ -46,23 +46,11 @@ export class AdminQuestionBank {
     this.editService.open(q).subscribe((updated) => {
       if (!updated) return;
 
-      // If the question exists on the server (has an id), persist update
-      if (updated.id) {
-        this.quizService.adminUpdateQuestion(String(updated.id), updated).subscribe({
-          next: (serverQ) => {
-            Object.assign(this.questionBank[bi], serverQ);
-            this.editQuestion.emit(bi);
-            this.toastr.success('Question updated.');
-          },
-          error: () => {
-            this.toastr.error('Failed to update question.');
-          },
-        });
-      } else {
-        // Apply locally for new/unpersisted questions
-        Object.assign(this.questionBank[bi], updated);
-        this.editQuestion.emit(bi);
-      }
+      // Apply changes locally first
+      Object.assign(this.questionBank[bi], updated);
+      
+      // Emit to parent to handle server update and propagation to quizzes
+      this.editQuestion.emit(bi);
     });
   }
 }

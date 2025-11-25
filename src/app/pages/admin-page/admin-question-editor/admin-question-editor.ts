@@ -45,9 +45,8 @@ export class AdminQuestionEditor implements OnChanges, OnDestroy {
   }
 
   // Public method to force form refresh when questions are modified externally
+  // DO NOT sync form to quiz here - this is called when quiz.questions has been updated externally
   refreshForm() {
-    // Sync current form data back to quiz before reinitializing
-    this.syncFormToQuiz();
     this.initializeForm();
   }
 

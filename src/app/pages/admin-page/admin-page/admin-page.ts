@@ -199,34 +199,45 @@ export class AdminPage {
   // Updates the question on the server first, then propagates to all affected quizzes locally.
   onQuestionEdited(bankIndex: number) {
     const updated = this.questionBank[bankIndex];
-    if (!updated?.id) return;
+    if (!updated) return;
 
-    // Update the question on the server first
-    this.quizService.adminUpdateQuestion(String(updated.id), updated).subscribe({
-      next: (serverQuestion: Question) => {
-        // Update the question with server response
-        Object.assign(this.questionBank[bankIndex], serverQuestion);
+    // If question has an ID, update on server
+    if (updated.id) {
+      this.quizService.adminUpdateQuestion(String(updated.id), updated).subscribe({
+        next: (serverQuestion: Question) => {
+          // Update the question with server response
+          Object.assign(this.questionBank[bankIndex], serverQuestion);
 
-        // Propagate to all affected quizzes locally
-        this.quizzes.forEach(quiz => {
-          quiz.questions?.forEach(q => {
-            if (this.isSameQuestion(q, serverQuestion)) {
-              Object.assign(q, serverQuestion);
-            }
-          });
-        });
+          // Propagate to all affected quizzes locally
+          this.propagateQuestionToQuizzes(serverQuestion);
 
-        // If the selected quiz was affected, refresh the form
-        if (this.selectedQuiz?.questions?.some(q => this.isSameQuestion(q, serverQuestion))) {
-          this.editorComponent?.refreshForm();
+          this.toastr.success('Question updated.');
+        },
+        error: () => {
+          this.toastr.error('Failed to update question.');
+        },
+      });
+    } else {
+      // For unpersisted questions, just propagate locally
+      this.propagateQuestionToQuizzes(updated);
+    }
+  }
+
+  // Helper to propagate question changes to all quizzes
+  private propagateQuestionToQuizzes(question: Question) {
+    // Propagate to all affected quizzes locally
+    this.quizzes.forEach(quiz => {
+      quiz.questions?.forEach((q, index) => {
+        if (this.isSameQuestion(q, question)) {
+          Object.assign(q, question);
         }
-
-        this.toastr.success('Question updated.');
-      },
-      error: () => {
-        this.toastr.error('Failed to update question.');
-      },
+      });
     });
+
+    // If the selected quiz was affected, refresh the form
+    if (this.selectedQuiz?.questions?.some(q => this.isSameQuestion(q, question))) {
+      this.editorComponent?.refreshForm();
+    }
   }
 
   deleteQuestion(bankIndex: number) {
@@ -285,6 +296,16 @@ export class AdminPage {
           } else {
             this.questionBank.push(serverQ);
           }
+          
+          // Propagate changes to all other quizzes that share this question
+          this.quizzes.forEach(q => {
+            if (q.id === quiz.id) return; // Skip current quiz
+            q.questions?.forEach((question, idx) => {
+              if (this.isSameQuestion(question, serverQ)) {
+                Object.assign(question, serverQ);
+              }
+            });
+          });
         });
 
         this.toastr.success('Questions saved.');
