@@ -32,16 +32,16 @@
         </select>
       } @else {
         @if (isAdmin) {
-          <select 
-            [(ngModel)]="selectedUserId"
+        <select 
+          [(ngModel)]="selectedUserId"
             (ngModelChange)="onSelectionChange()"
-            class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
-          >
-            <option value="">Select a user</option>
-            @for (user of users; track user.id) {
-              <option [value]="user.id">{{ user.fullName }} ({{ user.username }})</option>
-            }
-          </select>
+          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
+        >
+          <option value="">Select a user</option>
+          @for (user of users; track user.id) {
+            <option [value]="user.id">{{ user.fullName }} ({{ user.username }})</option>
+          }
+        </select>
         } @else {
           <span class="text-gray-600 text-sm">Viewing your overall analytics</span>
         }
@@ -68,16 +68,16 @@
   @if (!hasData && !isLoading) {
     <div class="flex justify-center items-center min-h-[60vh]">
       <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center max-w-md">
-        <svg class="w-16 h-16 mx-auto text-yellow-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-        </svg>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">No data available</h3>
-        <p class="text-gray-600">There are no analytics to display yet. This could mean:</p>
-        <ul class="text-gray-600 text-sm mt-2 space-y-1">
-          <li>• No quiz attempts have been made</li>
-          <li>• The selected quiz/user has no activity</li>
-          <li>• Data is still being processed</li>
-        </ul>
+      <svg class="w-16 h-16 mx-auto text-yellow-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">No data available</h3>
+      <p class="text-gray-600">There are no analytics to display yet. This could mean:</p>
+      <ul class="text-gray-600 text-sm mt-2 space-y-1">
+        <li>• No quiz attempts have been made</li>
+        <li>• The selected quiz/user has no activity</li>
+        <li>• Data is still being processed</li>
+      </ul>
       </div>
     </div>
   }

@@ -53,7 +53,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     // Load quizzes and users
     this.loadQuizzes();
     if (this.isAdmin) {
-      this.loadUsers();
+    this.loadUsers();
     }
   }
 
@@ -208,14 +208,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     // Use requestAnimationFrame to ensure DOM is ready, then render charts
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const timeSeries = this.sortedTimeSeries(data.attemptsByDay);
-        console.log('Time series:', timeSeries);
-        this.renderSparkline(timeSeries.labels, timeSeries.data);
-        this.renderAttemptsChart(timeSeries.labels, timeSeries.data);
-        
-        const distribution = this.ensureBuckets(data.scoreDistribution);
-        console.log('Distribution:', distribution);
-        this.renderDistributionChart(distribution.labels, distribution.data, data.averageScore, data.medianScore);
+    const timeSeries = this.sortedTimeSeries(data.attemptsByDay);
+    console.log('Time series:', timeSeries);
+    this.renderSparkline(timeSeries.labels, timeSeries.data);
+    this.renderAttemptsChart(timeSeries.labels, timeSeries.data);
+    
+    const distribution = this.ensureBuckets(data.scoreDistribution);
+    console.log('Distribution:', distribution);
+    this.renderDistributionChart(distribution.labels, distribution.data, data.averageScore, data.medianScore);
       });
     });
   }
@@ -230,7 +230,9 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     const labels: string[] = [];
     const data: number[] = [];
     for (let i = 0; i < 10; i++) {
-      const key = `${i * 10}-${(i + 1) * 10}`;
+      const start = i * 10;
+      const end = i === 9 ? 100 : (i + 1) * 10 - 1;
+      const key = `${start}-${end}`;
       labels.push(key);
       data.push(map?.[key] ?? 0);
     }
