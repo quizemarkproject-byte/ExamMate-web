@@ -1,56 +1,56 @@
-<div class="max-w-7xl mx-auto px-6 py-8">
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-semibold text-gray-800">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 md:mb-6">
+    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">
       @if (isAdmin) {
         Admin — Analytics Dashboard
       } @else {
         Analytics Dashboard
       }
     </h2>
-    <div class="flex items-center gap-3">
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
       <a 
         routerLink="/home" 
-        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
       >
-        <i class="fas fa-home mr-1"></i>Home
+        <i class="fas fa-home mr-1"></i><span class="hidden xs:inline">Home</span>
       </a>
       <a 
         routerLink="/quiz" 
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
       >
-        <i class="fas fa-book mr-1"></i>Quizzes
+        <i class="fas fa-book mr-1"></i><span class="hidden xs:inline">Quizzes</span>
       </a>
       @if (isAdmin) {
       <a 
         routerLink="/admin" 
-        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
       >
-        <i class="fas fa-cog mr-1"></i>Admin
+        <i class="fas fa-cog mr-1"></i><span class="hidden xs:inline">Admin</span>
       </a>
       }
     </div>
   </div>
   
   <!-- Controls -->
-  <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-    <div class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <label class="flex items-center gap-2">
+  <div class="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mb-4 md:mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex flex-col xs:flex-row items-start xs:items-center gap-3 sm:gap-4">
+        <label class="flex items-center gap-2 text-sm sm:text-base cursor-pointer">
           <input type="radio" name="mode" [(ngModel)]="mode" (ngModelChange)="onModeChange()" value="quiz" class="text-purple-600" />
           <span>Quiz analytics</span>
         </label>
-        <label class="flex items-center gap-2">
+        <label class="flex items-center gap-2 text-sm sm:text-base cursor-pointer">
           <input type="radio" name="mode" [(ngModel)]="mode" (ngModelChange)="onModeChange()" value="user" class="text-purple-600" />
           <span>@if (isAdmin) { User analytics } @else { My Analytics }</span>
         </label>
       </div>
       
-      <div class="flex-shrink-0 w-[200px]">
+      <div class="w-full sm:w-auto sm:flex-shrink-0 sm:min-w-[200px] sm:max-w-[250px]">
         @if (mode === 'quiz') {
           <select 
             [(ngModel)]="selectedQuizId"
             (ngModelChange)="onSelectionChange()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            class="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">Select a quiz</option>
             @for (quiz of quizzes; track quiz.id) {
@@ -62,7 +62,7 @@
           <select 
             [(ngModel)]="selectedUserId"
             (ngModelChange)="onSelectionChange()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            class="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">Select a user</option>
             @for (user of users; track user.id) {
@@ -70,7 +70,7 @@
             }
           </select>
           } @else {
-            <span class="text-gray-600 text-sm block py-2">Viewing your overall analytics</span>
+            <span class="text-gray-600 text-xs sm:text-sm block py-2">Viewing your overall analytics</span>
           }
         }
       </div>
@@ -79,11 +79,11 @@
 
   <!-- Loading State -->
   @if (isLoading) {
-    <div class="flex justify-center items-center min-h-[60vh]">
+    <div class="flex justify-center items-center min-h-[50vh] sm:min-h-[60vh]">
       <img
         src="assets/svg/loading.svg"
         alt="Loading"
-        class="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 xl:h-36 xl:w-36"
+        class="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 xl:h-32 xl:w-32"
         style="
           filter: invert(36%) sepia(88%) saturate(2065%) hue-rotate(206deg)
             brightness(98%) contrast(101%);
@@ -94,14 +94,14 @@
 
   <!-- Empty State -->
   @if (!hasData && !isLoading) {
-    <div class="flex justify-center items-center min-h-[60vh]">
-      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center max-w-md">
-      <svg class="w-16 h-16 mx-auto text-yellow-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="flex justify-center items-center min-h-[50vh] sm:min-h-[60vh] px-4">
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 sm:p-6 text-center max-w-md w-full">
+      <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-yellow-400 mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
       </svg>
-      <h3 class="text-lg font-semibold text-gray-800 mb-2">No data available</h3>
-      <p class="text-gray-600">There are no analytics to display yet. This could mean:</p>
-      <ul class="text-gray-600 text-sm mt-2 space-y-1">
+      <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">No data available</h3>
+      <p class="text-sm sm:text-base text-gray-600">There are no analytics to display yet. This could mean:</p>
+      <ul class="text-gray-600 text-xs sm:text-sm mt-2 space-y-1 text-left">
         <li>• No quiz attempts have been made</li>
         <li>• The selected quiz/user has no activity</li>
         <li>• Data is still being processed</li>
@@ -112,46 +112,48 @@
 
   <!-- KPIs -->
   @if (hasData && !isLoading) {
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-      <div class="text-gray-600 text-sm mb-2">Total attempts</div>
-      <div class="text-3xl font-bold text-gray-800 mb-4">{{ totalAttempts }}</div>
-      <canvas id="sparkline" width="200" height="40"></canvas>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6">
+    <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 text-center">
+      <div class="text-gray-600 text-xs sm:text-sm mb-2">Total attempts</div>
+      <div class="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">{{ totalAttempts }}</div>
+      <div class="overflow-x-auto">
+        <canvas id="sparkline" class="max-w-full" width="200" height="40"></canvas>
+      </div>
     </div>
 
-    <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-      <div class="text-gray-600 text-sm mb-2">Average</div>
-      <div class="text-3xl font-bold text-gray-800">{{ avgScore.toFixed(1) }}%</div>
+    <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 text-center">
+      <div class="text-gray-600 text-xs sm:text-sm mb-2">Average</div>
+      <div class="text-2xl sm:text-3xl font-bold text-gray-800">{{ avgScore.toFixed(1) }}%</div>
     </div>
 
-    <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-      <div class="text-gray-600 text-sm mb-2">Median</div>
-      <div class="text-3xl font-bold text-gray-800">{{ medianScore.toFixed(1) }}%</div>
+    <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 text-center sm:col-span-2 lg:col-span-1">
+      <div class="text-gray-600 text-xs sm:text-sm mb-2">Median</div>
+      <div class="text-2xl sm:text-3xl font-bold text-gray-800">{{ medianScore.toFixed(1) }}%</div>
     </div>
   </div>
 
   <!-- Charts Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Attempts by day</h3>
-      <div style="height: 300px;">
-        <canvas id="attemptsChart"></canvas>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
+    <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">Attempts by day</h3>
+      <div class="h-[250px] sm:h-[300px] relative">
+        <canvas id="attemptsChart" class="absolute inset-0 w-full h-full"></canvas>
       </div>
     </div>
 
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Score distribution</h3>
-      <div style="height: 300px;">
-        <canvas id="distributionChart"></canvas>
+    <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">Score distribution</h3>
+      <div class="h-[250px] sm:h-[300px] relative">
+        <canvas id="distributionChart" class="absolute inset-0 w-full h-full"></canvas>
       </div>
     </div>
   </div>
 
   <!-- Per-question difficulty -->
-  <div class="bg-white rounded-lg border border-gray-200 p-6">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4">Per-question difficulty (hardest first)</h3>
-    <div style="height: 400px;">
-      <canvas id="questionChart"></canvas>
+  <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">Per-question difficulty (hardest first)</h3>
+    <div class="h-[300px] sm:h-[350px] md:h-[400px] relative">
+      <canvas id="questionChart" class="absolute inset-0 w-full h-full"></canvas>
     </div>
   </div>
   }

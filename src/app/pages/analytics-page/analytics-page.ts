@@ -279,6 +279,8 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         }]
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
           x: { display: false },
@@ -315,16 +317,55 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          title: { display: true, text: 'Attempts by day' }
+          title: { 
+            display: false
+          },
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              boxWidth: 20,
+              padding: 10,
+              font: {
+                size: 12
+              }
+            }
+          }
         },
         scales: {
-          x: { title: { display: true, text: 'Date' } },
+          x: { 
+            title: { 
+              display: true, 
+              text: 'Date',
+              font: {
+                size: 11
+              }
+            },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 0,
+              autoSkip: true,
+              maxTicksLimit: 8,
+              font: {
+                size: 10
+              }
+            }
+          },
           y: { 
-            title: { display: true, text: 'Attempts' }, 
+            title: { 
+              display: true, 
+              text: 'Attempts',
+              font: {
+                size: 11
+              }
+            }, 
             beginAtZero: true,
             ticks: {
               stepSize: 1,
-              precision: 0
+              precision: 0,
+              font: {
+                size: 10
+              }
             }
           }
         }
@@ -381,7 +422,18 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          title: { display: true, text: 'Score distribution' },
+          title: { display: false },
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              boxWidth: 20,
+              padding: 10,
+              font: {
+                size: 12
+              }
+            }
+          },
           tooltip: {
             callbacks: {
               label: (ctx: any) => `${ctx.dataset.label}: ${ctx.parsed.y}`
@@ -391,13 +443,38 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         scales: {
           y: { 
             beginAtZero: true, 
-            title: { display: true, text: 'Count' },
+            title: { 
+              display: true, 
+              text: 'Count',
+              font: {
+                size: 11
+              }
+            },
             ticks: {
               stepSize: 1,
-              precision: 0
+              precision: 0,
+              font: {
+                size: 10
+              }
             }
           },
-          x: { title: { display: true, text: 'Score range (%)' } }
+          x: { 
+            title: { 
+              display: true, 
+              text: 'Score range (%)',
+              font: {
+                size: 11
+              }
+            },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 0,
+              autoSkip: false,
+              font: {
+                size: 10
+              }
+            }
+          }
         }
       }
     });
@@ -422,15 +499,10 @@ export class AnalyticsPage implements OnInit, OnDestroy {
       .sort((a, b) => (a.pctCorrect || 0) - (b.pctCorrect || 0))
       .slice(0, 20);
     
-    // Truncate labels for display but keep full text for tooltips
-    const truncateText = (text: string, maxLength: number = 40) => {
-      if (!text) return 'Q';
-      if (text.length <= maxLength) return text;
-      return text.substring(0, maxLength) + '...';
-    };
-    
-    const labels = stats.map(q => truncateText(q.text || q.id || 'Q'));
+    // Use first 6 characters of question IDs for y-axis labels
+    const labels = stats.map(q => (q.id || 'Q').substring(0, 6));
     const fullLabels = stats.map(q => q.text || q.id || 'Q');
+    const fullIds = stats.map(q => q.id || 'Q');
     const data = stats.map(q => Math.round((q.pctCorrect || 0) * 100));
     
     this.questionChart = new Chart(canvas, {
@@ -440,7 +512,9 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         datasets: [{
           label: '% correct',
           data,
-          backgroundColor: 'rgba(255,99,71,0.85)'
+          backgroundColor: 'rgba(255,99,71,0.85)',
+          barThickness: 'flex',
+          minBarLength: 2
         }]
       },
       options: {
@@ -448,14 +522,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          title: { display: true, text: 'Per-question % correct (hardest first)' },
+          title: { display: false },
           legend: { display: false },
           tooltip: {
             callbacks: {
               title: (tooltipItems: any[]) => {
-                // Show full question text in tooltip
+                // Show question ID and full text in tooltip
                 const index = tooltipItems[0].dataIndex;
-                return fullLabels[index];
+                return `ID: ${fullIds[index]}\n${fullLabels[index]}`;
               },
               label: (context: any) => {
                 return `${context.parsed.x}% correct`;
@@ -467,7 +541,26 @@ export class AnalyticsPage implements OnInit, OnDestroy {
           x: { 
             beginAtZero: true, 
             max: 100,
-            title: { display: true, text: '% correct' }
+            title: { 
+              display: true, 
+              text: '% correct',
+              font: {
+                size: 11
+              }
+            },
+            ticks: {
+              font: {
+                size: 10
+              }
+            }
+          },
+          y: {
+            ticks: {
+              font: {
+                size: 9
+              },
+              autoSkip: false
+            }
           }
         }
       }
