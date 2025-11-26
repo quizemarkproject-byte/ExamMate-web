@@ -1,16 +1,17 @@
 <div>
   <div class="flex items-center justify-between mb-2">
-    <h3 class="text-sm font-medium text-gray-700">Question Bank</h3>
+    <h3 class="text-xs sm:text-sm font-medium text-gray-700">Question Bank</h3>
     <button
       (click)="createBankQuestion.emit()"
-      class="bg-amber-400 text-white px-3 py-1.5 rounded-lg hover:bg-amber-500 text-sm"
+      class="bg-amber-400 text-white px-2 sm:px-3 py-1.5 rounded-lg hover:bg-amber-500 text-xs sm:text-sm"
+      title="Create a New Question for Bank"
     >
-      + Create Question
+      <i class="fas fa-plus"></i><span class="hidden xs:inline ml-1">Create</span>
     </button>
   </div>
   <div class="space-y-2">
     @if (!questionBank || questionBank.length === 0) {
-    <div class="text-sm text-gray-500">
+    <div class="text-xs sm:text-sm text-gray-500">
       No questions in the bank yet. Create one to begin reusing questions
       across quizzes.
     </div>
@@ -19,28 +20,29 @@
     <div
       class="flex items-center justify-between gap-2 p-2 rounded hover:bg-gray-50"
     >
-      <div class="flex-1 text-sm text-gray-700 truncate">
+      <div class="flex-1 text-xs sm:text-sm text-gray-700 truncate">
         {{ bq.text || "Untitled question" }}
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
         <button
           (click)="attachQuestion.emit(bi)"
           [disabled]="selectedQuizIndex === null"
-          class="text-sm text-purple-600"
+          class="text-xs sm:text-sm text-purple-600 disabled:opacity-50 p-1"
+          title="Attach Question to Selected Quiz"
         >
-          + Attach
+          <i class="fas fa-plus"></i><span class="hidden xs:inline ml-1">Attach</span>
         </button>
         <button
           (click)="onEdit(bi)"
           title="Edit question"
-          class="text-sm text-blue-600 hover:text-blue-800"
+          class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 p-1"
         >
           <i class="fas fa-edit"></i>
         </button>
         <button
           (click)="onDelete(bi)"
           title="Delete question"
-          class="text-sm text-red-500 hover:text-red-700"
+          class="text-xs sm:text-sm text-red-500 hover:text-red-700 p-1"
         >
           <i class="fas fa-trash"></i>
         </button>

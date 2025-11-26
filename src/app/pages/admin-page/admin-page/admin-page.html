@@ -1,25 +1,27 @@
-<div class="max-w-7xl mx-auto px-6 py-8 h-screen">
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-semibold text-gray-800">Admin — Quiz Builder</h1>
-    <div class="flex items-center gap-3">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-8 h-screen">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 md:mb-6">
+    <h1 class="text-xl sm:text-2xl font-semibold text-gray-800">Admin — Quiz Builder</h1>
+    <div class="flex items-center gap-2 sm:gap-3">
       <a 
         routerLink="/quiz" 
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        title="View All Quizzes"
       >
-        Quiz Page
+        <i class="fas fa-book mr-1"></i><span class="hidden xs:inline">Quiz Page</span>
       </a>
       <a 
         routerLink="/analytics" 
-        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        title="View Analytics Dashboard"
       >
-        Analytics
+        <i class="fas fa-chart-bar mr-1"></i><span class="hidden xs:inline">Analytics</span>
       </a>
     </div>
   </div>
 
-  <div class="grid md:grid-cols-3 gap-6 h-full min-h-0 min-w-0">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 h-full min-h-0 min-w-0">
     <!-- Left: Quiz list / create and question bank -->
-    <aside class="col-span-1 bg-white rounded-2xl border border-gray-200 p-4 h-full min-h-0 overflow-auto">
+    <aside class="lg:col-span-1 bg-white rounded-lg sm:rounded-2xl border border-gray-200 p-3 sm:p-4 h-full min-h-0 overflow-auto">
       <admin-quiz-list
         [quizzes]="quizzes"
         [selectedIndex]="selectedQuizIndex"
@@ -29,7 +31,7 @@
         (editQuiz)="editQuiz($event)">
       </admin-quiz-list>
 
-      <div class="mt-6 border-t pt-4">
+      <div class="mt-4 sm:mt-6 border-t pt-3 sm:pt-4">
         <admin-question-bank
           [questionBank]="questionBank"
           [selectedQuizIndex]="selectedQuizIndex"
@@ -44,9 +46,9 @@
     </aside>
 
     <!-- Right: Editor (delegated to child component) -->
-    <section class="col-span-2 bg-white rounded-2xl border border-gray-200 p-6 h-full min-h-0 overflow-auto min-w-0">
+    <section class="lg:col-span-2 bg-white rounded-lg sm:rounded-2xl border border-gray-200 p-3 sm:p-4 md:p-6 h-full min-h-0 overflow-auto min-w-0">
       @if (selectedQuizIndex === null) {
-      <div class="text-gray-500">Select a quiz on the left or create a new one to begin building questions.</div>
+      <div class="text-sm sm:text-base text-gray-500">Select a quiz on the left or create a new one to begin building questions.</div>
       } @else {
       <div class="min-h-[3rem] mb-3">
         @if (selectedQuizErrors.length > 0) {
