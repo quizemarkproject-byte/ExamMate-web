@@ -188,6 +188,7 @@ export class AdminPage {
     // Add to quiz questions and directly append to form array
     quiz.questions.push(q);
     this.editorComponent?.appendQuestion(q);
+    this.showQuestionBank = false;
   }
 
   createQuestion() {

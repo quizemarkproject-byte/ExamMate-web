@@ -16,11 +16,11 @@
         </div>
       </div>
     </div>
-    <div class="flex items-center gap-2 flex-shrink-0">
-      <button (click)="onAddQuestion()" [disabled]="saving" class="bg-blue-600 text-white px-2 sm:px-3 py-2 rounded-lg disabled:opacity-50 text-sm whitespace-nowrap" title="Add a New Question to Quiz">
+    <div class="flex items-center justify-between gap-2 flex-shrink-0">
+      <button (click)="onAddQuestion()" [disabled]="saving" class="bg-blue-600 text-white px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg disabled:opacity-50 text-sm whitespace-nowrap" title="Add a New Question to Quiz">
         <i class="fas fa-plus"></i><span class="hidden xs:inline ml-1">Add Question</span>
       </button>
-      <button (click)="saveAll()" [disabled]="hasValidationErrors || saving" class="bg-green-600 text-white px-2 sm:px-3 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2 text-sm whitespace-nowrap" title="Save All Quiz Changes">
+      <button (click)="saveAll()" [disabled]="hasValidationErrors || saving" class="bg-green-600 text-white px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg disabled:opacity-50 flex items-center gap-2 text-sm whitespace-nowrap" title="Save All Quiz Changes">
         @if (saving) {
           <img src="assets/svg/loading.svg" alt="Saving" class="h-4 w-4" />
           <span>Saving…</span>
