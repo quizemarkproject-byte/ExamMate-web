@@ -5,14 +5,14 @@
   <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 sm:mb-4 gap-3 sm:gap-4">
     <div class="flex-1 min-w-0">
       <div class="text-lg sm:text-xl font-semibold border-b pb-2 w-full truncate">{{ quiz.name }}</div>
-      <div class="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 mt-2">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
         <div class="text-xs sm:text-sm text-gray-500">
-          <span class="hidden xs:inline">Time: </span>
-          <span class="xs:ml-2 px-2 py-1 text-xs sm:text-sm">{{ quiz.timeLimit | duration }}</span>
+          <span>Time: </span>
+          <span class="ml-2 px-2 py-1 text-xs sm:text-sm">{{ quiz.timeLimit | duration }}</span>
         </div>
         <div class="text-xs sm:text-sm text-gray-500">
-          <span class="hidden xs:inline">Questions per Attempt: </span>
-          <span class="xs:ml-2 px-2 py-1 text-xs sm:text-sm">{{ quiz.questionLimit }}</span>
+          <span>Questions per Attempt: </span>
+          <span class="ml-2 px-2 py-1 text-xs sm:text-sm">{{ quiz.questionLimit }}</span>
         </div>
       </div>
     </div>
