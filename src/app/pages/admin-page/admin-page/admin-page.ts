@@ -35,6 +35,8 @@ export class AdminPage {
   selectedQuizIndex: number | null = null;
   selectedQuizErrors: string[] = [];
   saving: boolean = false;
+  showQuizList: boolean = false;
+  showQuestionBank: boolean = false;
 
   constructor(
     private toastr: ToastrService,
@@ -79,6 +81,14 @@ export class AdminPage {
     this.selectedQuizErrors = errors;
   }
 
+  toggleQuizList() {
+    this.showQuizList = !this.showQuizList;
+  }
+
+  toggleQuestionBank() {
+    this.showQuestionBank = !this.showQuestionBank;
+  }
+
   createQuiz() {
     if (!this.quizModal) return;
 
@@ -103,6 +113,7 @@ export class AdminPage {
 
   selectQuiz(i: number) {
     this.selectedQuizIndex = i;
+    this.showQuizList = false;
   }
 
   deleteQuiz(i: number) {

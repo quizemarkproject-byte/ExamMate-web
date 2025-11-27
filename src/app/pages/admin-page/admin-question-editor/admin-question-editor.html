@@ -5,7 +5,7 @@
   <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 sm:mb-4 gap-3 sm:gap-4">
     <div class="flex-1 min-w-0">
       <div class="text-lg sm:text-xl font-semibold border-b pb-2 w-full truncate">{{ quiz.name }}</div>
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
+      <div class="flex flex-row flex-wrap items-center gap-2 sm:gap-4 mt-2">
         <div class="text-xs sm:text-sm text-gray-500">
           <span>Time: </span>
           <span class="ml-2 px-2 py-1 text-xs sm:text-sm">{{ quiz.timeLimit | duration }}</span>
@@ -17,10 +17,10 @@
       </div>
     </div>
     <div class="flex items-center gap-2 flex-shrink-0">
-      <button (click)="onAddQuestion()" [disabled]="saving" class="bg-blue-600 text-white px-2 sm:px-3 py-2 rounded-lg disabled:opacity-50 text-xs sm:text-sm" title="Add a New Question to Quiz">
+      <button (click)="onAddQuestion()" [disabled]="saving" class="bg-blue-600 text-white px-2 sm:px-3 py-2 rounded-lg disabled:opacity-50 text-sm whitespace-nowrap" title="Add a New Question to Quiz">
         <i class="fas fa-plus"></i><span class="hidden xs:inline ml-1">Add Question</span>
       </button>
-      <button (click)="saveAll()" [disabled]="hasValidationErrors || saving" class="bg-green-600 text-white px-2 sm:px-3 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2 text-xs sm:text-sm" title="Save All Quiz Changes">
+      <button (click)="saveAll()" [disabled]="hasValidationErrors || saving" class="bg-green-600 text-white px-2 sm:px-3 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2 text-sm whitespace-nowrap" title="Save All Quiz Changes">
         @if (saving) {
           <img src="assets/svg/loading.svg" alt="Saving" class="h-4 w-4" />
           <span>Saving…</span>
