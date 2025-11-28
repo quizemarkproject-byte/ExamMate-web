@@ -1,11 +1,13 @@
 <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-8">
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 md:mb-6">
     <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">
-      @if (isAdmin) {
-        Admin — Analytics Dashboard
-      } @else {
-        Analytics Dashboard
-      }
+      <a routerLink="/analytics" class="hover:text-purple-600 transition-colors">
+        @if (isAdmin) {
+          Admin — Analytics Dashboard
+        } @else {
+          Analytics Dashboard
+        }
+      </a>
     </h2>
     <div class="flex flex-wrap items-center gap-2 sm:gap-3">
       <a 
