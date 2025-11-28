@@ -1,0 +1,112 @@
+<div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-8 h-screen">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 md:mb-6">
+    <h1 class="text-xl sm:text-2xl font-semibold text-gray-800">Admin — Quiz Builder</h1>
+    <div class="flex items-center gap-2 sm:gap-3">
+      <a 
+        routerLink="/home" 
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+        title="Go to Home Page"
+      >
+        <i class="fas fa-home mr-1"></i><span class="hidden xs:inline">Home</span>
+      </a>
+      <a 
+        routerLink="/quiz" 
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        title="View All Quizzes"
+      >
+        <i class="fas fa-book mr-1"></i><span class="hidden xs:inline">Quiz Page</span>
+      </a>
+      <a 
+        routerLink="/analytics" 
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        title="View Analytics Dashboard"
+      >
+        <i class="fas fa-chart-bar mr-1"></i><span class="hidden xs:inline">Analytics</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="flex flex-col lg:grid lg:grid-cols-3 gap-4 md:gap-6 lg:h-full min-h-0 min-w-0">
+    <!-- Left: Quiz list / create and question bank -->
+    <!-- Mobile: Collapsible sections, Desktop: Sidebar -->
+    <aside class="lg:col-span-1 space-y-3 lg:space-y-0 lg:bg-white lg:rounded-2xl lg:border lg:border-gray-200 lg:p-4 lg:h-full lg:min-h-0 lg:overflow-auto">
+      <!-- Quiz List Section -->
+      <div class="bg-white rounded-lg border border-gray-200 lg:border-0 lg:rounded-none">
+        <button 
+          (click)="toggleQuizList()" 
+          class="lg:hidden w-full flex items-center justify-between p-3 text-left font-semibold text-gray-800 hover:bg-gray-50">
+          <span class="flex items-center gap-2">
+            <i class="fas fa-list"></i>
+            <span>Quizzes</span>
+            <span class="text-xs font-normal text-gray-600">({{ quizzes.length }})</span>
+            @if (selectedQuiz) {
+              <span class="text-xs font-normal text-gray-600">- {{ selectedQuiz.name }}</span>
+            }
+          </span>
+          <i class="fas" [class.fa-chevron-down]="!showQuizList" [class.fa-chevron-up]="showQuizList"></i>
+        </button>
+        <div [class.hidden]="!showQuizList" [class.lg:block]="true" class="p-3 lg:p-0">
+          <admin-quiz-list
+            [quizzes]="quizzes"
+            [selectedIndex]="selectedQuizIndex"
+            (createQuiz)="createQuiz()"
+            (selectQuiz)="selectQuiz($event)"
+            (deleteQuiz)="deleteQuiz($event)"
+            (editQuiz)="editQuiz($event)">
+          </admin-quiz-list>
+        </div>
+      </div>
+
+      <!-- Question Bank Section -->
+      <div class="bg-white rounded-lg border border-gray-200 lg:border-0 lg:rounded-none lg:border-t lg:pt-4 lg:mt-6">
+        <button 
+          (click)="toggleQuestionBank()" 
+          class="lg:hidden w-full flex items-center justify-between p-3 text-left font-semibold text-gray-800 hover:bg-gray-50">
+          <span class="flex items-center gap-2">
+            <i class="fas fa-database"></i>
+            <span>Question Bank</span>
+            <span class="text-xs font-normal text-gray-600">({{ questionBank.length }})</span>
+          </span>
+          <i class="fas" [class.fa-chevron-down]="!showQuestionBank" [class.fa-chevron-up]="showQuestionBank"></i>
+        </button>
+        <div [class.hidden]="!showQuestionBank" [class.lg:block]="true" class="p-3 lg:p-0">
+          <admin-question-bank
+            [questionBank]="questionBank"
+            [selectedQuizIndex]="selectedQuizIndex"
+            (attachQuestion)="attachQuestionFromBank($event)"
+            (createBankQuestion)="createQuestion()"
+            (deleteQuestion)="deleteQuestion($event)"
+            (editQuestion)="onQuestionEdited($event)">
+          </admin-question-bank>
+          <!-- Create/Edit question modal (scoped to admin page) -->
+          <app-question-modal></app-question-modal>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right: Editor (delegated to child component) -->
+    <section class="lg:col-span-2 bg-white rounded-lg sm:rounded-2xl border border-gray-200 p-3 sm:p-4 md:p-6 h-full min-h-0 overflow-auto min-w-0">
+      @if (selectedQuizIndex === null) {
+      <div class="text-sm sm:text-base text-gray-500">Select a quiz on the left or create a new one to begin building questions.</div>
+      } @else {
+      <div class="min-h-[3rem] mb-3">
+        @if (selectedQuizErrors.length > 0) {
+        <div class="text-sm text-red-500">
+          @for (err of selectedQuizErrors; track $index) {<div>{{ err }}</div>}
+        </div>
+        }
+      </div>
+
+      <admin-question-editor
+        [quiz]="quizzes[selectedQuizIndex]"
+        [saving]="saving"
+        (saveQuiz)="persistQuiz($event)"
+        (validationErrors)="onValidationChange($event)">
+      </admin-question-editor>
+      }
+    </section>
+  </div>
+
+  <!-- Create/Edit quiz modal -->
+  <app-quiz-modal></app-quiz-modal>
+</div>

@@ -2,8 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  AdminQuiz,
   CountResponse,
+  Question,
   Quiz,
+  QuizRequest,
   QuizResultResponse,
   QuizSessionStartRequest,
   QuizSessionStartResponse,
@@ -16,9 +19,65 @@ import { environment } from '../../../environments/environment';
 })
 export class QuizService {
   private quizUrl = environment.backend_url + '/api/v1/quizzes';
+  private adminQuizUrl = environment.backend_url + '/api/v1/admin/quizzes';
   private quizSessionUrl = environment.backend_url + '/api/v1/quiz-sessions';
 
   constructor(private http: HttpClient) {}
+
+  adminGetAllQuiz(): Observable<AdminQuiz[]> {
+    return this.http.get<AdminQuiz[]>(this.adminQuizUrl);
+  }
+
+  adminCreateQuiz(quizRequest: QuizRequest): Observable<AdminQuiz> {
+    return this.http.post<AdminQuiz>(this.adminQuizUrl, quizRequest);
+  }
+
+  adminUpdateQuiz(quizRequest: QuizRequest): Observable<AdminQuiz> {
+    return this.http.put<AdminQuiz>(`${this.adminQuizUrl}/${quizRequest.id}`, quizRequest);
+  }
+
+  adminDeleteQuiz(quizId: string): Observable<void> {
+    return this.http.delete<void>(`${this.adminQuizUrl}/${quizId}`);
+  }
+
+  adminGetAllQuestions(): Observable<Question[]> {
+    return this.http.get<Question[]>(`${this.adminQuizUrl}/questions`);
+  }
+
+  adminUpdateQuizQuestions(
+    quizId: string,
+    questionRequest: Question[]
+  ): Observable<Question[]> {
+    return this.http.post<Question[]>(
+      `${this.adminQuizUrl}/${quizId}/questions/bulk`,
+      questionRequest
+    );
+  }
+
+  adminCreateQuestion(
+    question: Question
+  ): Observable<Question> {
+    return this.http.post<Question>(
+      `${this.adminQuizUrl}/questions`,
+      question
+    );
+  }
+
+  adminUpdateQuestion(
+    questionId: string,
+    question: Question
+  ): Observable<Question> {
+    return this.http.put<Question>(
+      `${this.adminQuizUrl}/questions/${questionId}`,
+      question
+    );
+  }
+
+  adminDeleteQuestion(questionId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.adminQuizUrl}/questions/${questionId}`
+    );
+  }
 
   getQuizzes(): Observable<Quiz[]> {
     return this.http.get<Quiz[]>(this.quizUrl);
@@ -28,17 +87,19 @@ export class QuizService {
     return this.http.get<Quiz>(`${this.quizUrl}/${quizId}`);
   }
 
-  startQuiz(startRequest: QuizSessionStartRequest): Observable<QuizSessionStartResponse> {
+  startQuiz(
+    startRequest: QuizSessionStartRequest
+  ): Observable<QuizSessionStartResponse> {
     return this.http.post<QuizSessionStartResponse>(
-      `${this.quizSessionUrl}/start`, startRequest
+      `${this.quizSessionUrl}/start`,
+      startRequest
     );
   }
 
-  submitQuiz(
-    quizSubmission: QuizSubmission
-  ): Observable<QuizResultResponse> {
+  submitQuiz(quizSubmission: QuizSubmission): Observable<QuizResultResponse> {
     return this.http.post<QuizResultResponse>(
-      `${this.quizSessionUrl}/submit`, quizSubmission
+      `${this.quizSessionUrl}/submit`,
+      quizSubmission
     );
   }
 

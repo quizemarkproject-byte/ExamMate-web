@@ -1,0 +1,51 @@
+<div>
+  <div class="flex items-center justify-between mb-2 sm:mb-3">
+    <h2 class="text-xs sm:text-sm font-medium text-gray-700">Quizzes</h2>
+    <button
+      (click)="createQuiz.emit()"
+      class="bg-purple-600 text-white px-2 sm:px-3 py-1.5 rounded-lg hover:bg-purple-700 text-xs sm:text-sm"
+      title="Create a New Quiz"
+    >
+      <i class="fas fa-plus"></i><span class="hidden xs:inline ml-1">Create Quiz</span>
+    </button>
+  </div>
+
+  <div class="space-y-2 sm:space-y-3">
+    @if (!quizzes || quizzes.length === 0) {
+    <div class="text-xs sm:text-sm text-gray-500">
+      No quizzes yet. Create one to get started.
+    </div>
+    } @else { @for (q of quizzes; track q.id || $index; let i = $index) {
+    <div
+      class="flex items-center justify-between gap-2 sm:gap-3 p-2 rounded-lg hover:bg-gray-50"
+      [class.bg-purple-50]="selectedIndex === i"
+      [class.border-l-4]="selectedIndex === i"
+      [class.border-purple-600]="selectedIndex === i"
+    >
+      <button (click)="selectQuiz.emit(i)" class="text-left flex-1 min-w-0">
+        <div class="font-medium text-sm sm:text-base truncate" [class.text-purple-700]="selectedIndex === i" [class.text-gray-800]="selectedIndex !== i">{{ q.name }}</div>
+        <div class="text-xs text-gray-400 mt-1">
+          <span class="hidden sm:inline">Time: {{ q.timeLimit | duration }} · Limit: {{ q.questionLimit }}</span>
+          <span class="sm:hidden">{{ q.timeLimit | duration }} · {{ q.questionLimit }}Q</span>
+        </div>
+      </button>
+      <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <button
+          (click)="editQuiz.emit(i)"
+          title="Edit quiz"
+          class="text-blue-600 hover:text-blue-800 p-1"
+        >
+          <i class="fas fa-edit text-sm"></i>
+        </button>
+        <button
+          (click)="onDelete(i)"
+          title="Delete quiz"
+          class="text-red-500 hover:text-red-700 p-1"
+        >
+          <i class="fas fa-trash text-sm"></i>
+        </button>
+      </div>
+    </div>
+    } }
+  </div>
+</div>

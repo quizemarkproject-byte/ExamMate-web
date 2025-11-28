@@ -1,22 +1,19 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
+import { environment } from '../../../environments/environment.production';
+import { Observable } from 'rxjs';
+import { UserModel } from '../../models/user-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private readonly USER_ID_KEY = 'app_user_id';
+  constructor(private http: HttpClient) {}
 
-  constructor() {}
+  private adminUserService = environment.backend_url + '/api/v1/admin/users';
 
-  // getUserId(): string {
-  //   let userId = localStorage.getItem(this.USER_ID_KEY);
-
-  //   if (!userId) {
-  //     userId = uuidv4();
-  //     localStorage.setItem(this.USER_ID_KEY, userId);
-  //   }
-
-  //   return userId;
-  // }
+  adminGetAllUsers(): Observable<UserModel[]> {
+    return this.http.get<UserModel[]>(this.adminUserService);
+  }
 }

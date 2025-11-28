@@ -28,6 +28,7 @@ export class SideBar {
   navLinks: NavLink[] = [
     { label: 'Quizzes', url: '/quiz', icon: 'fa-solid fa-book' },
     { label: 'Results', url: '/result', icon: 'fa-solid fa-trophy' },
+    { label: 'Analytics', url: '/analytics', icon: 'fa-solid fa-chart-line' },
   ];
 
   ngOnInit() {

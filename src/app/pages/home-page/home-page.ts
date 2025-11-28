@@ -17,7 +17,10 @@ export class HomePage {
 
   ngOnInit() {
     this.isLoggedIn = this.tokenService.isLoggedIn();
-    // this.username = this.tokenService.getSub();
+  }
+
+  get isAdmin(): boolean {
+    return this.tokenService.isAdmin();
   }
 
   startQuiz() {
@@ -36,7 +39,7 @@ export class HomePage {
     this.tokenService.setAccessToken(token);
     this.isLoggedIn = true;
     this.showAuth = false;
-    this.router.navigate(['/quiz']);
+    this.router.navigate(['/']);
   }
 
   logout() {
