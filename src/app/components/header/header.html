@@ -1,16 +1,18 @@
 <header
-  class="w-full bg-white border-b border-gray-200 px-4 md:px-8 py-4 flex justify-between items-center shadow-sm"
+  class="w-full bg-white border-b border-gray-100 px-4 md:px-8 py-4 flex justify-between items-center shadow-soft backdrop-blur-sm"
 >
   <div class="flex items-center gap-4">
     <button
-      class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-300"
+      class="md:hidden p-2.5 text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-300 hover:shadow-soft"
       (click)="toggleSidebar.emit()"
     >
       <i class="fas fa-bars text-xl"></i>
     </button>
     <div>
-      <a href="/home" class="flex items-center gap-2 text-gray-900">
-        <i class="fas fa-brain text-2xl md:text-3xl text-amber-400"></i>
+      <a href="/home" class="flex items-center gap-2 text-gray-900 group">
+        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-300">
+          <i class="fas fa-brain text-xl text-white"></i>
+        </div>
         <span class="text-xl md:text-2xl font-bold">ExamMate</span>
       </a>
     </div>
@@ -18,16 +20,17 @@
   <div class="flex items-center">
     @if (!isLoggedIn) {
       <button
-        class="hidden md:flex items-center gap-2 bg-white/10 text-gray-700 border-2 border-gray-300 px-4 md:px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 hover:border-gray-400 hover:-translate-y-0.5 transition-all duration-300"
+        class="hidden md:flex items-center gap-2 bg-white text-gray-700 border-2 border-gray-300 px-5 md:px-6 py-2.5 rounded-xl font-semibold hover:bg-gray-50 hover:border-primary-400 hover:text-primary-600 hover:-translate-y-0.5 hover:shadow-soft transition-all duration-300"
         (click)="login()"
       >
-        <span class="hidden md:inline">Join</span>
+        <span class="hidden md:inline">Join Now</span>
       </button>
     } @else {
       <button
-        class="hidden md:flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 text-white px-4 md:px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+        class="hidden md:flex items-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-5 md:px-6 py-2.5 rounded-xl font-semibold hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300"
         (click)="logout()"
       >
+        <i class="fas fa-sign-out-alt"></i>
         <span class="hidden md:inline">Logout</span>
       </button>
     }

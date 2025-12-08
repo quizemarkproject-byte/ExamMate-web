@@ -1,23 +1,26 @@
 @if (open) {
-<div class="fixed inset-0 z-50 flex items-center justify-center">
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
   <!-- Backdrop -->
   <div
-    class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+    class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-sm"
     (click)="close()"
   ></div>
 
   <!-- Modal -->
   <div
-    class="relative w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden"
+    class="relative w-full max-w-md mx-auto bg-white rounded-3xl shadow-strong overflow-hidden animate-scaleIn"
   >
-    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+    <!-- Header -->
+    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-primary-50 to-accent-50">
       <div class="flex items-center gap-2 text-gray-900">
-        <i class="fas fa-brain text-2xl md:text-3xl text-amber-400"></i>
-        <span class="text-xl md:text-2xl font-bold">ExamMate</span>
+        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-glow">
+          <i class="fas fa-brain text-xl text-white"></i>
+        </div>
+        <span class="text-xl font-bold">ExamMate</span>
       </div>
       <button
         (click)="close()"
-        class="text-gray-400 hover:text-gray-600 transition-colors"
+        class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-xl transition-all duration-300"
       >
         <i class="fas fa-times fa-lg"></i>
       </button>
@@ -25,14 +28,14 @@
 
     <!-- Email Step -->
     @if (step === 'email') {
-    <form (ngSubmit)="submitEmail()" [formGroup]="emailForm" class="p-6">
-      <div class="mb-5">
-        <h2 class="text-xl font-semibold text-gray-900">Welcome to ExamMate</h2>
-        <p class="text-sm text-gray-400">Test Your Knowledge with ExamMate</p>
+    <form (ngSubmit)="submitEmail()" [formGroup]="emailForm" class="p-6 space-y-5">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome to ExamMate</h2>
+        <p class="text-sm text-gray-500">Test Your Knowledge with ExamMate</p>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Email<span class="text-red-500">*</span></label
+        <label class="block text-sm font-semibold text-gray-700 mb-2"
+          >Email Address<span class="text-red-500 ml-1">*</span></label
         >
         <input
           id="auth-email"
@@ -40,20 +43,20 @@
           formControlName="email"
           type="email"
           placeholder="you@example.com"
-          class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 placeholder:text-gray-400"
         />
-        <div class="mt-1 h-4 flex items-start" aria-live="polite">
+        <div class="mt-2 h-5 flex items-start" aria-live="polite">
           @if (emailForm.controls['email'].touched &&
           emailForm.controls['email'].invalid) {<span
-            class="text-xs text-red-500"
-            >Valid email is required</span
+            class="text-xs text-red-500 flex items-center gap-1"
+            ><i class="fas fa-exclamation-circle"></i>Valid email is required</span
           >}
         </div>
       </div>
       <button
         type="submit"
         [disabled]="loading || emailForm.invalid"
-        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-3.5 rounded-xl font-semibold hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
       >
         @if (!loading) {<i class="fas fa-paper-plane"></i>} @else {<i
           class="fas fa-spinner fa-spin"
@@ -67,13 +70,15 @@
     <!-- OTP Step -->
     @if (step === 'otp') {
     <form (ngSubmit)="submitOtp()" [formGroup]="otpForm" class="p-6 space-y-5">
-      <p class="text-sm text-gray-600">
-        Enter the OTP sent to <strong>{{ emailValue }}</strong>
-      </p>
+      <div class="bg-primary-50 border border-primary-100 rounded-xl p-4">
+        <p class="text-sm text-gray-700">
+          Enter the OTP sent to <strong class="text-primary-700">{{ emailValue }}</strong>
+        </p>
+      </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">OTP</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">One-Time Password</label>
         <div
-          class="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap overflow-x-auto"
+          class="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap"
           (paste)="onOtpPaste($event)"
         >
           @for (box of [].constructor(otpLength); track $index) {
@@ -84,46 +89,39 @@
             type="text"
             inputmode="numeric"
             maxlength="1"
-            class="w-10 h-10 sm:w-12 sm:h-12 text-center text-base sm:text-lg rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            class="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-bold rounded-xl border-2 border-gray-200 focus:border-primary-500 transition-all duration-300"
+            style="outline: none !important; box-shadow: none !important;"
             (input)="onOtpInput($event, $index)"
             (keydown)="onOtpKeyDown($event, $index)"
           />
           @if ($index === 2) {
-          <span aria-hidden="true" class="mx-1 text-gray-400 select-none"
-            >-</span
-          >
-          } }
-        </div>
-        <div class="mt-2 h-4 flex items-start" aria-live="polite">
-          @if (otpForm.controls['otp'].invalid && (otpForm.controls['otp'].dirty
-          || otpForm.controls['otp'].touched)) {<span
-            class="text-xs text-red-500"
-            >Enter the 6-digit code</span
-          >}
+          <span aria-hidden="true" class="mx-1 text-gray-400 select-none text-xl font-bold">-</span>
+          }
+          }
         </div>
       </div>
-      <div class="flex items-center justify-between text-sm">
+      <div class="flex items-center justify-between text-sm gap-3">
         <button
           type="button"
           (click)="resendOtp()"
           [disabled]="loading"
-          class="text-purple-600 hover:text-purple-700 font-medium disabled:opacity-50"
+          class="text-primary-600 hover:text-primary-700 font-semibold disabled:opacity-50 hover:underline transition-all"
         >
-          Resend OTP
+          <i class="fas fa-redo mr-1"></i>Resend OTP
         </button>
         <button
           type="button"
           (click)="backToEmail()"
           [disabled]="loading"
-          class="text-gray-500 hover:text-gray-700"
+          class="text-gray-500 hover:text-gray-700 font-medium hover:underline transition-all"
         >
-          Change Email
+          <i class="fas fa-arrow-left mr-1"></i>Change Email
         </button>
       </div>
       <button
         type="submit"
         [disabled]="loading || otpForm.invalid"
-        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-3.5 rounded-xl font-semibold hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
       >
         @if (!loading) {<i class="fas fa-lock-open"></i>} @else {<i
           class="fas fa-spinner fa-spin"

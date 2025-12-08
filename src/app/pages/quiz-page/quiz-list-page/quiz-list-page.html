@@ -1,7 +1,10 @@
 <div class="w-full mx-auto px-4 p-5">
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-semibold text-gray-800">Available Quizzes</h2>
-    <span class="text-sm text-gray-500"
+  <div class="flex items-center justify-between mb-8">
+    <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-2">
+      <i class="fas fa-book text-primary-500"></i>
+      Available Quizzes
+    </h2>
+    <span class="text-sm font-semibold text-gray-600 bg-gray-100 px-4 py-2 rounded-xl border border-gray-200"
       >{{ quizData.length }} quiz{{ quizData.length !== 1 ? "zes" : "" }}</span
     >
   </div>
@@ -22,35 +25,39 @@
   <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
     @for (q of quizData; track $index) {
     <article
-      class="bg-white rounded-2xl shadow-sm p-6 border border-gray-200 flex flex-col justify-between"
+      class="bg-white rounded-3xl shadow-soft p-6 border border-gray-100 flex flex-col justify-between hover:shadow-strong hover:-translate-y-2 transition-all duration-300 group"
     >
       <div>
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-800">{{ q.name }}</h3>
-          <span class="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600"
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">{{ q.name }}</h3>
+          <span class="text-xs px-3 py-1.5 rounded-xl bg-gradient-to-r from-primary-50 to-primary-100 text-primary-600 font-semibold border border-primary-200"
             >Quiz</span
           >
         </div>
 
-        <p class="text-sm text-gray-500 mt-3">
-          <strong class="text-gray-700">{{ q.questionLimit }}</strong> questions
-        </p>
-        <p class="text-sm text-gray-500 mt-1">
-          Time limit:
-          <span class="font-medium text-gray-700">{{
+        <div class="space-y-2 mb-4">
+          <p class="text-sm text-gray-600 flex items-center gap-2">
+            <i class="fas fa-question-circle text-primary-500"></i>
+            <strong class="text-gray-900">{{ q.questionLimit }}</strong> questions
+          </p>
+          <p class="text-sm text-gray-600 flex items-center gap-2">
+            <i class="fas fa-clock text-accent-500"></i>
+            Time limit:
+            <span class="font-semibold text-gray-900">{{
             q.timeLimit | duration
           }}</span>
-        </p>
+          </p>
+        </div>
       </div>
 
-      <div class="mt-6 flex items-center justify-between">
-        <div class="text-sm text-gray-500">Ready to test your knowledge?</div>
+      <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+        <div class="text-sm text-gray-600 font-medium">Ready to test your knowledge?</div>
         <a
           [routerLink]="['/quiz', q.id]"
-          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          class="inline-flex items-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300 group-hover:scale-105"
           aria-label="Start quiz {{ q.name }}"
         >
-          <i class="fas fa-play w-4"></i>
+          <i class="fas fa-play"></i>
           Start
         </a>
       </div>
@@ -58,9 +65,12 @@
     }
   </div>
   } @if(!loading && quizData.length === 0){
-  <div class="mt-8 text-center text-gray-500">
-    <p class="text-lg">No quizzes available yet.</p>
-    <p class="mt-2">Check back later.</p>
+  <div class="mt-8 flex justify-center">
+    <div class="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-2xl p-8 text-center max-w-md shadow-soft">
+      <i class="fas fa-inbox text-5xl text-gray-400 mb-4"></i>
+      <p class="text-xl font-bold text-gray-900 mb-2">No quizzes available yet</p>
+      <p class="text-gray-600">Check back later for new quizzes!</p>
+    </div>
   </div>
   }
 </div>
