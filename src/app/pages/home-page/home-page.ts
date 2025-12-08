@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthModalService } from '../../services/auth-modal-service/auth-modal-service';
 import { TokenService } from '../../services/token-service/token-service';
 import { ToastrService } from '../../services/toastr-service/toastr-service';
+import { ThemeService } from '../../services/theme-service/theme-service';
 
 @Component({
   selector: 'app-home-page',
@@ -16,7 +17,8 @@ export class HomePage {
     private router: Router, 
     private tokenService: TokenService, 
     private toastr: ToastrService,
-    private authModalService: AuthModalService
+    private authModalService: AuthModalService,
+    public themeService: ThemeService
   ) {}
 
   ngOnInit() {

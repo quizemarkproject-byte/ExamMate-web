@@ -7,6 +7,7 @@ import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal'
 import { AuthModalComponent } from './components/auth-modal/auth-modal';
 import { AuthModalService } from './services/auth-modal-service/auth-modal-service';
 import { TokenService } from './services/token-service/token-service';
+import { ThemeService } from './services/theme-service/theme-service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,8 @@ export class App {
   constructor(
     private toastr: ToastrService,
     private authModalService: AuthModalService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private themeService: ThemeService // Initialize theme service
   ) {}
 
   ngOnInit() {
