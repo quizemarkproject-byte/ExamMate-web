@@ -1,13 +1,26 @@
 <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-8">
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-6">
-    <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-2">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors duration-300">
       <i class="fas fa-chart-pie text-primary-500"></i>
       Admin Analytics Dashboard
     </h1>
     <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Dark Mode Toggle -->
+      <button
+        (click)="themeService.toggleTheme()"
+        class="p-2.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-all duration-300 hover:shadow-soft"
+        [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
+        title="Toggle dark mode"
+      >
+        @if (themeService.isDarkMode()) {
+          <i class="fas fa-sun text-xl text-amber-400"></i>
+        } @else {
+          <i class="fas fa-moon text-xl text-primary-600"></i>
+        }
+      </button>
       <a 
         routerLink="/admin" 
-        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 hover:shadow-soft transition-all duration-300 font-semibold"
+        class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-slate-600 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-400 dark:hover:border-slate-500 hover:shadow-soft transition-all duration-300 font-semibold"
         title="Back to Admin Dashboard"
       >
         <i class="fas fa-arrow-left mr-1"></i><span class="hidden xs:inline">Admin</span>
@@ -23,7 +36,7 @@
   </div>
 
   <!-- View Mode Selection -->
-  <div class="bg-white rounded-3xl shadow-soft p-6 border border-gray-100 mb-8">
+  <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-soft p-6 border border-gray-100 dark:border-slate-700 mb-8 transition-colors duration-300">
     <div class="flex flex-col md:flex-row gap-4 items-start md:items-center min-h-[60px]">
       <div class="flex gap-4">
         <label class="flex items-center gap-2 cursor-pointer">
@@ -35,7 +48,7 @@
             (change)="onViewModeChange()"
             class="w-4 h-4 text-primary-600 focus:ring-primary-500"
           />
-          <span class="text-gray-700 font-medium">Quiz Analytics</span>
+          <span class="text-gray-700 dark:text-gray-300 font-medium">Quiz Analytics</span>
         </label>
         <label class="flex items-center gap-2 cursor-pointer">
           <input 
@@ -46,7 +59,7 @@
             (change)="onViewModeChange()"
             class="w-4 h-4 text-primary-600 focus:ring-primary-500"
           />
-          <span class="text-gray-700 font-medium">User Analytics</span>
+          <span class="text-gray-700 dark:text-gray-300 font-medium">User Analytics</span>
         </label>
       </div>
 
@@ -55,7 +68,7 @@
           <select 
             [(ngModel)]="selectedQuizId"
             (change)="onQuizChange()"
-            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+            class="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-slate-900 text-gray-900 dark:text-white transition-all duration-300"
           >
             @for (quiz of quizzes; track quiz.id) {
               <option [value]="quiz.id">{{ quiz.name }}</option>
@@ -65,7 +78,7 @@
           <select 
             [(ngModel)]="selectedUserId"
             (change)="onUserChange()"
-            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+            class="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-slate-900 text-gray-900 dark:text-white transition-all duration-300"
           >
             <option value="">Choose a user...</option>
             @for (user of users; track user.id) {
@@ -86,7 +99,7 @@
           class="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40 mx-auto animate-pulse"
           style="filter: invert(36%) sepia(88%) saturate(2065%) hue-rotate(206deg) brightness(98%) contrast(101%);"
         />
-        <p class="text-gray-600 font-medium">Loading analytics...</p>
+        <p class="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Loading analytics...</p>
       </div>
     </div>
   } @else if (analyticsData) {
@@ -118,8 +131,8 @@
     </div>
 
     <!-- Score Distribution -->
-    <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 mb-6">
-      <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-soft p-6 border border-gray-100 dark:border-slate-700 mb-6 transition-colors duration-300">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
         <i class="fas fa-chart-column text-primary-500"></i>
         Score Distribution
       </h3>
@@ -127,8 +140,8 @@
         <div class="space-y-3">
           @for (entry of getScoreDistributionEntries(); track entry[0]) {
             <div class="flex items-center gap-4">
-              <span class="text-sm font-semibold text-gray-700 w-20">{{ entry[0] }}%</span>
-              <div class="flex-1 bg-gray-100 rounded-full h-8 relative overflow-hidden">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300 w-20">{{ entry[0] }}%</span>
+              <div class="flex-1 bg-gray-100 dark:bg-slate-700 rounded-full h-8 relative overflow-hidden transition-colors duration-300">
                 @if (entry[1] > 0) {
                   <div 
                     class="bg-gradient-to-r from-primary-500 to-primary-600 h-full rounded-full transition-all duration-500 flex items-center justify-end pr-3"
@@ -142,13 +155,13 @@
           }
         </div>
       } @else {
-        <p class="text-gray-500 text-center py-8">No score distribution data available</p>
+        <p class="text-gray-500 dark:text-gray-400 text-center py-8 transition-colors duration-300">No score distribution data available</p>
       }
     </div>
 
     <!-- Attempts by Day -->
-    <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 mb-6">
-      <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-soft p-6 border border-gray-100 dark:border-slate-700 mb-6 transition-colors duration-300">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
         <i class="fas fa-calendar-days text-primary-500"></i>
         Attempts by Day
       </h3>
@@ -156,8 +169,8 @@
         <div class="space-y-3">
           @for (entry of getAttemptsByDayEntries(); track entry[0]) {
             <div class="flex items-center gap-4">
-              <span class="text-sm font-semibold text-gray-700 w-32">{{ entry[0] }}</span>
-              <div class="flex-1 bg-gray-100 rounded-full h-8 relative overflow-hidden">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300 w-32">{{ entry[0] }}</span>
+              <div class="flex-1 bg-gray-100 dark:bg-slate-700 rounded-full h-8 relative overflow-hidden transition-colors duration-300">
                 @if (entry[1] > 0) {
                   <div 
                     class="bg-gradient-to-r from-accent-500 to-accent-600 h-full rounded-full transition-all duration-500 flex items-center justify-end pr-3"
@@ -171,23 +184,23 @@
           }
         </div>
       } @else {
-        <p class="text-gray-500 text-center py-8">No daily attempt data available</p>
+        <p class="text-gray-500 dark:text-gray-400 text-center py-8 transition-colors duration-300">No daily attempt data available</p>
       }
     </div>
 
     <!-- Question Statistics -->
     @if (analyticsData.questionStats && analyticsData.questionStats.length > 0) {
-      <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100">
-        <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-soft p-6 border border-gray-100 dark:border-slate-700 transition-colors duration-300">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
           <i class="fas fa-lightbulb text-primary-500"></i>
           Question Difficulty Analysis
         </h3>
         <div class="space-y-3">
           @for (question of analyticsData.questionStats; track question.id) {
-            <div class="border border-gray-200 rounded-xl p-4 hover:border-primary-300 hover:shadow-soft transition-all">
-              <p class="text-sm text-gray-700 mb-3 font-medium">{{ question.text }}</p>
+            <div class="border border-gray-200 dark:border-slate-600 rounded-xl p-4 hover:border-primary-300 dark:hover:border-primary-500 hover:shadow-soft transition-all duration-300">
+              <p class="text-sm text-gray-700 dark:text-gray-300 mb-3 font-medium">{{ question.text }}</p>
               <div class="flex items-center gap-4">
-                <div class="flex-1 bg-gray-100 rounded-full h-6 relative overflow-hidden">
+                <div class="flex-1 bg-gray-100 dark:bg-slate-700 rounded-full h-6 relative overflow-hidden transition-colors duration-300">
                   <div 
                     class="h-full rounded-full transition-all duration-500"
                     [class.bg-gradient-to-r]="true"
@@ -207,7 +220,7 @@
                   {{ question.pctCorrect * 100 | number: '1.0-0' }}%
                 </span>
               </div>
-              <p class="text-xs text-gray-500 mt-2">
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 transition-colors duration-300">
                 @if (question.pctCorrect >= 0.7) {
                   <i class="fas fa-smile text-green-500"></i> Easy question
                 } @else if (question.pctCorrect >= 0.4) {
@@ -222,10 +235,10 @@
       </div>
     }
   } @else {
-    <div class="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-2xl p-12 text-center shadow-soft">
-      <i class="fas fa-chart-simple text-6xl text-gray-400 mb-4"></i>
-      <p class="text-xl font-bold text-gray-900 mb-2">No Analytics Data</p>
-      <p class="text-gray-600">
+    <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 border-2 border-gray-200 dark:border-slate-700 rounded-2xl p-12 text-center shadow-soft transition-colors duration-300">
+      <i class="fas fa-chart-simple text-6xl text-gray-400 dark:text-gray-500 mb-4"></i>
+      <p class="text-xl font-bold text-gray-900 dark:text-white mb-2">No Analytics Data</p>
+      <p class="text-gray-600 dark:text-gray-400">
         @if (viewMode === 'user' && !selectedUserId) {
           Please select a user to view their analytics
         } @else {

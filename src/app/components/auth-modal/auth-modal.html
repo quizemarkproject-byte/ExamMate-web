@@ -2,17 +2,17 @@
 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
   <!-- Backdrop -->
   <div
-    class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-sm"
+    class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/40 dark:from-black/70 dark:to-black/50 backdrop-blur-sm transition-colors duration-300"
     (click)="close()"
   ></div>
 
   <!-- Modal -->
   <div
-    class="relative w-full max-w-md mx-auto bg-white rounded-3xl shadow-strong overflow-hidden animate-scaleIn"
+    class="relative w-full max-w-md mx-auto bg-white dark:bg-slate-800 rounded-3xl shadow-strong overflow-hidden animate-scaleIn transition-colors duration-300"
   >
     <!-- Header -->
-    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-primary-50 to-accent-50">
-      <div class="flex items-center gap-2 text-gray-900">
+    <div class="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-primary-50 to-accent-50 dark:from-slate-700 dark:to-slate-700 transition-colors duration-300">
+      <div class="flex items-center gap-2 text-gray-900 dark:text-white transition-colors duration-300">
         <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-glow">
           <i class="fas fa-brain text-xl text-white"></i>
         </div>
@@ -20,7 +20,7 @@
       </div>
       <button
         (click)="close()"
-        class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-xl transition-all duration-300"
+        class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 p-2 rounded-xl transition-all duration-300"
       >
         <i class="fas fa-times fa-lg"></i>
       </button>
@@ -30,11 +30,11 @@
     @if (step === 'email') {
     <form (ngSubmit)="submitEmail()" [formGroup]="emailForm" class="p-6 space-y-5">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome to ExamMate</h2>
-        <p class="text-sm text-gray-500">Test Your Knowledge with ExamMate</p>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Welcome to ExamMate</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">Test Your Knowledge with ExamMate</p>
       </div>
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2"
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300"
           >Email Address<span class="text-red-500 ml-1">*</span></label
         >
         <input
@@ -43,7 +43,7 @@
           formControlName="email"
           type="email"
           placeholder="you@example.com"
-          class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 placeholder:text-gray-400"
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 placeholder:text-gray-400 dark:placeholder:text-gray-500"
         />
         <div class="mt-2 h-5 flex items-start" aria-live="polite">
           @if (emailForm.controls['email'].touched &&
@@ -70,13 +70,13 @@
     <!-- OTP Step -->
     @if (step === 'otp') {
     <form (ngSubmit)="submitOtp()" [formGroup]="otpForm" class="p-6 space-y-5">
-      <div class="bg-primary-50 border border-primary-100 rounded-xl p-4">
-        <p class="text-sm text-gray-700">
-          Enter the OTP sent to <strong class="text-primary-700">{{ emailValue }}</strong>
+      <div class="bg-primary-50 dark:bg-slate-700 border border-primary-100 dark:border-slate-600 rounded-xl p-4 transition-colors duration-300">
+        <p class="text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">
+          Enter the OTP sent to <strong class="text-primary-700 dark:text-primary-400">{{ emailValue }}</strong>
         </p>
       </div>
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">One-Time Password</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">One-Time Password</label>
         <div
           class="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap"
           (paste)="onOtpPaste($event)"
@@ -89,7 +89,7 @@
             type="text"
             inputmode="numeric"
             maxlength="1"
-            class="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-bold rounded-xl border-2 border-gray-200 focus:border-primary-500 transition-all duration-300"
+            class="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-bold rounded-xl border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:border-primary-500 transition-all duration-300"
             style="outline: none !important; box-shadow: none !important;"
             (input)="onOtpInput($event, $index)"
             (keydown)="onOtpKeyDown($event, $index)"
@@ -105,7 +105,7 @@
           type="button"
           (click)="resendOtp()"
           [disabled]="loading"
-          class="text-primary-600 hover:text-primary-700 font-semibold disabled:opacity-50 hover:underline transition-all"
+          class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold disabled:opacity-50 hover:underline transition-all duration-300"
         >
           <i class="fas fa-redo mr-1"></i>Resend OTP
         </button>
@@ -113,7 +113,7 @@
           type="button"
           (click)="backToEmail()"
           [disabled]="loading"
-          class="text-gray-500 hover:text-gray-700 font-medium hover:underline transition-all"
+          class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium hover:underline transition-all duration-300"
         >
           <i class="fas fa-arrow-left mr-1"></i>Change Email
         </button>

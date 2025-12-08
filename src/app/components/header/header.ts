@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { TokenService } from '../../services/token-service/token-service';
 import { AuthModalComponent } from '../auth-modal/auth-modal';
 import { ToastrService } from '../../services/toastr-service/toastr-service';
+import { ThemeService } from '../../services/theme-service/theme-service';
 
 interface NavLink {
   label: string;
@@ -18,7 +19,12 @@ interface NavLink {
 export class Header {
   isLoggedIn:boolean = false;
   showAuth = false;
-  constructor(private tokenService: TokenService, private router: Router, private toastr: ToastrService){}
+  constructor(
+    private tokenService: TokenService, 
+    private router: Router, 
+    private toastr: ToastrService,
+    public themeService: ThemeService
+  ){}
 
   ngOnInit() {
     this.isLoggedIn = this.tokenService.isLoggedIn();
