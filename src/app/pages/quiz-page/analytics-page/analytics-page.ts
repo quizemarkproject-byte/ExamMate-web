@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { AnalyticsService } from '../../services/analytics-service/analytics-service';
-import { AnalyticsResponse } from '../../models/analytics';
-import { QuizService } from '../../services/quiz-service/quiz-service';
-import { UserService } from '../../services/user-service/user-service';
-import { ToastrService } from '../../services/toastr-service/toastr-service';
-import { TokenService } from '../../services/token-service/token-service';
-import { Quiz } from '../../models/quiz';
-import { UserModel } from '../../models/user-service';
+import { AnalyticsService } from '../../../services/analytics-service/analytics-service';
+import { AnalyticsResponse } from '../../../models/analytics';
+import { QuizService } from '../../../services/quiz-service/quiz-service';
+import { UserService } from '../../../services/user-service/user-service';
+import { ToastrService } from '../../../services/toastr-service/toastr-service';
+import { TokenService } from '../../../services/token-service/token-service';
+import { Quiz } from '../../../models/quiz';
+import { UserModel } from '../../../models/user-service';
 
 // Register Chart.js components
 Chart.register(...registerables);

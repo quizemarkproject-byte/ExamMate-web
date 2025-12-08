@@ -7,7 +7,8 @@ import { QuizResultDetail } from './pages/quiz-page/result-detail/result-detail'
 import { QuizResultList } from './pages/quiz-page/result-list/result-list';
 import { QuizExitGuard } from './guards/quiz-exit-guard/quiz-exit-guard';
 import { AdminPage } from './pages/admin-page/admin-page/admin-page';
-import { AnalyticsPage } from './pages/analytics-page/analytics-page';
+import { AdminAnalytics } from './pages/admin-page/admin-analytics/admin-analytics';
+import { AnalyticsPage } from './pages/quiz-page/analytics-page/analytics-page';
 import { authGuard } from './guards/auth-guard/auth-guard';
 import { adminGuard } from './guards/admin-guard/admin-guard';
 
@@ -56,14 +57,28 @@ export const routes: Routes = [
   }
   ,
   {
+    path: 'analytics',
+    component: QuizPage,
+    title: 'ExamMate | Analytics',
+    children: [
+      {
+        path: '',
+        component: AnalyticsPage,
+        title: 'ExamMate | Analytics'
+      }
+    ],
+  }
+  ,
+  {
     path: 'admin',
     component: AdminPage,
     title: 'ExamMate | Admin',
     canActivate: [adminGuard],
   },
   {
-    path: 'analytics',
-    component: AnalyticsPage,
-    title: 'ExamMate | Analytics'
+    path: 'admin/analytics',
+    component: AdminAnalytics,
+    title: 'ExamMate | Admin Analytics',
+    canActivate: [adminGuard],
   }
 ];
