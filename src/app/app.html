@@ -5,4 +5,5 @@
   [duration]="toast.duration"
 ></app-toastr>
 <app-confirm-modal></app-confirm-modal>
+<app-auth-modal [open]="showAuth" (closed)="handleAuthClosed()" (authenticated)="handleAuthenticated($event)"></app-auth-modal>
 <router-outlet />

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TokenService } from '../../services/token-service/token-service';
-import { AuthModalComponent } from '../auth-modal/auth-modal';
+import { AuthModalService } from '../../services/auth-modal-service/auth-modal-service';
 import { ToastrService } from '../../services/toastr-service/toastr-service';
 import { ThemeService } from '../../services/theme-service/theme-service';
 
@@ -13,37 +13,30 @@ interface NavLink {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, AuthModalComponent],
+  imports: [RouterModule],
   templateUrl: './header.html',
 })
 export class Header {
   isLoggedIn:boolean = false;
-  showAuth = false;
   constructor(
     private tokenService: TokenService, 
     private router: Router, 
     private toastr: ToastrService,
+    private authModalService: AuthModalService,
     public themeService: ThemeService
   ){}
 
   ngOnInit() {
     this.isLoggedIn = this.tokenService.isLoggedIn();
+    this.authModalService.authenticated$.subscribe(() => {
+      this.isLoggedIn = true;
+    });
   }
 
   @Output() toggleSidebar = new EventEmitter<void>();
 
   login() {
-    this.showAuth = true;
-  }
-
-  handleAuthClosed() {
-    this.showAuth = false;
-  }
-
-  handleAuthenticated(token: string) {
-    this.tokenService.setAccessToken(token);
-    this.isLoggedIn = true;
-    this.showAuth = false;
+    this.authModalService.open();
   }
 
   logout() {

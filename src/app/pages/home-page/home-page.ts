@@ -1,22 +1,30 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { AuthModalComponent } from '../../components/auth-modal/auth-modal';
+import { AuthModalService } from '../../services/auth-modal-service/auth-modal-service';
 import { TokenService } from '../../services/token-service/token-service';
 import { ToastrService } from '../../services/toastr-service/toastr-service';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [RouterModule, AuthModalComponent],
+  imports: [RouterModule],
   templateUrl: './home-page.html',
 })
 export class HomePage {
-  showAuth:boolean = false;
   isLoggedIn:boolean = false;
-  constructor(private router: Router, private tokenService: TokenService, private toastr: ToastrService) {}
+  constructor(
+    private router: Router, 
+    private tokenService: TokenService, 
+    private toastr: ToastrService,
+    private authModalService: AuthModalService
+  ) {}
 
   ngOnInit() {
     this.isLoggedIn = this.tokenService.isLoggedIn();
+    this.authModalService.authenticated$.subscribe(() => {
+      this.isLoggedIn = true;
+      this.router.navigate(['/']);
+    });
   }
 
   get isAdmin(): boolean {
@@ -28,24 +36,13 @@ export class HomePage {
   }
 
   openAuth() {
-    this.showAuth = true;
-  }
-
-  handleAuthClosed() {
-    this.showAuth = false;
-  }
-
-  handleAuthenticated(token: string) {
-    this.tokenService.setAccessToken(token);
-    this.isLoggedIn = true;
-    this.showAuth = false;
-    this.router.navigate(['/']);
+    this.authModalService.open();
   }
 
   logout() {
     this.toastr.success('Logged out successfully');
     this.tokenService.logout();
     this.isLoggedIn = false;
-    this.showAuth = true;
+    this.authModalService.open();
   }
 }
