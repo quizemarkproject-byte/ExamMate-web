@@ -115,4 +115,16 @@ export class AdminAnalytics implements OnInit {
     if (!this.analyticsData?.attemptsByDay) return [];
     return Object.entries(this.analyticsData.attemptsByDay).sort((a, b) => a[0].localeCompare(b[0]));
   }
+
+  getMaxScoreDistribution(): number {
+    if (!this.analyticsData?.scoreDistribution) return 1;
+    const values = Object.values(this.analyticsData.scoreDistribution);
+    return Math.max(...values, 1);
+  }
+
+  getMaxAttemptsByDay(): number {
+    if (!this.analyticsData?.attemptsByDay) return 1;
+    const values = Object.values(this.analyticsData.attemptsByDay);
+    return Math.max(...values, 1);
+  }
 }

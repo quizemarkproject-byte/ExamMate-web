@@ -129,12 +129,14 @@
             <div class="flex items-center gap-4">
               <span class="text-sm font-semibold text-gray-700 w-20">{{ entry[0] }}%</span>
               <div class="flex-1 bg-gray-100 rounded-full h-8 relative overflow-hidden">
-                <div 
-                  class="bg-gradient-to-r from-primary-500 to-primary-600 h-full rounded-full transition-all duration-500 flex items-center justify-end pr-3"
-                  [style.width.%]="(entry[1] / analyticsData.totalAttempts) * 100"
-                >
-                  <span class="text-white text-sm font-bold">{{ entry[1] }}</span>
-                </div>
+                @if (entry[1] > 0) {
+                  <div 
+                    class="bg-gradient-to-r from-primary-500 to-primary-600 h-full rounded-full transition-all duration-500 flex items-center justify-end pr-3"
+                    [style.width.%]="(entry[1] / getMaxScoreDistribution()) * 100"
+                  >
+                    <span class="text-white text-sm font-bold">{{ entry[1] }}</span>
+                  </div>
+                }
               </div>
             </div>
           }
@@ -156,12 +158,14 @@
             <div class="flex items-center gap-4">
               <span class="text-sm font-semibold text-gray-700 w-32">{{ entry[0] }}</span>
               <div class="flex-1 bg-gray-100 rounded-full h-8 relative overflow-hidden">
-                <div 
-                  class="bg-gradient-to-r from-accent-500 to-accent-600 h-full rounded-full transition-all duration-500 flex items-center justify-end pr-3"
-                  [style.width.%]="(entry[1] / analyticsData.totalAttempts) * 100"
-                >
-                  <span class="text-white text-sm font-bold">{{ entry[1] }}</span>
-                </div>
+                @if (entry[1] > 0) {
+                  <div 
+                    class="bg-gradient-to-r from-accent-500 to-accent-600 h-full rounded-full transition-all duration-500 flex items-center justify-end pr-3"
+                    [style.width.%]="(entry[1] / getMaxAttemptsByDay()) * 100"
+                  >
+                    <span class="text-white text-sm font-bold">{{ entry[1] }}</span>
+                  </div>
+                }
               </div>
             </div>
           }
