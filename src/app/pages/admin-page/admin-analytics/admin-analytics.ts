@@ -7,11 +7,12 @@ import { UserService } from '../../../services/user-service/user-service';
 import { AnalyticsResponse } from '../../../models/analytics';
 import { AdminQuiz } from '../../../models/quiz';
 import { UserModel } from '../../../models/user-service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-admin-analytics',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './admin-analytics.html'
 })
 export class AdminAnalytics implements OnInit {
