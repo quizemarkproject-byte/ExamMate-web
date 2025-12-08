@@ -1,35 +1,40 @@
 <aside
   [class.-translate-x-full]="!open"
-  class="bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 md:translate-x-0 md:w-[280px] w-full absolute md:relative top-0 left-0 md:top-auto md:left-auto h-full md:h-full z-40"
+  class="bg-white border-r border-gray-100 flex flex-col transition-transform duration-300 md:translate-x-0 md:w-[280px] w-full absolute md:relative top-0 left-0 md:top-auto md:left-auto h-full md:h-full z-40 shadow-soft"
   id="sidebar"
 >
-  <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-    <h3 class="text-lg font-semibold text-gray-700">Quiz Navigation</h3>
+  <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white">
+    <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+      <i class="fas fa-compass text-primary-500"></i>
+      Navigation
+    </h3>
     <button
-      class="md:hidden p-1 text-gray-600 hover:bg-gray-100 rounded transition-colors duration-300"
+      class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-300"
       (click)="onClose()"
     >
       <i class="fas fa-times text-xl"></i>
     </button>
   </div>
-  <nav class="flex-1 py-4 flex flex-col">
+  <nav class="flex-1 py-4 flex flex-col gap-1 px-3">
     @for (link of navLinks; track link.url) {
     <a
       [routerLink]="link.url"
-      routerLinkActive="!text-blue-600 !border-blue-600 bg-gray-50"
-      class="group flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-300 border-l-4 border-transparent hover:border-blue-600"
+      routerLinkActive="!text-primary-600 !bg-gradient-to-r !from-primary-50 !to-primary-100 !border-primary-500 !shadow-soft"
+      class="group flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-300 border-l-4 border-transparent hover:border-primary-400 rounded-r-xl font-medium"
     >
-      <i [class]="link.icon + ' group-[.router-link-active]:text-blue-600'"></i>
+      <i [class]="link.icon + ' text-lg group-[.router-link-active]:text-primary-600'"></i>
       <span>{{ link.label }}</span>
     </a>
 
     }
   </nav>
   <!-- Footer: stick to bottom when sidebar is tall -->
-  <div class="mt-auto p-6 border-t border-gray-200">
-    <div class="flex justify-between items-center">
-        <span class="text-sm text-gray-600">Quizzes Completed</span>
-        <span class="font-semibold text-gray-900">{{ count }}</span>
+  <div class="mt-auto p-6 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-soft">
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-600 font-medium">Quizzes Completed</span>
+        <span class="text-2xl font-bold text-primary-600">{{ count }}</span>
       </div>
+    </div>
   </div>
 </aside>
