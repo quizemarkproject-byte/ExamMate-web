@@ -9,6 +9,7 @@ import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { UserService } from '../../../services/user-service/user-service';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
 import { TokenService } from '../../../services/token-service/token-service';
+import { ThemeService } from '../../../services/theme-service/theme-service';
 import { Quiz } from '../../../models/quiz';
 import { UserModel } from '../../../models/user-service';
 
@@ -41,6 +42,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private toastrService = inject(ToastrService);
   private tokenService = inject(TokenService);
+  private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
   private sparkChart?: Chart;
   private attemptsChart?: Chart;
@@ -299,6 +301,10 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     
     this.attemptsChart?.destroy();
     
+    const isDark = this.themeService.isDarkMode();
+    const textColor = isDark ? '#e2e8f0' : '#1f2937';
+    const gridColor = isDark ? '#475569' : '#e5e7eb';
+    
     this.attemptsChart = new Chart(canvas, {
       type: 'line',
       data: {
@@ -306,8 +312,8 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         datasets: [{
           label: 'Attempts',
           data,
-          borderColor: '#2ca02c',
-          backgroundColor: 'rgba(44,160,44,0.1)',
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16,185,129,0.1)',
           fill: true,
           tension: 0.3,
           pointRadius: 4
@@ -326,6 +332,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
             labels: {
               boxWidth: 20,
               padding: 10,
+              color: textColor,
               font: {
                 size: 12
               }
@@ -333,10 +340,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
           }
         },
         scales: {
-          x: { 
+          x: {
+            grid: {
+              color: gridColor
+            },
             title: { 
               display: true, 
               text: 'Date',
+              color: textColor,
               font: {
                 size: 11
               }
@@ -346,15 +357,20 @@ export class AnalyticsPage implements OnInit, OnDestroy {
               minRotation: 0,
               autoSkip: true,
               maxTicksLimit: 8,
+              color: textColor,
               font: {
                 size: 10
               }
             }
           },
-          y: { 
+          y: {
+            grid: {
+              color: gridColor
+            },
             title: { 
               display: true, 
               text: 'Attempts',
+              color: textColor,
               font: {
                 size: 11
               }
@@ -363,6 +379,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
             ticks: {
               stepSize: 1,
               precision: 0,
+              color: textColor,
               font: {
                 size: 10
               }
@@ -382,12 +399,16 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     
     this.distributionChart?.destroy();
     
+    const isDark = this.themeService.isDarkMode();
+    const textColor = isDark ? '#e2e8f0' : '#1f2937';
+    const gridColor = isDark ? '#475569' : '#e5e7eb';
+    
     const datasets: any[] = [
       {
         type: 'bar',
         label: 'Attempts',
         data,
-        backgroundColor: 'rgba(66,133,244,0.9)'
+        backgroundColor: 'rgba(139,92,246,0.8)'
       }
     ];
     
@@ -396,7 +417,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         type: 'line',
         label: 'Average',
         data: labels.map(() => avg),
-        borderColor: '#d9534f',
+        borderColor: '#ef4444',
         borderWidth: 2,
         pointRadius: 0,
         borderDash: [6, 4]
@@ -408,7 +429,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         type: 'line',
         label: 'Median',
         data: labels.map(() => median),
-        borderColor: '#f0ad4e',
+        borderColor: '#fbbf24',
         borderWidth: 2,
         pointRadius: 0,
         borderDash: [2, 4]
@@ -429,6 +450,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
             labels: {
               boxWidth: 20,
               padding: 10,
+              color: textColor,
               font: {
                 size: 12
               }
@@ -442,10 +464,14 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         },
         scales: {
           y: { 
-            beginAtZero: true, 
+            beginAtZero: true,
+            grid: {
+              color: gridColor
+            },
             title: { 
               display: true, 
               text: 'Count',
+              color: textColor,
               font: {
                 size: 11
               }
@@ -453,15 +479,20 @@ export class AnalyticsPage implements OnInit, OnDestroy {
             ticks: {
               stepSize: 1,
               precision: 0,
+              color: textColor,
               font: {
                 size: 10
               }
             }
           },
-          x: { 
+          x: {
+            grid: {
+              color: gridColor
+            },
             title: { 
               display: true, 
               text: 'Score range (%)',
+              color: textColor,
               font: {
                 size: 11
               }
@@ -470,6 +501,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
               maxRotation: 45,
               minRotation: 0,
               autoSkip: false,
+              color: textColor,
               font: {
                 size: 10
               }
@@ -493,6 +525,10 @@ export class AnalyticsPage implements OnInit, OnDestroy {
       return;
     }
     
+    const isDark = this.themeService.isDarkMode();
+    const textColor = isDark ? '#e2e8f0' : '#1f2937';
+    const gridColor = isDark ? '#475569' : '#e5e7eb';
+    
     // Sort by difficulty (hardest first) and take top 20
     const stats = questionStats
       .slice()
@@ -512,7 +548,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         datasets: [{
           label: '% correct',
           data,
-          backgroundColor: 'rgba(255,99,71,0.85)',
+          backgroundColor: 'rgba(239,68,68,0.8)',
           barThickness: 'flex',
           minBarLength: 2
         }]
@@ -538,24 +574,33 @@ export class AnalyticsPage implements OnInit, OnDestroy {
           }
         },
         scales: {
-          x: { 
+          x: {
             beginAtZero: true, 
             max: 100,
+            grid: {
+              color: gridColor
+            },
             title: { 
               display: true, 
               text: '% correct',
+              color: textColor,
               font: {
                 size: 11
               }
             },
             ticks: {
+              color: textColor,
               font: {
                 size: 10
               }
             }
           },
           y: {
+            grid: {
+              color: gridColor
+            },
             ticks: {
+              color: textColor,
               font: {
                 size: 9
               },
