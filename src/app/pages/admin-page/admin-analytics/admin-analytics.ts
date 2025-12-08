@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AnalyticsService } from '../../../services/analytics-service/analytics-service';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { UserService } from '../../../services/user-service/user-service';
+import { ThemeService } from '../../../services/theme-service/theme-service';
 import { AnalyticsResponse } from '../../../models/analytics';
 import { AdminQuiz } from '../../../models/quiz';
 import { UserModel } from '../../../models/user-service';
@@ -27,7 +28,8 @@ export class AdminAnalytics implements OnInit {
   constructor(
     private analyticsService: AnalyticsService,
     private quizService: QuizService,
-    private userService: UserService
+    private userService: UserService,
+    public themeService: ThemeService
   ) {}
 
   ngOnInit(): void {

@@ -1,14 +1,14 @@
 @if (form) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[65vh] flex flex-col overflow-hidden">
-      <div class="p-4 border-b">
-        <h3 class="text-lg font-medium text-gray-900">{{ isCreate ? 'Create Question' : 'Edit Question' }}</h3>
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/70 p-4 transition-colors duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[65vh] flex flex-col overflow-hidden transition-colors duration-300">
+      <div class="p-4 border-b border-gray-200 dark:border-slate-700 transition-colors duration-300">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white transition-colors duration-300">{{ isCreate ? 'Create Question' : 'Edit Question' }}</h3>
       </div>
       <div class="p-4 flex-1 overflow-auto">
         <form [formGroup]="form" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Question text</label>
-            <input formControlName="text" class="w-full px-3 py-2 border rounded mb-1" maxlength="255" required/>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Question text</label>
+            <input formControlName="text" class="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded mb-1 transition-colors duration-300" maxlength="255" required/>
             @if (textErrors.length > 0) {
               @for (msg of textErrors; track $index) {<div class="text-xs text-red-600 min-h-4">{{ msg }}</div>}
             }
@@ -16,7 +16,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Options</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">Options</label>
 
 
             <div class="space-y-1" formArrayName="options">
@@ -25,9 +25,9 @@
                   <div class="flex items-center gap-2">
                     <label class="flex items-center gap-2 flex-1 min-w-0">
                       <input type="radio" class="form-radio" [checked]="form.get('correctAnswer')?.value === options.at(oi).value" (change)="form.get('correctAnswer')?.setValue(options.at(oi).value)" />
-                      <input [formControlName]="oi" class="flex-1 px-3 py-2 border rounded min-w-0" maxlength="255" />
+                      <input [formControlName]="oi" class="flex-1 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded min-w-0 transition-colors duration-300" maxlength="255" />
                     </label>
-                    <button (click)="removeOption(oi)" class="text-red-500" type="button" aria-label="Remove option" title="Remove option" [disabled]="options.length <= 2"><i class="fas fa-xmark"></i></button>
+                    <button (click)="removeOption(oi)" class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors duration-300" type="button" aria-label="Remove option" title="Remove option" [disabled]="options.length <= 2"><i class="fas fa-xmark"></i></button>
                   </div>
                   <!-- per-option errors are displayed in the group area -->
                 </div>
@@ -35,10 +35,10 @@
             </div>
 
             <div class="mt-2">
-              <button (click)="addOption()" type="button" class="text-sm text-purple-600">+ Add option</button>
+              <button (click)="addOption()" type="button" class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors duration-300">+ Add option</button>
             </div>
             <!-- fixed-height error area moved below options/add button -->
-            <div class="h-20 mt-2 overflow-auto text-xs text-red-600">
+            <div class="h-20 mt-2 overflow-auto text-xs text-red-600 dark:text-red-400 transition-colors duration-300">
               @if (optionsGroupErrors.length > 0) {
                 @for (msg of optionsGroupErrors; track $index) {<div class="mb-1">{{ msg }}</div>}
               }
@@ -49,9 +49,9 @@
           </div>
         </form>
       </div>
-      <div class="p-4 border-t flex justify-end gap-3">
-        <button (click)="cancel()" class="px-3 py-2 rounded bg-gray-100">Cancel</button>
-        <button (click)="confirm()" [disabled]="!form || !form.valid" class="px-3 py-2 rounded bg-blue-600 text-white disabled:opacity-50">Save</button>
+      <div class="p-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 transition-colors duration-300">
+        <button (click)="cancel()" class="px-3 py-2 rounded bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors duration-300">Cancel</button>
+        <button (click)="confirm()" [disabled]="!form || !form.valid" class="px-3 py-2 rounded bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50 transition-colors duration-300">Save</button>
       </div>
     </div>
   </div>

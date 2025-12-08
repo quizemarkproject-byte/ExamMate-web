@@ -1,13 +1,13 @@
 <div class="w-full mx-auto px-4 p-5">
   <div class="flex items-center justify-between mb-8">
-    <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-2">
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors duration-300">
       <i class="fas fa-chart-line text-primary-500"></i>
       Analytics Dashboard
     </h2>
   </div>
   
   <!-- Controls -->
-  <div class="bg-white rounded-3xl border border-gray-100 shadow-soft p-6 mb-8">
+  <div class="bg-white dark:bg-slate-800 rounded-3xl border border-gray-100 dark:border-slate-700 shadow-soft p-6 mb-8 transition-colors duration-300">
     <div class="flex flex-col md:flex-row gap-4 items-start md:items-center min-h-[60px]">
       <div class="flex gap-4">
         <label class="flex items-center gap-2 cursor-pointer">
@@ -19,7 +19,7 @@
             value="quiz" 
             class="w-4 h-4 text-primary-600 focus:ring-primary-500"
           />
-          <span class="text-gray-700 font-medium">Quiz Analytics</span>
+          <span class="text-gray-700 dark:text-gray-300 font-medium transition-colors duration-300">Quiz Analytics</span>
         </label>
         <label class="flex items-center gap-2 cursor-pointer">
           <input 
@@ -30,7 +30,7 @@
             value="user" 
             class="w-4 h-4 text-primary-600 focus:ring-primary-500"
           />
-          <span class="text-gray-700 font-medium">My Analytics</span>
+          <span class="text-gray-700 dark:text-gray-300 font-medium transition-colors duration-300">My Analytics</span>
         </label>
       </div>
       
@@ -39,7 +39,7 @@
           <select 
             [(ngModel)]="selectedQuizId"
             (ngModelChange)="onSelectionChange()"
-            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+            class="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300"
           >
             <option value="">Choose a quiz...</option>
             @for (quiz of quizzes; track quiz.id) {
@@ -47,7 +47,7 @@
             }
           </select>
         } @else {
-          <div class="px-4 py-2.5 text-sm text-gray-500 font-medium">Viewing your overall analytics</div>
+          <div class="px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400 font-medium transition-colors duration-300">Viewing your overall analytics</div>
         }
       </div>
     </div>
@@ -63,17 +63,17 @@
           class="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40 mx-auto animate-pulse"
           style="filter: invert(36%) sepia(88%) saturate(2065%) hue-rotate(206deg) brightness(98%) contrast(101%);"
         />
-        <p class="text-gray-600 font-medium">Loading analytics...</p>
+        <p class="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Loading analytics...</p>
       </div>
     </div>
   }
 
   <!-- Empty State -->
   @if (!hasData && !isLoading) {
-    <div class="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-2xl p-12 text-center shadow-soft">
+    <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 border-2 border-gray-200 dark:border-slate-700 rounded-2xl p-12 text-center shadow-soft transition-colors duration-300">
       <i class="fas fa-chart-simple text-6xl text-gray-400 mb-4"></i>
-      <p class="text-xl font-bold text-gray-900 mb-2">No Analytics Data</p>
-      <p class="text-gray-600">
+      <p class="text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">No Analytics Data</p>
+      <p class="text-gray-600 dark:text-gray-400 transition-colors duration-300">
         @if (mode === 'quiz' && !selectedQuizId) {
           Please select a quiz to view its analytics
         } @else {
@@ -86,35 +86,35 @@
   <!-- KPI Cards -->
   @if (hasData && !isLoading) {
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-gradient-to-br from-primary-50 to-primary-100 border-2 border-primary-200 rounded-2xl p-6 shadow-soft hover:shadow-medium hover:-translate-y-1 transition-all duration-300">
+    <div class="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/30 border-2 border-primary-200 dark:border-primary-800 rounded-2xl p-6 shadow-soft hover:shadow-medium hover:-translate-y-1 transition-all duration-300">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="text-sm font-semibold text-primary-600">Total Attempts</h3>
-        <i class="fas fa-clipboard-list text-2xl text-primary-500"></i>
+        <h3 class="text-sm font-semibold text-primary-600 dark:text-primary-400 transition-colors duration-300">Total Attempts</h3>
+        <i class="fas fa-clipboard-list text-2xl text-primary-500 dark:text-primary-400"></i>
       </div>
-      <p class="text-4xl font-bold text-primary-700">{{ totalAttempts }}</p>
+      <p class="text-4xl font-bold text-primary-700 dark:text-primary-300 transition-colors duration-300">{{ totalAttempts }}</p>
     </div>
 
-    <div class="bg-gradient-to-br from-accent-50 to-accent-100 border-2 border-accent-200 rounded-2xl p-6 shadow-soft hover:shadow-medium hover:-translate-y-1 transition-all duration-300">
+    <div class="bg-gradient-to-br from-accent-50 to-accent-100 dark:from-accent-900/20 dark:to-accent-800/30 border-2 border-accent-200 dark:border-accent-800 rounded-2xl p-6 shadow-soft hover:shadow-medium hover:-translate-y-1 transition-all duration-300">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="text-sm font-semibold text-accent-600">Average Score</h3>
-        <i class="fas fa-chart-line text-2xl text-accent-500"></i>
+        <h3 class="text-sm font-semibold text-accent-600 dark:text-accent-400 transition-colors duration-300">Average Score</h3>
+        <i class="fas fa-chart-line text-2xl text-accent-500 dark:text-accent-400"></i>
       </div>
-      <p class="text-4xl font-bold text-accent-700">{{ avgScore.toFixed(1) }}%</p>
+      <p class="text-4xl font-bold text-accent-700 dark:text-accent-300 transition-colors duration-300">{{ avgScore.toFixed(1) }}%</p>
     </div>
 
-    <div class="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-2xl p-6 shadow-soft hover:shadow-medium hover:-translate-y-1 transition-all duration-300">
+    <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30 border-2 border-green-200 dark:border-green-800 rounded-2xl p-6 shadow-soft hover:shadow-medium hover:-translate-y-1 transition-all duration-300">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="text-sm font-semibold text-green-600">Median Score</h3>
-        <i class="fas fa-chart-bar text-2xl text-green-500"></i>
+        <h3 class="text-sm font-semibold text-green-600 dark:text-green-400 transition-colors duration-300">Median Score</h3>
+        <i class="fas fa-chart-bar text-2xl text-green-500 dark:text-green-400"></i>
       </div>
-      <p class="text-4xl font-bold text-green-700">{{ medianScore.toFixed(1) }}%</p>
+      <p class="text-4xl font-bold text-green-700 dark:text-green-300 transition-colors duration-300">{{ medianScore.toFixed(1) }}%</p>
     </div>
   </div>
 
   <!-- Charts Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-soft p-6">
-      <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-soft p-6 transition-colors duration-300">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
         <i class="fas fa-calendar-days text-primary-500"></i>
         Attempts by Day
       </h3>
@@ -123,8 +123,8 @@
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-soft p-6">
-      <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-soft p-6 transition-colors duration-300">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
         <i class="fas fa-chart-pie text-accent-500"></i>
         Score Distribution
       </h3>
@@ -135,12 +135,12 @@
   </div>
 
   <!-- Per-question difficulty -->
-  <div class="bg-white rounded-2xl border border-gray-100 shadow-soft p-6">
-    <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+  <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-soft p-6 transition-colors duration-300">
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
       <i class="fas fa-lightbulb text-primary-500"></i>
       Question Difficulty Analysis
     </h3>
-    <p class="text-sm text-gray-600 mb-4">Questions ranked from most difficult to easiest based on success rate</p>
+    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 transition-colors duration-300">Questions ranked from most difficult to easiest based on success rate</p>
     <div class="h-[400px] relative">
       <canvas id="questionChart" class="absolute inset-0 w-full h-full"></canvas>
     </div>

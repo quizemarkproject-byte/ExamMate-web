@@ -2,7 +2,7 @@
   @for (option of question.options; track $index) {
   <label
     class="group flex items-center gap-4 rounded-2xl border-2 p-5 cursor-pointer transition-all duration-300 transform hover:scale-[1.02]"
-    [ngClass]="option === selectedAnswer ? 'border-primary-500 bg-gradient-to-r from-primary-500 to-primary-600 shadow-glow' : 'border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50 hover:shadow-soft'"
+    [ngClass]="option === selectedAnswer ? 'border-primary-500 bg-gradient-to-r from-primary-500 to-primary-600 shadow-glow' : 'border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-primary-300 dark:hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-slate-700 hover:shadow-soft'"
     (click)="selectAnswer(option)"
     [attr.for]="'option-' + $index"
   >
@@ -10,13 +10,13 @@
     <div class="flex items-center gap-3 flex-1">
       <div
         class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base flex-shrink-0 transition-all duration-300 group-hover:scale-110"
-        [ngClass]="option === selectedAnswer ? 'bg-white text-primary-600 shadow-soft' : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700 group-hover:from-primary-100 group-hover:to-primary-200 group-hover:text-primary-600'"
+        [ngClass]="option === selectedAnswer ? 'bg-white text-primary-600 shadow-soft' : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-600 text-gray-700 dark:text-gray-300 group-hover:from-primary-100 group-hover:to-primary-200 dark:group-hover:from-primary-900/50 dark:group-hover:to-primary-800/50 group-hover:text-primary-600 dark:group-hover:text-primary-400'"
       >
         {{ getOptionLetter($index) }}
       </div>
       <p
         class="text-base font-medium leading-relaxed transition-colors duration-300"
-        [ngClass]="option === selectedAnswer ? 'text-white' : 'text-gray-800 group-hover:text-gray-900'"
+        [ngClass]="option === selectedAnswer ? 'text-white' : 'text-gray-800 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white'"
       >
         {{ option }}
       </p>

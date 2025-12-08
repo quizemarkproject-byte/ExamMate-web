@@ -10,6 +10,7 @@ import { QuizModal } from '../../../components/quiz-modal/quiz-modal';
 import { ToastrService } from '../../../services/toastr-service/toastr-service';
 import { QuizService } from '../../../services/quiz-service/quiz-service';
 import { EditQuestionService } from '../../../services/edit-question-service/edit-question-service';
+import { ThemeService } from '../../../services/theme-service/theme-service';
 import { QuizRequest, AdminQuiz, Question } from '../../../models/quiz';
 
 @Component({
@@ -41,7 +42,8 @@ export class AdminPage {
   constructor(
     private toastr: ToastrService,
     private quizService: QuizService,
-    private editService: EditQuestionService
+    private editQuestionService: EditQuestionService,
+    public themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -192,7 +194,7 @@ export class AdminPage {
   }
 
   createQuestion() {
-    this.editService.open().subscribe((created) => {
+    this.editQuestionService.open().subscribe((created: Question | null) => {
       if (!created) return;
 
       this.quizService.adminCreateQuestion(created as Question).subscribe({
